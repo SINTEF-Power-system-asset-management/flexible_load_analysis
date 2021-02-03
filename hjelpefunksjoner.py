@@ -86,12 +86,13 @@ def temp_korriger_last(last, døgn_temp = True, plot_bool = False):
     """ 
     normal_temperatur = normal_temperatur_døgn() # gjennomsnittlig døgntemperatur basert på siste 20 år
     if døgn_temp: 
-        df_temp = pd.read_excel('Norgesnett data\\Temperatur_Strømtangen_fyr_2020.xlsx') 
+        df_temp = pd.read_excel('temperatur_data\\Temperatur_Strømtangen_fyr_2020.xlsx') 
         temperatur_array = np.array(df_temp)
         temperatur = np.zeros(shape=(365,1))
         for dag in range(365): 
             temperatur[dag] = temperatur_array[dag][3] 
     else:
+        print("not in use")
         df_temp = pd.read_excel('temperatur_data\\Timesverdier temperatur 2019 Færder.xlsx')  
         temperatur_array = np.array(df_temp)
         temperatur = np.zeros(shape=(8760,1))
@@ -137,7 +138,7 @@ def normal_temperatur_døgn():
     Returns: 
         normal_temperatur: normal (dvs gjennomsnittlig) temperatur for hver dag
     """
-    df_temp = pd.read_excel('Norgesnett data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx')  
+    df_temp = pd.read_excel('temperatur_data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx')  
     temperatur_array_historisk = np.array(df_temp) 
     temperatur_array_historisk_transponert = np.transpose(temperatur_array_historisk)
     antall_år = math.floor(len(temperatur_array_historisk_transponert[3])/365)
