@@ -36,6 +36,34 @@ def generer_test_data(max_mnd, ukedag_var, helg_var, max_P, startdag = 0):
 
     return profil
 
+def last_inn_data(anlegg_nr): 
+    """ Plot-funksjon for maks-effekter. Distribusjon av  
+    Args: 
+        fordeling: maks-effekter for x antall lastmodelleringer
+    Returns: 
+        last: effektserie for last
+        startdag: hvilken dag last-serien starter på, 0 for mandag, 1 for tirsdag osv 
+    """
+    path = r'C:\Users\eirikh\Lastmodellering\Stokastisk_lastmodellering\Norgesnett data\H5699_data.xlsx'
+    if anlegg_nr == 1: 
+        df = pd.read_excel(path,'Anlegg_1')
+    elif anlegg_nr == 2: 
+        df = pd.read_excel(path,'Anlegg_2')
+    elif anlegg_nr == 3: 
+        df = pd.read_excel(path,'Anlegg_3')
+    elif anlegg_nr == 4: 
+        df = pd.read_excel(path,'Anlegg_4')
+    elif anlegg_nr == 5: 
+        df = pd.read_excel(path,'Anlegg_5')
+    else: 
+        df = None 
+    temp = np.array(df) 
+    temp_t = np.transpose(temp) 
+    last = temp_t[2]    # Effekt-serie last, et år 
+    last = last[0:8760]
+    startdag = 0 #startdag 2018: mandag 
+    return last, startdag
+
 def plot_maks_effekt(fordeling, simu_antall): 
     """ Plot-funksjon for maks-effekter. Distribusjon av  
     Args: 
