@@ -12,6 +12,7 @@ plt.rcParams.update({"font.size": 28})  # skriftstørrelse på plot
 plot_bool = 1  # plotte last og avvik underveis?
 x_simu = 0     # dersom man ønsker å modellere lasten en gang, sett x_simu til 0.
 # dersom man ønsker x antall modelleringer av samme last, sett x_simu til 1 og angi antall simuleringer (simu_antall)
+alt = "A"      # Variasjonskurve-alternativ: A eller B 
 
 ############################
 #### Last inn last-data ####
@@ -46,7 +47,7 @@ if x_simu:  # Kjør x antall simuleringer (x bestemmes av "simu_antall" i linja 
     eva_verdi = np.zeros(shape=(simu_antall,))
     for sim in range(simu_antall):
         maks_eff[sim], eva_verdi[sim] = modeller_last(
-            last, startdag=last_startdag, år=antall_år, plot=plot_bool,
+            last, startdag=last_startdag, år=antall_år, alt=alt, plot=plot_bool,
         )
 
     plot_maks_effekt(maks_eff, simu_antall)
@@ -59,7 +60,7 @@ if x_simu:  # Kjør x antall simuleringer (x bestemmes av "simu_antall" i linja 
 else:  # kjør en simulering
 
     maks_eff, eva_verdi = modeller_last(
-        last, startdag=last_startdag, år=antall_år, plot=plot_bool
+        last, startdag=last_startdag, år=antall_år, alt=alt, plot=plot_bool
     )
     print("Modellert maks-effekt er", maks_eff, "kW.")
     print("Stokastisk evaluering gir:", eva_verdi)

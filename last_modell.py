@@ -10,7 +10,7 @@ from hjelpefunksjoner import *
 # En funksjon (modeller_last) som utfører lastmodelleringen basert på Tønne sin algoritme.
 
 
-def modeller_last(last, startdag, år, plot=True):
+def modeller_last(last, startdag, år, alt, plot=True):
     """ Funksjon for modellering av last 
     Steg 1: Temperaturkorriger last 
     Steg 2: Fremkall variasjonskurver 
@@ -22,6 +22,7 @@ def modeller_last(last, startdag, år, plot=True):
         last [numpy array, 8760 verdier]: målt/faktisk forbruk, effektserie med timesoppløsning 
         startdag [int]: indikerer startdag 
         år [int]: indikerer antall år lasten går over
+        alt: Alternativ for variasjonskurver, A 3, B 24
         plot (default: True): sannhetsvariabel for plot
     Return: 
         mod_last: modellert last
@@ -48,23 +49,28 @@ def modeller_last(last, startdag, år, plot=True):
     ### Generer variasjonskurver for måned, hverdag, helg
 
     # Fremkall variasjonskurver
-    max_mnd = find_monthly_max(last, år)
-    ukedag_var = finn_var(last, startdag)
-    helg_var = finn_var(last, startdag, ukedag=False)
 
-    # Normaliser variasjonskurvene
-    max_P = max(last)
-    max_mnd = max_mnd / max_P
-    ukedag_var = ukedag_var / max_P
-    helg_var = helg_var / max_P
+    if alt == "A":
+        max_mnd = find_monthly_max(last, år)
+        ukedag_var = finn_var(last, startdag)
+        helg_var = finn_var(last, startdag, ukedag=False)
 
-    if plot:
-        # plot last før og etter temperatur-korrigering
-        plot_temp_last(gammel_last, last)
+        # Normaliser variasjonskurvene
+        max_P = max(last)
+        max_mnd = max_mnd / max_P
+        ukedag_var = ukedag_var / max_P
+        helg_var = helg_var / max_P
 
-        # plot variasjonskurver
-        plot_mnd_var_kurve(max_mnd)
-        plot_dag_var_kurve(ukedag_var, helg_var)
+        if plot:
+            # plot last før og etter temperatur-korrigering
+            plot_temp_last(gammel_last, last)
+
+            # plot variasjonskurver
+            plot_mnd_var_kurve(max_mnd)
+            plot_dag_var_kurve(ukedag_var, helg_var)
+
+    else: # Alternativ B 
+        print("Ikke implementert.")
 
     ############
     ## Steg 3 ##
@@ -72,7 +78,10 @@ def modeller_last(last, startdag, år, plot=True):
 
     ### Beregn estimert maks
 
-    est_maks = estimer_maks_profil(max_mnd, ukedag_var, helg_var, max_P, år, startdag)
+    if alt == "A":
+        est_maks = estimer_maks_profil(max_mnd, ukedag_var, helg_var, max_P, år, startdag)
+    else: 
+        print("Ikke implementert.")
 
     if plot:
         # Plot en uke med estimert maks

@@ -535,8 +535,6 @@ def plot_rel_avvik_hist(avvik, startdag=0):
     plt.legend((p1[0], p2[0]), ("Hverdag", "Helg"))
     plt.title("Stokastisk avvik - histogram")
     plt.show()
-    print(avvik_hverdag)
-    print(avvik_helg)
 
 
 def plot_post_mod(last, mod_last, tid=8760):
