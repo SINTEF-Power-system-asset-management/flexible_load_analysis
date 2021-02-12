@@ -10,7 +10,7 @@ from hjelpefunksjoner import *
 # En funksjon (modeller_last) som utfører lastmodelleringen basert på Tønne sin algoritme.
 
 
-def modeller_last(last, startdag, år, plot=True, print_div=True):
+def modeller_last(last, startdag, år, plot=True):
     """ Funksjon for modellering av last 
     Steg 1: Temperaturkorriger last 
     Steg 2: Fremkall variasjonskurver 
@@ -23,7 +23,6 @@ def modeller_last(last, startdag, år, plot=True, print_div=True):
         startdag [int]: indikerer startdag 
         år [int]: indikerer antall år lasten går over
         plot (default: True): sannhetsvariabel for plot
-        print_div (default: True): sannhetsvariabel for printing 
     Return: 
         mod_last: modellert last
     """
@@ -52,7 +51,6 @@ def modeller_last(last, startdag, år, plot=True, print_div=True):
     max_mnd = find_monthly_max(last, år)
     ukedag_var = finn_var(last, startdag)
     helg_var = finn_var(last, startdag, ukedag=False)
-    print("Sjekk maks", max(max_mnd), max(ukedag_var), max(helg_var))
 
     # Normaliser variasjonskurvene
     max_P = max(last)
@@ -92,7 +90,7 @@ def modeller_last(last, startdag, år, plot=True, print_div=True):
 
     if plot:
         # Plot målt (temp-korrigert), estimert maks og relativt avvik
-        plot_pre_mod(last, est_maks, avvik)
+        plot_pre_mod(last, est_maks, avvik, år)
 
         # plot relativt avvik som serie
         plot_rel_avvik(avvik)
@@ -132,20 +130,9 @@ def modeller_last(last, startdag, år, plot=True, print_div=True):
     if plot:
         # plot modellert last for en gitt tid
         plot_post_mod(last, mod_last, tid=len(mod_last))
-        plot_post_mod(last, mod_last, tid=1416)
+        plot_post_mod(last, mod_last, tid=744)
 
         # plot evaluering av modell
         plot_mod_evaluering(eva_arr)
 
-    # Print diverse parametre
-    if print_div:
-        print("Makseffekt for estimert maks: ", max(est_maks), " kW.")
-        print("Makseffekt for målt last: ", max(last), " kW.")
-        print("Makseffekt for modellert last: ", max(mod_last), " kW.")
-        print("Evaluering av stokastisk modell: ", sum(np.positive(eva_arr)), " %.")
-        print("Grad av avviket som er negativt: ", neg_avvik / 87.6, " %.")
-        print(
-            "Liten grad av negativt avvik tilsier at modelleringen typisk gir en for høy verdi."
-        )
-
-    return max(mod_last)
+    return max(mod_last), sum(abs(eva_arr))

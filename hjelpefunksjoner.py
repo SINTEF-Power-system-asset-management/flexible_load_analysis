@@ -62,7 +62,7 @@ def last_inn_data(anlegg_nr):
     temp = np.array(df)
     temp_t = np.transpose(temp)
     last = temp_t[2]  # Effekt-serie last, et år
-    år = int(math.floor(len(last) / 8760))
+    år =  int(math.floor(len(last) / 8760))
     last = last[0 : 8760 * år]
     startdag = 0  # startdag 2018: mandag
     return last, startdag, år
@@ -332,7 +332,6 @@ def estimer_maks_profil(max_mnd, ukedag_var, helg_var, max_P, antall_år=1, star
             maks_profil[t] = max_mnd[ind] * ukedag_var[int(t % 24)] * max_P
         else:
             maks_profil[t] = max_mnd[ind] * helg_var[int(t % 24)] * max_P
-
     return maks_profil
 
 
@@ -492,20 +491,20 @@ def plot_estimert_maks(est_maks, startdag):
     plt.show()
 
 
-def plot_pre_mod(last, est_maks, rel_avvik):
+def plot_pre_mod(last, est_maks, rel_avvik, antall_år = 1):
     """ Plot effektserier før modellering (pre)
     Args: 
         last: effekt-serie for last
         est_maks: effekt-serie for estimert maks basert på variasjonskurver 
         rel_avvik: relativt avvik mellom last og est_maks 
     """
-    plot_arr = np.zeros(shape=(3, 8760))  # len(last)))#8760*år))
-    plot_arr[0] = last[0:8760]
-    plot_arr[1] = est_maks[0:8760]
-    plot_arr[2] = rel_avvik[0:8760]
+    plot_arr = np.zeros(shape=(2, 8760*antall_år))  # len(last)))#8760*år))
+    plot_arr[0] = last[0:8760*antall_år]
+    plot_arr[1] = est_maks[0:8760*antall_år]
+    #plot_arr[2] = rel_avvik[0:8760*antall_år]
 
     plt.plot(np.transpose(plot_arr), linewidth=0.5)
-    plt.legend(["Målt", "Maks multi. variasjonskurver", "Rel. avvik"])
+    #plt.legend(["Målt", "Maks multi. variasjonskurver", "Rel. avvik"])
     plt.title("Effektserier før modellering: Målt, estimert maks og relativt avvik")
     plt.show()
 
