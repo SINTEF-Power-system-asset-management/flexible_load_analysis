@@ -5,7 +5,9 @@ Steg 1: Temperaturkorriger last
 	Temperaturkorrigering kan også gjøres med timesverdier - time mot normaltemperatur.
     
 Steg 2: Fremkall variasjonskurver 
-	Variasjonskurver for hverdag, helg og sesong blir generert. 
+	Variasjonskurver 
+		alt. A: for hverdag, helg og sesong blir generert. 
+		alt. B: for hver måned: en hverdag og en helg. 
 	Variasjonskurvene er maks-verdier for de ulike timene i løpet av en hverdag, helg eller sesong. 
     
 Steg 3: Beregn profil for estimert maks-effekt
@@ -26,16 +28,16 @@ Steg 6: Evauler stokatisk modell (valgfri)
 Kode-struktur: 
 
 	- hoved_fil: kjører koden og tar inn hjelpe_funksjoner og last_modell 
-		- hjelpe_funksjoner: inneholder mange funksjoner for å utføre ulike beregninger og plotting 
+		- hjelpe_funksjoner: inneholder mange funksjoner for å utføre ulike beregninger og plotting. Støtter hovedsaklig last_modell. 
 		- last_modell: inneholder en funksjon (som kjøres i hoved_fil) som utfører lastmodelleringen og inneholder algoritmen for modellering 
 
 Kommentarer: 
 	1) Input til last-modellen under må være en np-array som inneholder en effektserie over et år for en gitt last / kunde.
 		Koden over må endres / tilpasses det man har av tilgjengelig data / dataformat slik at man får en last med et slik format.
-	2) I hoved_fil kontrollerer brukeren om lastmodellen skal kjøres en gang eller mange. Dersom man vil kjøre en gang settes x_simu til 0. 
- 		Dersom man ønsker å kjøre mange ganger, settes x_simu til 1, simu_antall til det antallet ganger man ønsker å simulere. 
-		percentil settes til den prosenten man ønsker basert på risiko. Jo høyere percentil, jo høyere sikkerhet for at antatt maks-effekt 
-		ikke er for lav. Varaiblene plot og print_div kan settes for å fjerne alt av printing og plotting i last_modell. 
+	2) I hoved_fil kontrollerer brukeren om 
+		- lastmodellen skal kjøres en eller flere ganger 
+		- hvilke variasjonskurver som skal brukes
+		- hvordan inndelingen av relative avvik skal være
 
 
 
