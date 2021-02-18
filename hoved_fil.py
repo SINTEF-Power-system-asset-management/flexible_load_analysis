@@ -10,10 +10,12 @@ from test_data import last_max_mnd, last_ukedag_var, last_helg_var
 plt.rcParams.update({"font.size": 28})  # skriftstørrelse på plot
 
 plot_bool = 0  # plotte last og avvik underveis?
-x_simu = 0  # dersom man ønsker å modellere lasten en gang, sett x_simu til 0.
-# dersom man ønsker x antall modelleringer av samme last, sett x_simu til 1 og angi antall simuleringer (simu_antall)
-alt = "B"  # Variasjonskurve-alternativ: A eller B
-avvik_fordeling = "felles"  # "felles" eller "ind" for individuell
+antall_simuleringer = 1  # dersom man ønsker å modellere lasten en gang
+
+# Variasjonskurve-alternativ: A eller B
+alt = "A"  
+# Avviksinndeling: "felles" eller "individuell"
+avvik_fordeling = "felles"  
 
 ############################
 #### Last inn last-data ####
@@ -41,31 +43,11 @@ print("Målt maks-effekt er", max(last), "kW.")
 #### Lastmodellering ####
 #########################
 
-if x_simu:  # Kjør x antall simuleringer (x bestemmes av "simu_antall" i linja under)
+maks_eff = np.zeros(shape=(antall_simuleringer,))
+eva_verdi = np.zeros(shape=(antall_simuleringer,))
 
-    simu_antall = 100
-    maks_eff = np.zeros(shape=(simu_antall,))
-    eva_verdi = np.zeros(shape=(simu_antall,))
-    for sim in range(simu_antall):
-        maks_eff[sim], eva_verdi[sim] = modeller_last(
-            last,
-            startdag=last_startdag,
-            år=antall_år,
-            alt=alt,
-            fordeling_avvik=avvik_fordeling,
-            plot=plot_bool,
-        )
-
-    plot_maks_effekt(maks_eff, simu_antall)
-    print(
-        "Gjennomsnittlig verdi for evaluering av stokastisk modell:",
-        sum(eva_verdi) / simu_antall,
-    )
-    print("Maks modellert verdi:", max(maks_eff))
-
-else:  # kjør en simulering
-
-    maks_eff, eva_verdi = modeller_last(
+for simulering in range(antall_simuleringer): 
+    maks_eff[simulering], eva_verdi[simulering] = modeller_last(
         last,
         startdag=last_startdag,
         år=antall_år,
@@ -73,5 +55,14 @@ else:  # kjør en simulering
         fordeling_avvik=avvik_fordeling,
         plot=plot_bool,
     )
-    print("Modellert maks-effekt er", maks_eff, "kW.")
-    print("Stokastisk evaluering gir:", eva_verdi)
+
+if antall_simuleringer > 1: 
+    plot_maks_effekt(maks_eff, antall_simuleringer)
+    print(
+        "Gjennomsnittlig verdi for evaluering av stokastisk modell:",
+        sum(eva_verdi) / antall_simuleringer,
+    )
+    print("Maks modellert verdi:", max(maks_eff))
+else: 
+    print("Modellert maks-effekt er", maks_eff[0], "kW.")
+    print("Stokastisk evaluering gir:", eva_verdi[0])
