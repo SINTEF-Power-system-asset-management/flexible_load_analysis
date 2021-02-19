@@ -13,9 +13,9 @@ plot_bool = 1  # plotte last og avvik underveis?
 antall_simuleringer = 1  # dersom man ønsker å modellere lasten en gang
 
 # Variasjonskurve-alternativ: A eller B
-alt = "A"  
+alt = "A"
 # Avviksinndeling: "felles" eller "individuell"
-avvik_fordeling = "felles"  
+avvik_fordeling = "felles"
 
 ############################
 #### Last inn last-data ####
@@ -46,7 +46,7 @@ print("Målt maks-effekt er", max(last), "kW.")
 maks_eff = np.zeros(shape=(antall_simuleringer,))
 eva_verdi = np.zeros(shape=(antall_simuleringer,))
 
-for simulering in range(antall_simuleringer): 
+for simulering in range(antall_simuleringer):
     maks_eff[simulering], eva_verdi[simulering] = modeller_last(
         last,
         startdag=last_startdag,
@@ -56,13 +56,13 @@ for simulering in range(antall_simuleringer):
         plot=plot_bool,
     )
 
-if antall_simuleringer > 1: 
+if antall_simuleringer > 1:
     plot_maks_effekt(maks_eff, antall_simuleringer)
     print(
         "Gjennomsnittlig verdi for evaluering av stokastisk modell:",
         sum(eva_verdi) / antall_simuleringer,
     )
     print("Maks modellert verdi:", max(maks_eff))
-else: 
+else:
     print("Modellert maks-effekt er", maks_eff[0], "kW.")
     print("Stokastisk evaluering gir:", eva_verdi[0])

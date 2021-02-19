@@ -10,7 +10,7 @@ from hjelpefunksjoner import *
 # En funksjon (modeller_last) som utfører lastmodelleringen basert på Tønne sin algoritme.
 
 
-def modeller_last(last, startdag, år, alt, fordeling_avvik = "felles", plot=True):
+def modeller_last(last, startdag, år, alt, fordeling_avvik="felles", plot=True):
     """ Funksjon for modellering av last 
     Steg 1: Temperaturkorriger last 
     Steg 2: Fremkall variasjonskurver 
@@ -114,9 +114,9 @@ def modeller_last(last, startdag, år, alt, fordeling_avvik = "felles", plot=Tru
 
     last = np.array(last)
     est_maks = np.array(est_maks)
-    if fordeling_avvik == "felles": 
+    if fordeling_avvik == "felles":
         avvik = (last - est_maks) / est_maks  # relativt avvik
-    elif fordeling_avvik == "individuell": 
+    elif fordeling_avvik == "individuell":
         avvik = fordel_avvik(last, est_maks)
 
     if plot:
@@ -127,7 +127,10 @@ def modeller_last(last, startdag, år, alt, fordeling_avvik = "felles", plot=Tru
         plot_rel_avvik(avvik)
 
         # plot relativt avvik som histogram
-        plot_rel_avvik_hist(avvik, startdag)
+        if fordeling_avvik == "felles":
+            plot_rel_avvik_hist(avvik, startdag)
+        elif fordeling_avvik == "individuell":
+            print("ikke implementert")
 
     # (valgfri) Finn sannsynlighetsfordeling for relative avvik
 
@@ -139,9 +142,9 @@ def modeller_last(last, startdag, år, alt, fordeling_avvik = "felles", plot=Tru
 
     mod_last = np.zeros(shape=(8760 * år,))
     for t in range(len(mod_last)):
-        if fordeling_avvik == "felles": 
+        if fordeling_avvik == "felles":
             random_number = np.random.choice(avvik)
-        elif fordeling_avvik == "individuell": 
+        elif fordeling_avvik == "individuell":
             time_nr = int(t % 24)
             random_number = np.random.choice(avvik[time_nr])
         mod_last[t] = est_maks[t] * (1 + random_number)
@@ -153,14 +156,8 @@ def modeller_last(last, startdag, år, alt, fordeling_avvik = "felles", plot=Tru
     ### Evaluer modell
 
     # Avvik mellom modellert last og faktisk last
-    tot_avvik = mod_last - last
 
-    eva_arr = np.zeros(shape=(8760 * år,))
-    neg_avvik = 0
-    for t in range(len(eva_arr)):
-        if tot_avvik[t] < 0:
-            neg_avvik += 1
-        eva_arr[t] = (mod_last[t] - last[t]) / est_maks[t]
+    eva_arr = (mod_last - last) / est_maks
 
     if plot:
         # plot modellert last for en gitt tid

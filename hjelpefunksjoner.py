@@ -400,16 +400,17 @@ def get_index_mnd_max(t, år=0):
         print("Something went wrong...")
 
 
-def fordel_avvik(last, est_maks): 
+def fordel_avvik(last, est_maks):
     """ 
-    """ 
-    antall_dager = int(np.floor(len(last)/24))
+    """
+    antall_dager = int(np.floor(len(last) / 24))
     avvik = np.zeros(shape=(24, antall_dager))
-    for t in range(len(last)): 
-        dag = int(np.floor(t/24))
+    for t in range(len(last)):
+        dag = int(np.floor(t / 24))
         time_nr = int(t % 24)
         avvik[time_nr, dag] = (last[t] - est_maks[t]) / est_maks[t]
-    return avvik 
+    return avvik
+
 
 def sorter_avvik(alle_avvik, startdag=0):
     """ Sorterer avvik mellom helg og hverdag i histogram 
