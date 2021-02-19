@@ -9,7 +9,7 @@ from test_data import last_max_mnd, last_ukedag_var, last_helg_var
 
 plt.rcParams.update({"font.size": 28})  # skriftstørrelse på plot
 
-plot_bool = 0  # plotte last og avvik underveis?
+plot_bool = 1  # plotte last og avvik underveis?
 antall_simuleringer = 1  # dersom man ønsker å modellere lasten en gang
 
 # Variasjonskurve-alternativ: A eller B

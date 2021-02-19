@@ -10,7 +10,7 @@ from hjelpefunksjoner import *
 # En funksjon (modeller_last) som utfører lastmodelleringen basert på Tønne sin algoritme.
 
 
-def modeller_last(last, startdag, år, alt, fordeling_avvik, plot=True):
+def modeller_last(last, startdag, år, alt, fordeling_avvik = "felles", plot=True):
     """ Funksjon for modellering av last 
     Steg 1: Temperaturkorriger last 
     Steg 2: Fremkall variasjonskurver 
@@ -114,7 +114,10 @@ def modeller_last(last, startdag, år, alt, fordeling_avvik, plot=True):
 
     last = np.array(last)
     est_maks = np.array(est_maks)
-    avvik = (last - est_maks) / est_maks  # relativt avvik
+    if fordeling_avvik == "felles": 
+        avvik = (last - est_maks) / est_maks  # relativt avvik
+    elif fordeling_avvik == "individuell": 
+        avvik = fordel_avvik(last, est_maks)
 
     if plot:
         # Plot målt (temp-korrigert), estimert maks og relativt avvik
@@ -136,7 +139,11 @@ def modeller_last(last, startdag, år, alt, fordeling_avvik, plot=True):
 
     mod_last = np.zeros(shape=(8760 * år,))
     for t in range(len(mod_last)):
-        random_number = np.random.choice(avvik)
+        if fordeling_avvik == "felles": 
+            random_number = np.random.choice(avvik)
+        elif fordeling_avvik == "individuell": 
+            time_nr = int(t % 24)
+            random_number = np.random.choice(avvik[time_nr])
         mod_last[t] = est_maks[t] * (1 + random_number)
 
     ############
