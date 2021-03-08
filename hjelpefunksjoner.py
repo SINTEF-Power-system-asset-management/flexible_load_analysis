@@ -38,15 +38,15 @@ def generer_test_data(max_mnd, ukedag_var, helg_var, max_P, startdag=0):
     return profil
 
 
-def last_inn_data(anlegg_nr):
     """ Plot-funksjon for maks-effekter. Distribusjon av  
+def last_inn_data(anlegg_nr,path):
     Args: 
         fordeling: maks-effekter for x antall lastmodelleringer
     Returns: 
         last: effektserie for last
         startdag: hvilken dag last-serien starter på, 0 for mandag, 1 for tirsdag osv 
     """
-    path = r"C:\Users\eirikh\Lastmodellering\Stokastisk_lastmodellering\Norgesnett data\H5699_data.xlsx"
+    
     if anlegg_nr == 1:
         df = pd.read_excel(path, "Anlegg_1")
     elif anlegg_nr == 2:

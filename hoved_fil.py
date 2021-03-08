@@ -17,6 +17,9 @@ alt = "A"
 # Avviksinndeling: "felles" eller "individuell"
 avvik_fordeling = "felles"
 
+#path_load_data = r"C:\Users\eirikh\Lastmodellering\Stokastisk_lastmodellering\Norgesnett data\H5699_data.xlsx" # Lokal fillokasjon på Eirik sin PC
+path_load_data = r"C:\Users\ivespe\Data_sets\Lastdata_Norgesnett\H5699_data.xlsx" # Lokal fillokasjon på Iver sin PC
+
 ############################
 #### Last inn last-data ####
 ############################
@@ -32,7 +35,7 @@ if test:
 else:
     # Last inn kunde
     anlegg_nr = 5
-    last, last_startdag, antall_år = last_inn_data(anlegg_nr)
+    last, last_startdag, antall_år = last_inn_data(anlegg_nr,path_load_data)
 
 print("Målt maks-effekt er", max(last), "kW.")
 
