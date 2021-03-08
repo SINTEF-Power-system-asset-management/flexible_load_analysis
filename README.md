@@ -6,7 +6,7 @@ Den er implementert av SINTEF Energi AS i forbindelse med CINELDI WP1.
 Koden er kompatibel med Python 3. 
 Nødvendig pakker som må være installert for kjøring av kode er: 
 a) numpy
-b) math 
+b) openpyxl
 c) pandas 
 d) matplotlib (pyplot) 
 
