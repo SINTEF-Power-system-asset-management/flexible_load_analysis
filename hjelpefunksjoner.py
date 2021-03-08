@@ -38,13 +38,15 @@ def generer_test_data(max_mnd, ukedag_var, helg_var, max_P, startdag=0):
     return profil
 
 
-    """ Plot-funksjon for maks-effekter. Distribusjon av  
 def last_inn_data(anlegg_nr,path):
+    """ Leser inn lastdata fra Excel-fil
     Args: 
-        fordeling: maks-effekter for x antall lastmodelleringer
+        anlegg_nr: nummer for anlegg/kunde i tidsserien som skal plottes
+        path: Fullstendig sti for Excel-fil med lastdata
     Returns: 
         last: effektserie for last
         startdag: hvilken dag last-serien starter på, 0 for mandag, 1 for tirsdag osv 
+        år: antall år i lasttidsserien
     """
     
     if anlegg_nr == 1:
