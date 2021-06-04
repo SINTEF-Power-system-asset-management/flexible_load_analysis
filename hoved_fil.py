@@ -9,8 +9,8 @@ from test_data import last_max_mnd, last_ukedag_var, last_helg_var
 
 plt.rcParams.update({"font.size": 28})  # skriftstørrelse på plot
 
-plot_bool = 1  # plotte last og avvik underveis?
-antall_simuleringer = 1  # dersom man ønsker å modellere lasten en gang
+plot_bool = 0  # plotte last og avvik underveis?
+antall_simuleringer = 2  # dersom man ønsker å modellere lasten en gang
 
 # Variasjonskurve-alternativ: A eller B
 alt = "A"
@@ -34,10 +34,12 @@ if test:
     antall_år = 1
 else:
     # Last inn kunde
-    anlegg_nr = 5
+    anlegg_nr = 4
     last, last_startdag, antall_år = last_inn_data(anlegg_nr,path_load_data)
 
 print("Målt maks-effekt er", max(last), "kW.")
+
+plot_last_hist(last)
 
 # Input til last-modellen under må være en np-array som inneholder en effektserie over et år for en gitt last / kunde
 # Koden over må endres / tilpasses det man har av tilgjengelig data / dataformat slik at man får en last med et slik format

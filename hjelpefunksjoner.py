@@ -479,7 +479,7 @@ def plot_temperatur(temperatur, normal_temperatur, år):
     plt.xlabel("Dag")
     plt.legend(["Temperatur 2018-2020", "Normaltemperatur (2000-2020)"])
     plt.title("Temperatur og normaltemperatur - Strømtangen")
-    plt.show()
+    #plt.show()
 
 
 def plot_temp_last(gammel_last, last):
@@ -494,7 +494,7 @@ def plot_temp_last(gammel_last, last):
     plt.plot(np.transpose(plot_last))
     plt.legend(["Før temperaturkorrigering", "Etter temperaturkorrigering"])
     plt.title("Last")
-    plt.show()
+    #plt.show()
 
 
 def plot_mnd_var_kurve(max_mnd):
@@ -504,7 +504,7 @@ def plot_mnd_var_kurve(max_mnd):
     """
     plt.plot(max_mnd)
     plt.title("Variasjonskurve år")
-    plt.show()
+    #plt.show()
 
 
 def plot_dag_var_kurve(ukedag_var, helg_var):
@@ -519,7 +519,7 @@ def plot_dag_var_kurve(ukedag_var, helg_var):
     plt.plot(np.transpose(plot_arr))
     plt.title("Variasjonskurver uke")
     plt.legend(["Hverdag", "Helg"])
-    plt.show()
+    #plt.show()
 
 
 def plot_var_kurve_alt_B(var_kurve, ukedag=True):
@@ -629,7 +629,7 @@ def plot_pre_mod(last, est_maks, rel_avvik, antall_år=1):
     plt.plot(np.transpose(plot_arr), linewidth=0.5)
     # plt.legend(["Målt", "Maks multi. variasjonskurver", "Rel. avvik"])
     plt.title("Effektserier før modellering: Målt, estimert maks og relativt avvik")
-    plt.show()
+    #plt.show()
 
 
 def plot_rel_avvik(rel_avvik):
@@ -639,7 +639,7 @@ def plot_rel_avvik(rel_avvik):
     """
     plt.plot(np.transpose(rel_avvik), linewidth=0.5)
     plt.title("Relativt avvik")
-    plt.show()
+    #plt.show()
 
 
 def plot_rel_avvik_hist(avvik, startdag=0):
@@ -657,6 +657,28 @@ def plot_rel_avvik_hist(avvik, startdag=0):
     plt.xticks(pos, x)
     plt.legend((p1[0], p2[0]), ("Hverdag", "Helg"))
     plt.title("Stokastisk avvik - histogram")
+    #plt.show()
+
+def plot_last_hist(last, n_bins = 50):
+    """ Plot histogram for lasttidsserie
+    Args: 
+        startdag (default: 0): startdag i tidsserie (mandag=0, tirsdag=1, osv)
+        avvik: relativt avvik mellom last og est_maks 
+    """
+
+    plt.subplot(1,2,1)
+    p = plt.hist(last,bins=n_bins, density=True)
+    plt.ylabel("Sannsynlighetstetthet")
+    plt.xlabel("Effekt [kW]")
+    plt.ylim([0, 0.002])
+    #plt.title("Sannsynlighetsfordeling for last")
+
+    plt.subplot(1,2,2)
+    p = plt.hist(last,bins=n_bins, density=True,cumulative=True)
+
+    plt.ylabel("Kumulativ fordelingsfunksjon")
+    plt.xlabel("Effekt [kW]")
+    plt.ylim([0.75, 1])
     plt.show()
 
 
@@ -676,6 +698,7 @@ def plot_post_mod(last, mod_last, tid=8760):
     plt.ylabel("Effekt [kW]")
     plt.legend(["Målt", "Modellert"])
     plt.title("Effektserier: Målt og modellert last")
+    plt.ylim([0,2000])
     plt.show()
 
 
@@ -687,4 +710,4 @@ def plot_mod_evaluering(eva_arr):
     # Plot evaluering av modell
     plt.plot(eva_arr, linewidth=0.5)
     plt.title("Evaluering av stokastisk modell")
-    plt.show()
+    #plt.show()
