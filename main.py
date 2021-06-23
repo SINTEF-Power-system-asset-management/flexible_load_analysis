@@ -1,0 +1,3 @@
+import init
+
+init.init()
