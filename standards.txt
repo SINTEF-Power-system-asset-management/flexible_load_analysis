@@ -1,0 +1,4 @@
+Dev-decided convention
+
+Naming conventions
+Variables, functions : snake_case
