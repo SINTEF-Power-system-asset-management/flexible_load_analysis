@@ -1,0 +1,58 @@
+name = "Stochastic Load Modelling"
+
+[data]
+
+    [data.load_measurements]
+    path = "sample_load_data.xlsx"
+    date_format = "%H"
+    first_date_iso = "2020-01-01"
+    
+    # For excel-files:
+    sheet = 0
+    time_column = 0
+    data_column = 1
+    vertical_data = "True"
+
+
+    [data.temperature_measurements]
+    path = "temperatur_data\\Temperatur_Strømtangen_fyr_2018-2020.xlsx"
+    date_format = "%d.%m.%Y"
+    first_date_iso = "2018-01-01"
+
+    # For excel-files:
+    sheet = 0
+    time_column = 2
+    data_column = 3
+    vertical_data = "True"
+
+
+    [data.temperature_measurements_historical]
+    path = "temperatur_data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx"
+    date_format = "%d.%m.%Y"
+    first_date_iso = "2000-01-01"
+
+    # For excel-files:
+    sheet = 0
+    time_column = 2
+    data_column = 3
+    vertical_data = "True"
+
+[model]
+
+chosen_model = "Tønne"
+
+
+# Old JSON-implementation
+#{
+#    "load_measurements_path" : "sample_load_data.xlsx",
+#    "load_measurements_date_format" : "%H",
+#    "load_measurements_first_date_iso" : "2020-01-01",
+#    
+#    "temperature_measurements_path" : "temperatur_data\\Temperatur_Strømtangen_fyr_2018-2020.xlsx",
+#    "temperature_measurements_date_format" : "%d.%m.%Y",
+#    "temperature_measurements_first_date_iso" : "2018-01-01",
+#    
+#    "temperature_measurements_historical_path" : "temperatur_data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx",
+#    "temperature_measurements_historical_date_format" : "%d.%m.%Y",
+#    "temperature_measurements_historical_first_date_iso" : "2000-01-01"
+#}
