@@ -37,6 +37,12 @@ name = "Stochastic Load Modelling"
     data_column = 3
     vertical_data = "True"
 
+[preprocessing]
+
+# Any non-zero value will indicate the chosen preprocessing step is computed
+remove_NaN_and_None = "True"
+correct_for_temperature = "True"
+
 [model]
 
 chosen_model = "Tønne"

@@ -12,7 +12,11 @@ def load_time_and_data_from_excel(str_path_excel, str_sheet, int_time_column, in
         arr_excel_sheet = np.transpose(arr_excel_sheet)
     return arr_excel_sheet[:,int_time_column], arr_excel_sheet[:,int_data_column]
 
+"""
+def load_time_and_data_from_csv(str_path_csv, parameters):
 
+    return arr_time, arr_data
+"""
 
 # str_first_date_iso not necessary when time format contains dates
 def convert_general_time_array_to_datetime_array(arr_time_general, str_time_format, str_first_date_iso=""):
@@ -23,6 +27,8 @@ def convert_general_time_array_to_datetime_array(arr_time_general, str_time_form
                 arr_time_dt[i] = dt.datetime.fromisoformat(str_first_date_iso) + dt.timedelta(hours=arr_time_general[i])
         else:
             arr_time_dt[i] = dt.datetime.strptime(str(arr_time_general[i]), str_time_format)
+
+    # Or perhaps do some pipeline-y thing with arr_time_dt[i] += ... for bit of info given
 
         """ Always perform this action? Can you imagine time format not on HH:MM:SS and doesn't contain d?
         if not 'd' in str_time_format:  # when the timestamps are relative some given start-date
@@ -39,18 +45,18 @@ def create_standard_time_series(arr_time_dt, arr_data):
 
 
 
-def load_data_and_create_timeseries(data_config):
-    str_data_path = data_config["path"]
-    str_data_date_format = data_config["date_format"]
-    str_data_first_date_iso = data_config["first_date_iso"]
+def load_data_and_create_timeseries(dict_data_config):
+    str_data_path = dict_data_config["path"]
+    str_data_date_format = dict_data_config["date_format"]
+    str_data_first_date_iso = dict_data_config["first_date_iso"]
 
-    str_data_filename, str_data_filetype = os.path.splitext(str_data_path)
+    _str_data_filename, str_data_filetype = os.path.splitext(str_data_path)
 
     if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
-        str_sheet = data_config["sheet"]
-        str_time_column = data_config["time_column"]
-        str_data_column = data_config["data_column"]
-        bool_vertical_data = data_config["vertical_data"]
+        str_sheet = dict_data_config["sheet"]
+        str_time_column = dict_data_config["time_column"]
+        str_data_column = dict_data_config["data_column"]
+        bool_vertical_data = dict_data_config["vertical_data"]
 
         arr_time, arr_data = load_time_and_data_from_excel(str_data_path, str_sheet, str_time_column, str_data_column, bool_vertical_data)
     
