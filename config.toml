@@ -42,6 +42,8 @@ name = "Stochastic Load Modelling"
 # Any non-zero value will indicate the chosen preprocessing step is computed
 remove_NaN_and_None = "True"
 correct_for_temperature = "True"
+k_temperature_coefficient = 0.1
+x_temperature_sensitivity = 0.05
 
 [model]
 

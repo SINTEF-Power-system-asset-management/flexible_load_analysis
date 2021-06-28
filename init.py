@@ -27,4 +27,5 @@ def initialize_config_and_data():
         dict_data_ts[data_source] = data_loading.load_data_and_create_timeseries(dict_data_config[data_source])
         print("Successfully loaded: ", data_source)
     
-    return dict_config, dict_data_ts    # Bad? Consider implementing dict_config as getter-setter, so it doesn't have to be passed around as much?
+    print("Successfully loaded all data")
+    return dict_config, dict_data_ts
