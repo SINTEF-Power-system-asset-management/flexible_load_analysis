@@ -6,7 +6,10 @@ import os.path
 
 
 def load_time_and_data_from_excel(str_path_excel, str_sheet, int_time_column, int_data_column, vertical_data=True):
-    df_excel_sheet = pd.read_excel(str_path_excel, str_sheet)
+    try:
+        df_excel_sheet = pd.read_excel(str_path_excel, str_sheet)
+    except FileNotFoundError:
+        print("File not found, check path in config.toml")
     arr_excel_sheet = np.array(df_excel_sheet)
     if not vertical_data:
         arr_excel_sheet = np.transpose(arr_excel_sheet)
