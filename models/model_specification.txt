@@ -1,0 +1,1 @@
+Models must take as input timeseries and (optionally empty) parameters.
