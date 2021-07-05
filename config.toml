@@ -19,7 +19,7 @@ name = "Stochastic Load Modelling"
     # data_column = int         --      Zero-indexed column the data occupies
 
     [data.load_measurements]
-    path = "load_data\\sample_load_data.xlsx"
+    path = "example_data\\sample_load_data.xlsx"
     date_format = "%H"
     first_date_iso = "2020-01-01"
     
@@ -31,7 +31,7 @@ name = "Stochastic Load Modelling"
 
 
     [data.temperature_measurements]
-    path = "temperatur_data\\Temperatur_Strømtangen_fyr_2018-2020.xlsx"
+    path = "example_data\\Temperatur_Strømtangen_fyr_2018-2020.xlsx"
     date_format = "%d.%m.%Y"
     first_date_iso = "2018-01-01"
 
@@ -43,7 +43,7 @@ name = "Stochastic Load Modelling"
 
 
     [data.temperature_measurements_historical]
-    path = "temperatur_data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx"
+    path = "example_data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx"
     date_format = "%d.%m.%Y"
     first_date_iso = "2000-01-01"
 
