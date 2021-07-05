@@ -1,12 +1,9 @@
 import numpy as np
-from numpy.lib.shape_base import _kron_dispatcher
 
 # Module for implementing Tønne's load modeling method. 
 # Requires input measured load to be compensated for temperature.
 
-def generate_deterministic_model(ts_measured_load, str_max_or_average_variation, str_variation_value_alternative):
-    # Implements both step 2 and 3 og Tønne.
-
+def calculate_variation_values(ts_measured_load, str_max_or_average_variation, str_variation_value_alternative):
     # Initialization of empty data containers
     if str.lower(str_variation_value_alternative) == "a":
             dict_variation_values = {
@@ -69,9 +66,10 @@ def generate_deterministic_model(ts_measured_load, str_max_or_average_variation,
     else:
         raise Exception("Unsupported variation value alternative")    
 
+    return fl_normalization_baseline, dict_variation_values
 
-    # Step 3, generate deterministic model
-    ts_load_deterministic_model = []
+def generate_deterministic_model(ts_measured_load, dict_variation_values, fl_normalization_baseline, str_variation_value_alternative):
+    ts_load_deterministic_model = np.zeros_like(ts_measured_load)
     for i in range(len(ts_measured_load)):
         dt_time_i = ts_measured_load[i, 0]
         int_month_i = dt_time_i.month
@@ -94,37 +92,81 @@ def generate_deterministic_model(ts_measured_load, str_max_or_average_variation,
         else:
             raise Exception("Unsupported variation value alternative")
         
-        ts_load_deterministic_model.append([dt_time_i, fl_modelled_load_i])
+        ts_load_deterministic_model[i,:] = [dt_time_i, fl_modelled_load_i]
+    return np.array(ts_load_deterministic_model)
 
-    return np.array(ts_load_deterministic_model), dict_variation_values
+def generate_stochastic_model(ts_deterministic_model, arr_model_error_histogram, str_stochastic_source):
+    if str_stochastic_source == "distribution_fitting":
+        # Perform distribution fitting here to create probability density function
+        # See https://stackoverflow.com/a/37616966 for potential implementation
+        raise Exception("Not yet implemented")
+
+    ts_stochastic_model = np.zeros_like(ts_deterministic_model)
+    for i in range(len(ts_deterministic_model)):
+        dt_time_i = ts_deterministic_model[i,0]
+        fl_load_baseline_i = ts_deterministic_model[i,1]
+        
+        # Draw random number from chosen source of stochasticity
+        if str_stochastic_source == "error_histogram":
+            fl_random_value = np.random.choice(list(arr_model_error_histogram[:,0]),p=list(arr_model_error_histogram[:,1]))
+        elif str_stochastic_source == "distribution_fitting":
+            raise Exception("Not yet implemented")
+        else:
+            raise Exception("Unsupported stochastic source")
+        ts_stochastic_model[i,:] = [dt_time_i, fl_load_baseline_i*(1 + fl_random_value)]
+
+    return np.array(ts_stochastic_model)
 
 
 def create_toenne_load_model(dict_data_ts, dict_parameters):
     print("Performing Tønne-modelling...")
 
-    # Step 1 of Tønne is inherent in the load already being 
+    # Step 1 of Tønne is inherent in the load already being corrected for temperature-deviations
     ts_measured_load = dict_data_ts["load"]
     str_max_or_average_variation = dict_parameters["max_or_average_variation_calculation"]
     str_variation_value_alternative = dict_parameters["variation_values_alternative"]
 
-    # Step 2 and 3 of Tønne
-    ts_load_deterministic_model, dict_variation_values = generate_deterministic_model(ts_measured_load, str_max_or_average_variation, str_variation_value_alternative)
+    # Step 2 of Tønne
+    fl_normalization_baseline, dict_variation_values = calculate_variation_values(ts_measured_load, str_max_or_average_variation, str_variation_value_alternative)
+    
+    # Step 3 of Tønne
+    ts_load_deterministic_model = generate_deterministic_model(ts_measured_load, dict_variation_values, fl_normalization_baseline, str_variation_value_alternative)
 
     # Step 4 of Tønne
-    # Todo: felles/individuelt avvik
-    ts_relative_model_error = []
+    # Todo: felles/individuelt avvik (individuelt: avvik er gitt per time for en gitt dag)
+    ts_relative_model_error = np.zeros_like(ts_measured_load)
     for i in range(len(ts_measured_load)):
         dt_time_i = ts_measured_load[i, 0]
         fl_actual_load_i = ts_measured_load[i, 1]
         fl_modelled_load_i = ts_load_deterministic_model[i, 1]
         fl_relative_error_i = (fl_actual_load_i - fl_modelled_load_i) / fl_modelled_load_i
-        ts_relative_model_error.append([dt_time_i, fl_relative_error_i])
+        ts_relative_model_error[i, :] = [dt_time_i, fl_relative_error_i]
     ts_relative_model_error = np.array(ts_relative_model_error)
 
     # Step 5 of Tønne
-    # Todo
+    # Todo: different periods for the histograms
+    arr_error_histogram_counts, arr_error_histogram_bins = np.histogram(
+        ts_relative_model_error[:,1],
+        bins=int(
+            np.ceil(
+                np.sqrt(
+                    len(
+                        ts_relative_model_error[:,1])))))
+    arr_model_error_histogram = np.transpose([
+        arr_error_histogram_bins[1:],       # endpoints of buckets
+        #arr_error_histogram_bins[:-1] + np.diff(arr_error_histogram_bins)/2,    # Midpoint of bucket edges
+        arr_error_histogram_counts / sum(arr_error_histogram_counts)])      # Uniform probability of landing in a given bucket
+    ts_load_stochastic_model = generate_stochastic_model(ts_load_deterministic_model, arr_model_error_histogram, dict_parameters["stochastic_source"])
 
+    # Backloading of model
     dict_model = {}
-    dict_model["load"] = ts_load_stochastic_model  # Model timeseries
-    dict_model["biproducts"] = {}    # Dictionary of biproducts from modelling
+    dict_model["load"] = ts_load_stochastic_model
+    dict_model["biproducts"] = {
+        "variation_values" : dict_variation_values,
+        "error_timeseries" : ts_relative_model_error,
+        "error_histogram" : arr_model_error_histogram
+        }
+
+    # Not necessary, as outer module already prints when it is successfully returns
+    #print("Successfully performed Tønne-modelling")
     return dict_model

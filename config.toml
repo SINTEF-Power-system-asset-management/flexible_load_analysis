@@ -53,4 +53,5 @@ chosen_model = "toenne"
     [modelling.toenne]
     max_or_average_variation_calculation = "average"
     variation_values_alternative = "B"  # As presented in Tønne, A: monthly and by workday/weekend, multiplicative, B: workday/weekend monthly
-    stochastic_source = "error_histogram"   # Chosen way of generatic stochastic model, either from "error_histogram" or "distribution_fittin"
+    histogram_periods = 1   # As presented in WP1_pilot_Stokastisk_lastmodellering, 
+    stochastic_source = "error_histogram"   # Chosen way of generatic stochastic model, either from "error_histogram" or "distribution_fitting"
