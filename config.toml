@@ -2,6 +2,22 @@ name = "Stochastic Load Modelling"
 
 [data]
 
+    # The following fields relate to input path of data, how the timestamps are formatted and the date of the first datapoint.
+    # Timestamp-format is described by the C standard (1989 version). See i.e. https://docs.python.org/3.6/library/datetime.html#strftime-and-strptime-behavior
+    # Example usage: data has timestamp "September 2. 2020", then the C representation would be "%B %d. %Y"
+    # The first date of the data must be in iso format.
+
+    # Additional fields are required based on the filetype the loaded data is on:
+    # .xlsx / .xls
+    # sheet = int               --      Zero-indexed sheet the data is stored on
+    # time_column = int         --      Zero-indexed column the timestamps occupies
+    # data_column = int         --      Zero-indexed column the data occupies
+    # vertical_data = string    --      Insert empty string if data is horizontal (occupies rows instead of columns), instert "True" if data is vertical
+    # .txt
+    # delimiter                 --      ASCII-character which separates each column of data
+    # time_column = int         --      Zero-indexed column the timestamps occupies
+    # data_column = int         --      Zero-indexed column the data occupies
+
     [data.load_measurements]
     path = "load_data\\sample_load_data.xlsx"
     date_format = "%H"
@@ -40,7 +56,7 @@ name = "Stochastic Load Modelling"
 
 [preprocessing]
 
-# Any non-zero value will indicate the chosen preprocessing step is computed
+# Any non-empty string will indicate the chosen preprocessing step is performed
 remove_NaN_and_None = "True"
 correct_for_temperature = "True"
 k_temperature_coefficient = 0.1
@@ -53,5 +69,17 @@ chosen_model = "toenne"
     [modelling.toenne]
     max_or_average_variation_calculation = "average"
     variation_values_alternative = "B"  # As presented in Tønne, A: monthly and by workday/weekend, multiplicative, B: workday/weekend monthly
-    histogram_periods = 1   # As presented in WP1_pilot_Stokastisk_lastmodellering, 
+    histogram_periods = 1   # As presented in WP1_pilot_Stokastisk_lastmodellering
     stochastic_source = "error_histogram"   # Chosen way of generatic stochastic model, either from "error_histogram" or "distribution_fitting"
+
+[plotting]
+
+font_size = 12
+date_format = "%Y-%m-%d"
+
+    # Figures to plot, leave as empty string to not plot
+    [plotting.plots_to_be_made]
+    load_measurements = ""
+    load_measurements_histogram = ""
+    temperature_measurements = ""
+    load_measurements_before_and_after_temperature_correction = "True"
