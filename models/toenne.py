@@ -158,11 +158,14 @@ def create_toenne_load_model(dict_data_ts, dict_parameters):
         arr_error_histogram_counts / sum(arr_error_histogram_counts)])      # Uniform probability of landing in a given bucket
     ts_load_stochastic_model = generate_stochastic_model(ts_load_deterministic_model, arr_model_error_histogram, dict_parameters["stochastic_source"])
 
+    # Todo: evalation of stoch. model, (stochastic_load - measured_load) / deterministic_load
+
     # Backloading of model
     dict_model = {}
     dict_model["load"] = ts_load_stochastic_model
     dict_model["biproducts"] = {
         "variation_values" : dict_variation_values,
+        "deterministic_model" : ts_load_deterministic_model,
         "error_timeseries" : ts_relative_model_error,
         "error_histogram" : arr_model_error_histogram
         }

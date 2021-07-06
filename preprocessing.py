@@ -71,7 +71,8 @@ def correct_load_for_temperature_deviations(dict_config, dict_data_ts):
         arr_datapoint_i = ts_load[i]
         dt_time_i = arr_datapoint_i[0]
         fl_load_i = arr_datapoint_i[1]
-        if 11 <= dt_time_i.month or dt_time_i.month <= 4:
+        #if 11 <= dt_time_i.month or dt_time_i.month <= 4:      # Removed, but should in theory be performed according to Tønne
+        if True:
             Tn = dict_daily_normal_temperature[datetime_to_yearless_iso_string(dt_time_i)]
             Ti = compute_n_day_average_starting_from(dt_time_i, ts_temperature, n=3)
             fl_load_corrected_i = fl_load_i + fl_load_i*k*x*(Tn - Ti)

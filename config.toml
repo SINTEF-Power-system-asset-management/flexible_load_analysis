@@ -5,6 +5,7 @@ name = "Stochastic Load Modelling"
     # The following fields relate to input path of data, how the timestamps are formatted and the date of the first datapoint.
     # Timestamp-format is described by the C standard (1989 version). See i.e. https://docs.python.org/3.6/library/datetime.html#strftime-and-strptime-behavior
     # Example usage: data has timestamp "September 2. 2020", then the C representation would be "%B %d. %Y"
+    # The date-format may be given as a list if formats are used.
     # The first date of the data must be in iso format.
 
     # Additional fields are required based on the filetype the loaded data is on:
@@ -13,21 +14,32 @@ name = "Stochastic Load Modelling"
     # time_column = int         --      Zero-indexed column the timestamps occupies
     # data_column = int         --      Zero-indexed column the data occupies
     # vertical_data = string    --      Insert empty string if data is horizontal (occupies rows instead of columns), instert "True" if data is vertical
+    #
     # .txt
-    # delimiter                 --      ASCII-character which separates each column of data
+    # separator                 --      ASCII-character which separates each column of data
     # time_column = int         --      Zero-indexed column the timestamps occupies
     # data_column = int         --      Zero-indexed column the data occupies
 
     [data.load_measurements]
-    path = "example_data\\sample_load_data.xlsx"
-    date_format = "%H"
-    first_date_iso = "2020-01-01"
-    
-    # For excel-files:
-    sheet = 0
-    time_column = 0
-    data_column = 1
+    path = "load_data\\CINELDI_ORA_DATA.txt"
+    date_format = ["%d/%m/%Y", "%d/%m/%Y %H:%M:%S"]
+    first_date_iso = "2019-03-01"
+
+    # For txt-files:
+    separator = ";"
+    time_column = 2
+    data_column = 3
     vertical_data = "True"
+
+    #path = "load_data\\sample_load_data.xlsx"
+    #date_format = "%H"
+    #first_date_iso = "2020-01-01"
+
+    # For excel-files:
+    #sheet = 0
+    #time_column = 0
+    #data_column = 1
+    #vertical_data = "True"
 
 
     [data.temperature_measurements]
@@ -79,7 +91,14 @@ date_format = "%Y-%m-%d"
 
     # Figures to plot, leave as empty string to not plot
     [plotting.plots_to_be_made]
-    load_measurements = ""
-    load_measurements_histogram = ""
-    temperature_measurements = ""
+    load_measurements = "True"
+    load_measurements_histogram = "True"
+    temperature_measurements = "True"
     load_measurements_before_and_after_temperature_correction = "True"
+    # Specific for Tønne-algorithm
+    variation_curves = "True"
+    deterministic_model = "True"
+    load_measurements_and_deterministic_model = "True"
+    relative_error = "True"
+    relative_error_histogram = "True"
+    load_measurements_and_stochastic_model = "True"
