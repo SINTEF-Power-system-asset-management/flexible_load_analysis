@@ -107,7 +107,7 @@ font_size = 12
     load_measurements_before_and_after_temperature_correction = "True"
     # Specific for Tønne-algorithm
     variation_curves = "True"
-    deterministic_model = "True"
+    deterministic_model = ""
     load_measurements_and_deterministic_model = "True"
     relative_error = "True"
     relative_error_histogram = "True"

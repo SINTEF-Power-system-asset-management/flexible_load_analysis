@@ -22,7 +22,7 @@ def plot_timeseries(list_ts, list_labels, str_xlabel, str_ylabel, str_title):
     ax.set_title(str_title)
     ax.grid(True)
     ax.legend(loc='upper left')
-    ax.xaxis.set_major_locator(mdates.DayLocator(interval=20))
+    ax.xaxis.set_major_locator(mdates.DayLocator(interval=30))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     plt.xticks(rotation=90)
     plt.tight_layout()
