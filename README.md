@@ -54,5 +54,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 # Authors
-Contributors: Eirik Haugen, Daniel Bjerkehagen, Iver Bakken Sperstad
+Contributors: Eirik Haugen, Daniel Bjerkehagen, Iver Bakken Sperstad, Susanne Sandell
+
 Copyright (C) 2021 SINTEF Energi AS
