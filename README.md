@@ -21,6 +21,8 @@ Running the script requires the following dependencies:
 
 To use this script, change config.toml to reflect placement and structure of
 dataset, as well as changing any other fields.
+Remember to update the path of the config in main.py as well.
+
 After this, the program may be ran by running
 ```Bash
 python main.py

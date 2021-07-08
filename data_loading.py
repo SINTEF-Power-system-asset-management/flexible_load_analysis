@@ -5,7 +5,7 @@ import numpy as np
 import toml
 
 
-def load_config():
+def load_config(str_config_path):
     """Loads config.toml.
 
     Returns
@@ -17,7 +17,7 @@ def load_config():
     ----------
     Requires toml as dependency.
     """
-    dict_config = toml.load("config.toml")
+    dict_config = toml.load(str_config_path)
     return dict_config
 
 
