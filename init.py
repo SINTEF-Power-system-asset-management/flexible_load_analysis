@@ -2,7 +2,7 @@ import data_loading
 from utilities import print_dictionary_recursive
 
 
-def initialize_config_and_data():
+def initialize_config_and_data(str_config_path):
     """Loads configuration file and creates timeseries from the data-sources.
 
     Returns
@@ -13,7 +13,8 @@ def initialize_config_and_data():
         Pairs of data-sources as strings and loaded data on timeseries-format.
     """
     ## Loading config ###
-    dict_config = data_loading.load_config()
+    print("Preparing to load config-file:", str_config_path)
+    dict_config = data_loading.load_config(str_config_path)
     print("Loaded the following config-file:")
     print("----------------------------------------")
     print_dictionary_recursive(dict_config)
