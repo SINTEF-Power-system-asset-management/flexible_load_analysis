@@ -67,8 +67,8 @@ def compute_daily_historical_normal(ts_daily_data_historical):
             str_date_yearless, [0, 0])[0]
         int_cur_count = dict_running_sum_and_count.get(
             str_date_yearless, [0, 0])[1]
-        list_new_sum_and_count = [flt_cur_sum +
-                                  arr_cur_data[1], int_cur_count + 1]
+        list_new_sum_and_count = [flt_cur_sum + arr_cur_data[1],
+                                  int_cur_count + 1]
         dict_running_sum_and_count[str_date_yearless] = list_new_sum_and_count
 
     dict_daily_average = {}
@@ -78,37 +78,52 @@ def compute_daily_historical_normal(ts_daily_data_historical):
     return dict_daily_average
 
 
-def compute_n_day_average_ending_at(dt_end_day, ts_daily_data, n):
-    """Computes average over n last days of timeseries.
+def create_n_day_average_dict(ts_basis, dt_start, dt_end,  n):
+    """Computes backwards n-day average at every point of input timeseries.
 
     Parameters
     -----------
-    dt_end_day : datetime
-        Last day of the n days.
-    ts_daily_data : timeseries
-        Timeseries of a single datapoint for any given day.
+    ts_basis : timeseries
+        Timeseries to calculate average over daily datapoints.
+    dt_start : datetime
+        First date to calculate from.
+    dt_end : datetime
+        Last date to calculate to (inclusive)
     n : int
-        Amount of days to take average over.
+        Amount of days to take backwards average over.
 
     Returns
     -----------
-    float
-        n-day average.
+    dict_averages : dict
+        n-day backwards averages, keyed by date.
+
+    Notes
+    ----------
+    Contents of return will always be a chronologically sorted dict as long as
+    ts_basis is sorted.
     """
     int_starting_index = 0
-    while int_starting_index < len(ts_daily_data):
-        if ts_daily_data[int_starting_index][0].day == dt_end_day.day and (
-                ts_daily_data[int_starting_index][0].month == dt_end_day.month):
+    while int_starting_index < len(ts_basis):
+        if ts_basis[int_starting_index][0].date() == dt_start.date():
             break
         else:
             int_starting_index += 1
 
-    fl_running_sum = 0
-    i = 0
-    while i < n:
-        fl_running_sum += ts_daily_data[int_starting_index - i][1]
-        i += 1
-    return fl_running_sum / n
+    dict_averages = {}
+    while int_starting_index < len(ts_basis):
+        fl_running_sum = 0
+        i = 0
+        while i < n:
+            fl_running_sum += ts_basis[int_starting_index - i][1]
+            i += 1
+
+        dt_cur_date = ts_basis[int_starting_index][0].date()
+        dict_averages[dt_cur_date] = fl_running_sum / n
+
+        if dt_cur_date == dt_end.date():
+            return dict_averages
+        else:
+            int_starting_index += 1
 
 
 def correct_load_for_temperature_deviations(dict_data_ts, k, x):
@@ -138,9 +153,11 @@ def correct_load_for_temperature_deviations(dict_data_ts, k, x):
     # Parameters
     ts_load = dict_data_ts["load_measurements"]
     ts_temperature = dict_data_ts["temperature_measurements"]
-    ts_temperature_historical = dict_data_ts["temperature_measurements_historical"]
     dict_daily_normal_temperature = compute_daily_historical_normal(
-        ts_temperature_historical)
+                                        ts_temperature)
+    dict_temperature_n_day_average = create_n_day_average_dict(
+                                        ts_temperature, ts_load[0, 0],
+                                        ts_load[-1, 0],  n=3)
 
     # Correction step
     ts_load_corrected = np.zeros_like(ts_load)
@@ -153,8 +170,7 @@ def correct_load_for_temperature_deviations(dict_data_ts, k, x):
         if True:
             Tn = dict_daily_normal_temperature[datetime_to_yearless_iso_string(
                 dt_time_i)]
-            Ti = compute_n_day_average_ending_at(
-                dt_time_i, ts_temperature, n=3)
+            Ti = dict_temperature_n_day_average[dt_time_i.date()]
             fl_load_corrected_i = fl_load_i + fl_load_i*k*x*(Tn - Ti)
         else:
             fl_load_corrected_i = fl_load_i
