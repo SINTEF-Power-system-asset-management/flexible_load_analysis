@@ -124,6 +124,7 @@ def create_n_day_average_dict(ts_basis, dt_start, dt_end,  n):
             return dict_averages
         else:
             int_starting_index += 1
+    raise(Exception("End date missing from basis-timeseries"))
 
 
 def correct_load_for_temperature_deviations(dict_data_ts, k, x):
