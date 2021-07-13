@@ -43,19 +43,7 @@ name = "Stochastic Load Modelling"
 
 
     [data.temperature_measurements]
-    path = "example_data\\Temperatur_Strømtangen_fyr_2018-2020.xlsx"
-    date_format = "%d.%m.%Y"
-    first_date_iso = "2018-01-01"
-
-    # For excel-files:
-    sheet = 0
-    time_column = 2
-    data_column = 3
-    vertical_data = "True"
-
-
-    [data.temperature_measurements_historical]
-    path = "example_data\\Temperatur_Strømtangen_fyr_2000-2019.xlsx"
+    path = "example_data\\Temperatur_Strømtangen_fyr_2000-2020.xlsx"
     date_format = "%d.%m.%Y"
     first_date_iso = "2000-01-01"
 
