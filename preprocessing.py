@@ -2,7 +2,7 @@ import numpy as np
 import datetime as dt
 
 
-def remove_nan_and_none_datapoints(dict_data_ts):
+def remove_nan_and_none_datapoints(ts_data):
     """Removes datapoints containing NaN or None.
 
     Parameters
@@ -16,18 +16,16 @@ def remove_nan_and_none_datapoints(dict_data_ts):
         Dictionary of all timeseries without NaN and None-values.
     """
     print("Removing NaN and None datapoints...")
-    for data_source in dict_data_ts:
-        ts_data = dict_data_ts[data_source]
-        list_good_indeces = []
-        for dp in ts_data:
-            dp = list(dp)
-            if (not None in dp) and (dp == dp):
-                list_good_indeces.append(True)
-            else:
-                list_good_indeces.append(False)
-        ts_data = ts_data[list_good_indeces]
-        dict_data_ts[data_source] = ts_data
-    return dict_data_ts
+    
+    list_good_indeces = []
+    for dp in ts_data:
+        dp = list(dp)
+        if (not None in dp) and (dp == dp):
+            list_good_indeces.append(True)
+        else:
+            list_good_indeces.append(False)
+    ts_data = ts_data[list_good_indeces]
+    return ts_data
 
 
 def datetime_to_yearless_iso_string(dt):
@@ -78,7 +76,7 @@ def compute_daily_historical_normal(ts_daily_data_historical):
     return dict_daily_average
 
 
-def create_n_day_average_dict(ts_basis, dt_start, dt_end,  n):
+def create_n_day_average_dict(ts_basis, date_start, date_end,  n):
     """Computes backwards n-day average at every point of input timeseries.
 
     Parameters
@@ -104,7 +102,7 @@ def create_n_day_average_dict(ts_basis, dt_start, dt_end,  n):
     """
     int_starting_index = 0
     while int_starting_index < len(ts_basis):
-        if ts_basis[int_starting_index][0].date() == dt_start.date():
+        if ts_basis[int_starting_index][0].date() == date_start:
             break
         else:
             int_starting_index += 1
@@ -120,14 +118,18 @@ def create_n_day_average_dict(ts_basis, dt_start, dt_end,  n):
         dt_cur_date = ts_basis[int_starting_index][0].date()
         dict_averages[dt_cur_date] = fl_running_sum / n
 
-        if dt_cur_date == dt_end.date():
+        if dt_cur_date == date_end:
             return dict_averages
         else:
             int_starting_index += 1
     raise(Exception("End date missing from basis-timeseries"))
 
 
-def correct_load_for_temperature_deviations(dict_data_ts, k, x):
+def correct_load_for_temperature_deviations(
+        ts_load, 
+        dict_daily_normal_temperature,
+        dict_temperature_n_day_average,
+        k, x):
     """Performs temperature-correction of load-timeseries based on historical
     temperature measurements.
 
@@ -150,16 +152,6 @@ def correct_load_for_temperature_deviations(dict_data_ts, k, x):
         calculated daily historical normal temperature.
     """
     print("Performing temperature-correction of load-data...")
-
-    # Parameters
-    ts_load = dict_data_ts["load_measurements"]
-    ts_temperature = dict_data_ts["temperature_measurements"]
-    dict_daily_normal_temperature = compute_daily_historical_normal(
-                                        ts_temperature)
-    dict_temperature_n_day_average = create_n_day_average_dict(
-                                        ts_temperature, ts_load[0, 0],
-                                        ts_load[-1, 0],  n=3)
-
     # Correction step
     ts_load_corrected = np.zeros_like(ts_load)
     for i in range(len(ts_load)):
@@ -179,10 +171,7 @@ def correct_load_for_temperature_deviations(dict_data_ts, k, x):
         ts_load_corrected[i][0] = dt_time_i
         ts_load_corrected[i][1] = fl_load_corrected_i
 
-    # Backloading new data
-    dict_data_ts["temperature_daily_normal"] = dict_daily_normal_temperature
-    dict_data_ts["load_temperature_corrected"] = ts_load_corrected
-    return dict_data_ts
+    return ts_load_corrected
 
 
 def preprocess_data(dict_preprocessing_config, dict_data_ts):
@@ -209,21 +198,28 @@ def preprocess_data(dict_preprocessing_config, dict_data_ts):
     list_preprocessing_log = []
 
     if dict_preprocessing_config["remove_NaN_and_None"]:
-        dict_data_ts = remove_nan_and_none_datapoints(dict_data_ts)
+        dict_data_ts["load_measurements"] = remove_nan_and_none_datapoints(dict_data_ts["load_measurements"])
         list_preprocessing_log.append("remove_nan_and_none")
 
     if dict_preprocessing_config["correct_for_temperature"]:
+        ts_load = dict_data_ts["load_measurements"]
+        dict_daily_normal_temperature = dict_data_ts["normal_temperature"]
+        dict_temperature_3_day_average = dict_data_ts["n-day_average_temperature"]
         k = dict_preprocessing_config["k_temperature_coefficient"]
         x = dict_preprocessing_config["x_temperature_sensitivity"]
-        dict_data_ts = correct_load_for_temperature_deviations(
-            dict_data_ts, k, x)
+
+        dict_data_ts["load_temperature_corrected"] = correct_load_for_temperature_deviations(
+            ts_load, 
+            dict_daily_normal_temperature,
+            dict_temperature_3_day_average,
+            k, x)
         list_preprocessing_log.append("correct_for_temperature")
 
     # Format allows for simple pipelining of additional preprocessing steps.
     # if dict_preprocessing_config["example"]:
-    #   dict_data_ts = example_preprocessing_step(dict_preprocessing_config, dict_data_ts)
+    #   dict_data_ts["field"] = example_preprocessing_step(dict_preprocessing_config, dict_data_ts["other_field"])
     # if dict_preprocessing_config["another"]:
-    #   dict_data_ts = another_preprocessing_step(dict_preprocessing_config, dict_data_ts)
+    #   dict_data_ts["other_field"] = another_preprocessing_step(dict_preprocessing_config, dict_data_ts["yet_another_field"])
 
     if "correct_for_temperature" in list_preprocessing_log:
         dict_data_ts["load"] = dict_data_ts["load_temperature_corrected"]

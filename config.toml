@@ -37,6 +37,7 @@ name = "Stochastic Load Modelling"
     path = "load_data\\CINELDI_ORA_DATA_split\\"
     date_format = ["%d/%m/%Y", "%d/%m/%Y %H:%M:%S"]
     first_date_iso = "2019-03-01"
+    last_date_iso = "2021-06-01"
 
     # For txt-files:
     separator = ";"
@@ -68,6 +69,7 @@ x_temperature_sensitivity = 0.05
 
 [modelling]
 
+perform_modelling = "True"
 chosen_model = "toenne"
 
     [modelling.toenne]

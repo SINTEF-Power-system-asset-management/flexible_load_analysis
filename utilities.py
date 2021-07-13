@@ -40,3 +40,10 @@ def first_matching_index(indexable, fn_boolean):
         if fn_boolean(indexable[i]):
             return i
     return None
+
+
+def get_first_value_of_dictionary(dict_inp):
+    """Returns first value of dictionary.
+    """
+    for key in dict_inp:
+        return dict_inp[key]

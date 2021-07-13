@@ -34,6 +34,7 @@ name = "Stochastic Load Modelling"
     path = "example_data\\sample_load_data.xlsx"
     date_format = "%H"
     first_date_iso = "2020-01-01"
+    last_date_iso = "2020-12-31"
 
     # For txt-files:
     sheet = 0
@@ -65,6 +66,7 @@ x_temperature_sensitivity = 0.05
 
 [modelling]
 
+perform_modelling = "True"
 chosen_model = "toenne"
 
     [modelling.toenne]

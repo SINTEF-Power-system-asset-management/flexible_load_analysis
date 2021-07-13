@@ -1,6 +1,5 @@
 import init
-import preprocessing
-import modelling
+import nodes
 import plotting
 
 print()
@@ -10,12 +9,11 @@ print("#########################################################################
 print()
 
 STR_CONFIG_PATH = "config.toml"
-dict_config, dict_data_ts = init.initialize_config_and_data(STR_CONFIG_PATH)
+dict_config, dict_data = init.initialize_config_and_data(STR_CONFIG_PATH)
 
-dict_data_ts = preprocessing.preprocess_data(dict_config["preprocessing"], dict_data_ts)
+dict_loads = nodes.prepare_all_nodes(dict_config, dict_data)
 
-dict_model = modelling.model_load(dict_config["modelling"], dict_data_ts)
-
-plotting.plot_selection(dict_config, dict_data_ts, dict_model)
+# Commented to avoid errors while reconfiguring.
+#plotting.plot_selection(dict_config, dict_data_ts, dict_model)
 
 # Todo: write to file
