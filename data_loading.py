@@ -1,4 +1,4 @@
-import os.path
+import os
 import datetime as dt
 import pandas as pd
 import numpy as np
@@ -252,38 +252,54 @@ def load_data_and_create_timeseries(dict_data_config):
     str_data_date_format = dict_data_config["date_format"]
     str_data_first_date_iso = dict_data_config["first_date_iso"]
 
-    _str_data_filename, str_data_filetype = os.path.splitext(str_data_path)
+    list_paths_to_be_loaded = []
+    if os.path.isdir(str_data_path):
+        for str_file_path in os.listdir(str_data_path):
+            list_paths_to_be_loaded.append(str_data_path + str_file_path)
+    else:
+        list_paths_to_be_loaded.append(str_data_path)
 
-    if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
-        int_sheet = dict_data_config["sheet"]
-        int_time_column = dict_data_config["time_column"]
-        int_data_column = dict_data_config["data_column"]
-        bool_vertical_data = dict_data_config["vertical_data"]
+    dict_loaded_ts = {}
+    for str_path in list_paths_to_be_loaded:
+        print("Loading", str_path + "...")
+        _str_data_filename, str_data_filetype = os.path.splitext(str_path)
 
-        arr_time, arr_data = load_time_and_data_from_excel(
-            str_data_path, int_sheet,
-            int_time_column, int_data_column, bool_vertical_data)
+        if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
+            int_sheet = dict_data_config["sheet"]
+            int_time_column = dict_data_config["time_column"]
+            int_data_column = dict_data_config["data_column"]
+            bool_vertical_data = dict_data_config["vertical_data"]
 
-    elif str_data_filetype == ".txt":
-        str_separator = dict_data_config["separator"]
-        int_time_column = dict_data_config["time_column"]
-        int_data_column = dict_data_config["data_column"]
-        bool_vertical_data = dict_data_config["vertical_data"]
+            arr_time, arr_data = load_time_and_data_from_excel(
+                str_path, int_sheet,
+                int_time_column, int_data_column, bool_vertical_data)
 
-        arr_time, arr_data = load_time_and_data_from_txt(
-            str_data_path, str_separator,
-            int_time_column, int_data_column, bool_vertical_data)
+        elif str_data_filetype == ".txt":
+            str_separator = dict_data_config["separator"]
+            int_time_column = dict_data_config["time_column"]
+            int_data_column = dict_data_config["data_column"]
+            bool_vertical_data = dict_data_config["vertical_data"]
 
-    elif str_data_filetype == ".csv":
-        raise Exception("Not yet implemented")
+            arr_time, arr_data = load_time_and_data_from_txt(
+                str_path, str_separator,
+                int_time_column, int_data_column, bool_vertical_data)
 
-    # elif str_data_filetype == ".example"
-    #   Code for additional formats
+        elif str_data_filetype == ".csv":
+            raise Exception("Not yet implemented")
 
-    arr_time_dt = convert_general_time_array_to_datetime_array(
-        arr_time, str_data_date_format, str_data_first_date_iso)
-    arr_data = convert_general_data_array_to_float_array(arr_data)
+        # elif str_data_filetype == ".example"
+        #   Code for additional formats
 
-    ts_data = create_standard_time_series(arr_time_dt, arr_data)
+        arr_time_dt = convert_general_time_array_to_datetime_array(
+            arr_time, str_data_date_format, str_data_first_date_iso)
+        arr_data = convert_general_data_array_to_float_array(arr_data)
 
-    return ts_data
+        ts_data = create_standard_time_series(arr_time_dt, arr_data)
+
+        if os.path.isdir(str_data_path):
+            str_key_name, _temp = os.path.splitext(str_path.replace(str_data_path, ""))
+        else:
+            str_key_name = str_data_path
+        dict_loaded_ts[str_key_name] = ts_data
+    
+    return dict_loaded_ts

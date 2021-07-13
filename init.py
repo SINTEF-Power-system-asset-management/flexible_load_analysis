@@ -27,11 +27,11 @@ def initialize_config_and_data(str_config_path):
     ### Loading data ###
     print("Beginning to load data...")
     dict_data_config = dict_config["data"]
-    dict_data_ts = {}
+    dict_data = {}
     for data_source in dict_data_config:
-        dict_data_ts[data_source] = data_loading.load_data_and_create_timeseries(
+        dict_data[data_source] = data_loading.load_data_and_create_timeseries(
             dict_data_config[data_source])
-        print("Successfully loaded: ", data_source)
+        print("Successfully loaded:", data_source)
 
     print("Successfully loaded all data")
-    return dict_config, dict_data_ts
+    return dict_config, dict_data

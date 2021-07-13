@@ -9,6 +9,9 @@ name = "Stochastic Load Modelling"
     # The following fields relate to input path of data, how the timestamps are
     # formatted and the date of the first datapoint.
     
+    # The script allows for loading of whole directories of similarily structured
+    # data if the path is a directory
+
     # Timestamp-format is described by the C standard (1989 version). 
     # See i.e. https://docs.python.org/3.6/library/datetime.html#strftime-and-strptime-behavior
     # Example usage: data has timestamp "September 2. 2020", then the 
@@ -31,7 +34,7 @@ name = "Stochastic Load Modelling"
     # data_column = int         --      Zero-indexed column the data occupies
 
     [data.load_measurements]
-    path = "load_data\\CINELDI_ORA_DATA.txt"
+    path = "load_data\\CINELDI_ORA_DATA_split\\"
     date_format = ["%d/%m/%Y", "%d/%m/%Y %H:%M:%S"]
     first_date_iso = "2019-03-01"
 
