@@ -9,6 +9,11 @@ name = "Stochastic Load Modelling"
     # The following fields relate to input path of data, how the timestamps are
     # formatted and the date of the first datapoint.
     
+    # The script allows for loading of whole directories of similarily structured
+    # data if the path is a directory.
+    # The path must then end in "\\".
+
+    
     # Timestamp-format is described by the C standard (1989 version). 
     # See i.e. https://docs.python.org/3.6/library/datetime.html#strftime-and-strptime-behavior
     # Example usage: data has timestamp "September 2. 2020", then the 
@@ -82,6 +87,11 @@ chosen_model = "toenne"
     #[modelling.example]
     #parameter1 = 3.14
     #parameter2 = "Hello World"
+
+
+[network]
+path = "example_data\\example_network\\"
+separator = ";"
 
 
 [plotting]

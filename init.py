@@ -33,5 +33,10 @@ def initialize_config_and_data(str_config_path):
             dict_data_config[data_source])
         print("Successfully loaded:", data_source)
 
-    print("Successfully loaded all data")
-    return dict_config, dict_data
+    ### Loading network ###
+    print("Beginning to load network...")
+    dict_network_config = dict_config["network"]
+    dict_network = data_loading.load_network_from_directory(dict_network_config)
+
+    print("Successfully loaded all components")
+    return dict_config, dict_data, dict_network

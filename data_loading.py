@@ -303,3 +303,29 @@ def load_data_and_create_timeseries(dict_data_config):
         dict_loaded_ts[str_key_name] = ts_data
     
     return dict_loaded_ts
+
+
+def load_network_from_directory(dict_network_config):
+
+    str_dir_path = dict_network_config["path"]
+    str_separator = dict_network_config["separator"]
+
+    list_paths_to_be_loaded = []
+    for str_file_path in os.listdir(str_dir_path):
+        list_paths_to_be_loaded.append(str_dir_path + str_file_path)
+    
+
+    dict_network = {}
+    for str_path in list_paths_to_be_loaded:
+        print("Loading", str_path + "...")
+    
+        df_network_info = pd.read_csv(str_path, sep=str_separator)
+        dict_network_info = {}
+        for col in df_network_info:
+            dict_network_info[col] = np.array(df_network_info[col])
+
+        str_data_filename, _str_data_filetype = os.path.splitext(str_path)
+        str_key_name = str_data_filename.replace(str_dir_path, "")
+        dict_network[str_key_name] = dict_network_info
+
+    return dict_network
