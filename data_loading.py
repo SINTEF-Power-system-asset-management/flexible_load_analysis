@@ -149,8 +149,8 @@ def convert_general_time_array_to_datetime_array(
     arr_time_dt = [None] * len(arr_time_general)
     for i in range(len(arr_time_general)):
         if 'H' in list_time_format:
-                arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
-                                  + dt.timedelta(hours=int(arr_time_general[i])))
+            arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
+                              + dt.timedelta(hours=int(arr_time_general[i])))
         else:
             if isinstance(list_time_format, list):
                 for str_format in list_time_format:
@@ -296,28 +296,39 @@ def load_data_and_create_timeseries(dict_data_config):
         ts_data = create_standard_time_series(arr_time_dt, arr_data)
 
         if os.path.isdir(str_data_path):
-            str_key_name, _temp = os.path.splitext(str_path.replace(str_data_path, ""))
+            str_key_name, _temp = os.path.splitext(
+                str_path.replace(str_data_path, ""))
         else:
             str_key_name = str_data_path
         dict_loaded_ts[str_key_name] = ts_data
-    
+
     return dict_loaded_ts
 
 
 def load_network_from_directory(dict_network_config):
+    """Loads directory of MATPOWER-formatted csb-files to dictionary.
 
+    Parameters
+    ----------
+    dict_network_config : dict
+        Dictionary of file-configuration, including path.
+
+    Returns
+    ----------
+    dict_network : dict
+        Dictionary of network-information required to build graph-representation.
+    """
     str_dir_path = dict_network_config["path"]
     str_separator = dict_network_config["separator"]
 
     list_paths_to_be_loaded = []
     for str_file_path in os.listdir(str_dir_path):
         list_paths_to_be_loaded.append(str_dir_path + str_file_path)
-    
 
     dict_network = {}
     for str_path in list_paths_to_be_loaded:
         print("Loading", str_path + "...")
-    
+
         df_network_info = pd.read_csv(str_path, sep=str_separator)
         dict_network_info = {}
         for col in df_network_info:
