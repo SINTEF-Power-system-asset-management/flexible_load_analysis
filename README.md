@@ -23,6 +23,8 @@ To use this script, change config.toml to reflect placement and structure of
 dataset, as well as changing any other fields.
 Remember to update the path of the config in main.py as well.
 
+Which data-files the program requires is described in example_data\TUTORIAL.md
+
 After this, the program may be ran by running
 ```Bash
 python main.py

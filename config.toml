@@ -89,7 +89,7 @@ chosen_model = "toenne"
 
 
 [network]
-path = "example_data\\example_network\\"
+path = "network_data\\ora\\"
 separator = ";"
 
 
