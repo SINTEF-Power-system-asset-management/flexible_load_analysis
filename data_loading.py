@@ -148,10 +148,9 @@ def convert_general_time_array_to_datetime_array(
     """
     arr_time_dt = [None] * len(arr_time_general)
     for i in range(len(arr_time_general)):
-        if isinstance(arr_time_general[i], (int, np.float64)):
-            if 'H' in list_time_format:
+        if 'H' in list_time_format:
                 arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
-                                  + dt.timedelta(hours=arr_time_general[i]))
+                                  + dt.timedelta(hours=int(arr_time_general[i])))
         else:
             if isinstance(list_time_format, list):
                 for str_format in list_time_format:
