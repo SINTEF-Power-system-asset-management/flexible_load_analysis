@@ -31,12 +31,21 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs, dict_ID_encodin
 
     dict_uniques = {}
     str_header = arr_contents[0]
+    list_skipped = []
     for i in range(1, len(arr_contents)):
         arr_cur_line = str.split(str.strip(arr_contents[i]), str_separator)
-        ID = dict_ID_encoding[arr_cur_line[int_column_IDs]]
-        arr_lines_so_far = dict_uniques.get(ID, [str_header])
-        arr_lines_so_far.append(str_separator.join(arr_cur_line) + '\n')
-        dict_uniques[ID] = arr_lines_so_far
+        old_ID = arr_cur_line[int_column_IDs]
+        if old_ID in dict_ID_encoding:
+            new_ID = dict_ID_encoding[arr_cur_line[int_column_IDs]]
+            arr_lines_so_far = dict_uniques.get(new_ID, [str_header])
+            arr_lines_so_far.append(str_separator.join(arr_cur_line) + '\n')
+            dict_uniques[new_ID] = arr_lines_so_far
+        else:
+            if not (old_ID in list_skipped): list_skipped.append(old_ID)
+    print("Skipped the following customers missing from encoding:")
+    #for id in list_skipped: print(id)
+    print(list_skipped)
+
 
     str_input_filename, _str_data_filetype = os.path.splitext(str_path_txt)
     str_folder = str_input_filename + "_split\\"
