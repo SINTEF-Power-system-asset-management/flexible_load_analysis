@@ -127,15 +127,15 @@ def format_data_files(dict_data_unsplit, dict_network, str_path_encoding):
 
 
 dict_data_unsplit = {
-    "path": "example_data\\example_load_data.txt",
+    "path": "load_data\\CINELDI_ORA_DATA.txt",
     "separator": ";",
     "ID_column": 0
 }
 dict_network = {
-    "path": "example_data\\example_network\\",
+    "path": "network_data\\ora_H1109\\",
     "separator": ";"
 }
-str_path_encoding = "example_data\\example_encoding.xlsx"
+str_path_encoding = "network_data\\encoding_ora_H1109.xlsx"
 
 format_data_files(
     dict_data_unsplit,
