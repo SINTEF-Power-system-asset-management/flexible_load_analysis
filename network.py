@@ -25,6 +25,7 @@ def convert_network_dictionary_to_graph(dict_network):
     nx_network : nx.Graph()
         Graph representation of network.
     """
+    print("Converting MATPOWER-network to NetworkX...")
     nx_network = nx.Graph()
     # Todo: Add color based on voltage-level.
     nx_network.add_nodes_from(dict_network["bus"]["bus_i"])
@@ -33,7 +34,9 @@ def convert_network_dictionary_to_graph(dict_network):
             dict_network["branch"]["fbus"],
             dict_network["branch"]["tbus"]),
             axis=1))
-    # plt.subplot(111)
-    #nx.draw(nx_network, with_labels=True, font_weight='bold')
+    plt.subplot(111)
+    nx.draw(nx_network, with_labels=True, font_weight='bold')
     plt.show()
+
+    print("Successfully converted to internal graph-representation")
     return nx_network
