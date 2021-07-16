@@ -35,7 +35,7 @@ def prepare_all_nodes(dict_config, dict_data):
         ts_temperature_historical,
         date_start, date_end,  n=3)
 
-    print("Preparing all nodes in network...")
+    print("Preparing all loads in network...")
     # Preprocessing and potential modelling of every load-point
     dict_loads = {}
     for str_node_ID in dict_data["load_measurements"]:
@@ -59,5 +59,6 @@ def prepare_all_nodes(dict_config, dict_data):
         else:
             dict_loads[str_node_ID] = dict_node_ts["load"]
 
-    print("Successfully prepared all nodes")
+    print("--------------------")
+    print("Successfully prepared all load-points")
     return dict_loads
