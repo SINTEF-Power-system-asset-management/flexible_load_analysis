@@ -1,7 +1,11 @@
+"""Module for converting data-files to compliant format
+"""
 import os.path
+import pandas as pd
+import numpy as np
 
 
-def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs):
+def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs, dict_ID_encoding):
     """Splits rows of txt into multiple files based on ID-field.
 
     Parameters
@@ -13,6 +17,8 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs):
     int_column_IDs : int
         Column number of file to group rows by. Rows with the same "ID"-value
         are stored together in a new file with ID as the name. Zero-indexed.
+    dict_ID_encoding : dict
+        Pair of old_ID and new_ID, for anonymizing customer-data.
 
     Notes
     ----------
@@ -26,7 +32,7 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs):
     str_header = arr_contents[0]
     for i in range(1, len(arr_contents)):
         arr_cur_line = str.split(str.strip(arr_contents[i]), str_separator)
-        ID = arr_cur_line[int_column_IDs]
+        ID = dict_ID_encoding[arr_cur_line[int_column_IDs]]
         arr_lines_so_far = dict_uniques.get(ID, [str_header])
         arr_lines_so_far.append(str_separator.join(arr_cur_line) + '\n')
         dict_uniques[ID] = arr_lines_so_far
@@ -41,4 +47,87 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs):
             with open(str_new_path, 'w') as fp:
                 fp.writelines(dict_uniques[key])
         else:
-            raise Exception("At least one duplicate file! Delete all old files before continuing.")
+            print(
+                "WARNING! At least one duplicate file! Delete all old files before continuing.")
+    return
+
+
+def encode_directory_contents(str_dir_path, dict_encoding):
+    """Encodes all apperances of ID's in directory of txt-like files.
+
+    Parameters:
+    ----------
+    str_dir_path : str
+        Path of directory to encode.
+    dict_encoding : dict
+        Dictionary of old_ID, new_ID-encoding.
+
+    Notes
+    ----------
+    Works with .txt, .csv-files stored in str_dir_path.
+
+    """
+    str_new_dir_path = str_dir_path[:-1] + \
+        "_encoded\\"  # To remove \ from old path
+    if not os.path.exists(str_new_dir_path):
+        os.mkdir(str_new_dir_path)
+
+    for str_file_path in os.listdir(str_dir_path):
+        with open(str_dir_path + str_file_path, 'r') as fp:
+            arr_contents = fp.readlines()
+        for i in range(len(arr_contents)):
+            for old_ID in dict_encoding:
+                new_ID = dict_encoding[old_ID]
+                arr_contents[i] = arr_contents[i].replace(old_ID, new_ID)
+
+        str_new_file_path = str_new_dir_path + str_file_path
+        if not os.path.exists(str_new_file_path):
+            with open(str_new_file_path, 'w') as fp:
+                fp.writelines(arr_contents)
+        else:
+            raise Exception(
+                "At least one duplicate file! Delete all old files before continuing.")
+
+    return
+
+
+def format_data_files(dict_data_unsplit, dict_network, str_path_encoding):
+
+    print("Loading encoding...")
+    df_encoding = pd.read_excel(str_path_encoding, 0)
+    arr_old_ID = np.array(df_encoding["old_ID"])
+    arr_new_ID = np.array(df_encoding["new_ID"])
+    dict_encoding = {}
+    for i in range(len(arr_old_ID)):
+        dict_encoding[str(arr_old_ID[i])] = str(arr_new_ID[i])
+
+    print("Splitting data-file...")
+    str_path = dict_data_unsplit["path"]
+    str_separator = dict_data_unsplit["separator"]
+    int_ID_column = dict_data_unsplit["ID_column"]
+    split_txt_by_ID(str_path, str_separator, int_ID_column, dict_encoding)
+
+    print("Encoding network-data...")
+    str_path = dict_network["path"]
+    str_separator = dict_network["separator"]
+    encode_directory_contents(str_path, dict_encoding)
+
+    return
+
+
+dict_data_unsplit = {
+    "path": "example_data\\example_load_data.txt",
+    "separator": ";",
+    "ID_column": 0
+}
+dict_network = {
+    "path": "example_data\\example_network\\",
+    "separator": ";"
+}
+str_path_encoding = "example_data\\example_encoding.xlsx"
+
+format_data_files(
+    dict_data_unsplit,
+    dict_network,
+    str_path_encoding
+)
