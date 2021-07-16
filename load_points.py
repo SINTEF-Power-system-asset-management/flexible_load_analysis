@@ -1,3 +1,5 @@
+"""Module for implementing storage and interaction of the nodes of the network.
+"""
 import datetime as dt
 import preprocessing
 import modelling
@@ -17,7 +19,7 @@ def prepare_all_nodes(dict_config, dict_data):
         Configuration-file.
     dict_data : dictionary of measured loads and temperature.
     """
-    print("Preparing common node data...")
+    print("Preparing common data...")
     date_start = dt.date.fromisoformat(
         dict_config["data"]["load_measurements"]["first_date_iso"])
     date_end = dt.date.fromisoformat(
@@ -34,11 +36,11 @@ def prepare_all_nodes(dict_config, dict_data):
         date_start, date_end,  n=3)
 
     print("Preparing all nodes in network...")
-    # Preprocessing and potential modelling of every node
-    dict_nodes = {}
+    # Preprocessing and potential modelling of every load-point
+    dict_loads = {}
     for str_node_ID in dict_data["load_measurements"]:
         print("--------------------")
-        print("Preparing node", str_node_ID + "...")
+        print("Preparing load-point", str_node_ID + "...")
 
         dict_node_ts = {}
         dict_node_ts["load_measurements"] = dict_data["load_measurements"][str_node_ID]
@@ -53,12 +55,9 @@ def prepare_all_nodes(dict_config, dict_data):
             print("Modelling based on dataset", str_node_ID + "...")
             dict_model = modelling.model_load(
                 dict_config["modelling"], dict_node_ts)
-            dict_nodes[str_node_ID] = dict_model["load"]
+            dict_loads[str_node_ID] = dict_model["load"]
         else:
-            dict_nodes[str_node_ID] = dict_node_ts["load"]
+            dict_loads[str_node_ID] = dict_node_ts["load"]
 
     print("Successfully prepared all nodes")
-    return dict_nodes    # Now we won't be able to plot relevant info from a
-    # singular node, as this data (modelling biproducts and preprocessing biproducts) are lost
-    # How to keep this functionality nicely? Internals of node-preparation
-    # not relevant for main.py, but plotting should be done last.
+    return dict_loads
