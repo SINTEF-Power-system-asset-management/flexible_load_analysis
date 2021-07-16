@@ -1,4 +1,5 @@
-"""Module for converting data-files to compliant format
+"""Module for converting data-files to compliant format.
+Modify path-parameters at the 
 """
 import os.path
 import pandas as pd
@@ -48,7 +49,7 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs, dict_ID_encodin
                 fp.writelines(dict_uniques[key])
         else:
             print(
-                "WARNING! At least one duplicate file! Delete all old files before continuing.")
+                "WARNING! Duplicate split load-file! Delete all old files before continuing.")
     return
 
 
@@ -85,8 +86,8 @@ def encode_directory_contents(str_dir_path, dict_encoding):
             with open(str_new_file_path, 'w') as fp:
                 fp.writelines(arr_contents)
         else:
-            raise Exception(
-                "At least one duplicate file! Delete all old files before continuing.")
+            print(
+                "WARNING! Duplicate network-file! Delete all old files before continuing.")
 
     return
 
@@ -112,6 +113,7 @@ def format_data_files(dict_data_unsplit, dict_network, str_path_encoding):
     str_separator = dict_network["separator"]
     encode_directory_contents(str_path, dict_encoding)
 
+    print("Successfully performed all data-operations")
     return
 
 
