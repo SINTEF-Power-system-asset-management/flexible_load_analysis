@@ -1,5 +1,6 @@
 import init
 import nodes
+import network
 import plotting
 
 print()
@@ -9,9 +10,11 @@ print("#########################################################################
 print()
 
 STR_CONFIG_PATH = "config.toml"
-dict_config, dict_data = init.initialize_config_and_data(STR_CONFIG_PATH)
+dict_config, dict_data, dict_network = init.initialize_config_and_data(STR_CONFIG_PATH)
 
 dict_loads = nodes.prepare_all_nodes(dict_config, dict_data)
+
+g_network = network.convert_network_dictionary_to_graph(dict_network)
 
 # Commented to avoid errors while reconfiguring.
 #plotting.plot_selection(dict_config, dict_data_ts, dict_model)
