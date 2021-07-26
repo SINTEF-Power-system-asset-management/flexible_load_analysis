@@ -45,5 +45,8 @@ def first_matching_index(indexable, fn_boolean):
 def get_first_value_of_dictionary(dict_inp):
     """Returns first value of dictionary.
     """
-    for key in dict_inp:
-        return dict_inp[key]
+    if len(dict_inp) == 1:
+        for key in dict_inp:
+            return dict_inp[key]
+    else:
+        return None

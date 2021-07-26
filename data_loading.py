@@ -119,8 +119,7 @@ def load_time_and_data_from_txt(
     arr_contents = np.array(arr_contents)
     if not vertical_data:
         arr_contents = np.transpose(arr_contents)
-    # Hard-coded last datapoint for testing purposes
-    arr_contents = arr_contents[1:19753, :]
+    arr_contents = arr_contents[1:,:]
     arr_time = arr_contents[:, int_time_column]
     arr_data = arr_contents[:, int_data_column]
     return arr_time, arr_data
