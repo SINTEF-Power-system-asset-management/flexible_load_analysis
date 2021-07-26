@@ -27,7 +27,6 @@ def convert_network_dictionary_to_graph(dict_network):
     """
     print("Converting MATPOWER-network to NetworkX...")
     nx_network = nx.Graph()
-    # Todo: Add color based on voltage-level.
     nx_network.add_nodes_from(dict_network["bus"]["bus_i"])
     nx_network.add_edges_from(
         np.stack((

@@ -1,14 +1,16 @@
 """Module for implementing storage and interaction of the nodes of the network.
+
+Notes
+----------
+The point of isolating operations relating to load-points is such that the
+chosen way of storing the load-points may be changed at will, without needing to
+change code outside this module.
+
 """
 import datetime as dt
 import preprocessing
 import modelling
 import utilities
-
-# Ugly name for module, also mixing abstraction-levels; will this module ever
-# be used for something else than nodes representing load-points? If no:
-# rename to "load_nodes" or similarly. The rigidness of prepare_all_nodes-
-# procedure suggests this to be the best next step.
 
 
 def prepare_all_nodes(dict_config, dict_data):

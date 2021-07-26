@@ -16,6 +16,7 @@ Running the script requires the following dependencies:
 * [pandas](https://pandas.pydata.org/pandas-docs/stable/index.html#)
 * [openpyxl](https://openpyxl.readthedocs.io/en/stable/)
 * [toml](https://toml.io/en/)
+* [networkx](https://networkx.org/)
 
 ## Usage
 
