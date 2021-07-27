@@ -44,8 +44,8 @@ name = "Stochastic Load Modelling"
 
     # For txt-files:
     separator = ";"
-    time_column = 0
-    data_column = 1
+    time_column = 1
+    data_column = 2
     vertical_data = "True"
 
 
