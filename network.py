@@ -26,7 +26,7 @@ def convert_network_dictionary_to_graph(dict_network):
         Graph representation of network.
     """
     print("Converting MATPOWER-network to NetworkX...")
-    nx_network = nx.Graph()
+    nx_network = nx.DiGraph()
     nx_network.add_nodes_from(dict_network["bus"]["bus_i"])
     nx_network.add_edges_from(
         np.stack((
@@ -39,3 +39,8 @@ def convert_network_dictionary_to_graph(dict_network):
 
     print("Successfully converted to internal graph-representation")
     return nx_network
+
+def list_children_of_node(node, g_network):
+    """Return child-nodes of a node in directed network.
+    """
+    return list(g_network.successors(node))

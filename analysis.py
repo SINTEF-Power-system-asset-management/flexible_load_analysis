@@ -1,0 +1,41 @@
+import network
+import load_points
+
+def aggregate_load_of_node(n_node, n_load_of_leaf_nodes, g_network):
+    """Finds timeseries of total load experienced by a node.
+
+    Parameters:
+    ----------
+    n_node : node-name
+        Node which to aggregate load at.
+    n_load_of_leaf_nodes : nodes
+        Container indexable by node-names of load-timeseries at that node.
+    g_network : graph
+        Directed graph of network-topology of loads.
+
+    Returns:
+    ----------
+    ts_sum : timeseries
+        Calculated aggregated load at n_node.
+
+    Notes:
+    ----------
+    Will calculate recursively, stopping at nodes which have no children which
+    are then treated as customers.
+
+    """
+    if not n_node in g_network:
+        raise Exception("Error: Node missing from network")
+    list_children = network.list_children_of_node(n_node, g_network)
+    if list_children == []:
+        try:
+            return n_load_of_leaf_nodes[str(n_node)]
+        except KeyError:
+            print("Warning: Load-point", n_node, "is missing timeseries!")
+            return []
+    else:
+        ts_sum = []
+        for n_child in list_children:
+            ts_child = aggregate_load_of_node(n_child, n_load_of_leaf_nodes, g_network)
+            ts_sum = load_points.add_timeseries(ts_sum, ts_child)
+        return ts_sum
