@@ -37,6 +37,7 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs, dict_ID_encodin
         old_ID = arr_cur_line[int_column_IDs]
         if old_ID in dict_ID_encoding:
             new_ID = dict_ID_encoding[arr_cur_line[int_column_IDs]]
+            arr_cur_line[int_column_IDs] = new_ID
             arr_lines_so_far = dict_uniques.get(new_ID, [str_header])
             arr_lines_so_far.append(str_separator.join(arr_cur_line) + '\n')
             dict_uniques[new_ID] = arr_lines_so_far
