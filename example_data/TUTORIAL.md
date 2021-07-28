@@ -1,6 +1,10 @@
 # How to use this directory
 This folder contains examples of all the necessary files needed to run this program, and an explanaition of how to use them.
 
+This directory may be used as a test of the script working, and as to gain insight into the allowed data-formats.
+You may also use the directory to test the data_formatting.py script. In that case: Delete the sub-directories
+"example_network_encoded" and "example_load_data_split" before running data_formatting.
+
 # Files
 ## config.toml
 File containing configuration of the program runtime, such as which parts of the program to run. Important parameters such as path to your datafiles must be put in such a config-file, and referred to in main.py.
@@ -34,7 +38,7 @@ Since this requires computing the daily average temperature, a longer timespan i
 
 Directory of non-encoded network-data on MATPOWER-format.
 
-data_formatting.py will create a new directory with encoded ID's, for 
+Running data_formatting.py will create a new directory of these files, with ID's encoded based on encoding.
 
 ## encoding
 

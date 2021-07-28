@@ -2,5 +2,3 @@ __pycache__
 load_data
 temperature_data
 network_data
-example_data/example_load_data_split
-example_data/example_network_encoded

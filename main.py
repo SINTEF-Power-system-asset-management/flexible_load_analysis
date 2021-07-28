@@ -10,7 +10,7 @@ print("##                              Generic Load Modelling                   
 print("#############################################################################################")
 print()
 
-STR_CONFIG_PATH = "config.toml"
+STR_CONFIG_PATH = "example_data\\example_config.toml"
 dict_config, dict_data, dict_network = init.initialize_config_and_data(
     STR_CONFIG_PATH)
 
