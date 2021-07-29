@@ -9,8 +9,10 @@ def initialize_config_and_data(str_config_path):
     ----------
     dict_config : dict
         Dictionary containing loaded configuration-file.
-    dict_data_ts : dict
-        Pairs of data-sources as strings and loaded data on timeseries-format.
+    dict_data : dict
+        Pairs of data-sources as strings and loaded datafiles on timeseries-format.
+    dict_network : dict
+        Dictionary of network-information required to build graph-representation.
     """
     ## Loading config ###
     print("Preparing to load config-file:", str_config_path)
@@ -27,11 +29,17 @@ def initialize_config_and_data(str_config_path):
     ### Loading data ###
     print("Beginning to load data...")
     dict_data_config = dict_config["data"]
-    dict_data_ts = {}
+    dict_data = {}
     for data_source in dict_data_config:
-        dict_data_ts[data_source] = data_loading.load_data_and_create_timeseries(
+        dict_data[data_source] = data_loading.load_data_and_create_timeseries(
             dict_data_config[data_source])
-        print("Successfully loaded: ", data_source)
+        print("Successfully loaded:", data_source)
 
-    print("Successfully loaded all data")
-    return dict_config, dict_data_ts
+    ### Loading network ###
+    print("Beginning to load network...")
+    dict_network_config = dict_config["network"]
+    dict_network = data_loading.load_network_from_directory(
+        dict_network_config)
+
+    print("Successfully loaded all components")
+    return dict_config, dict_data, dict_network
