@@ -2,6 +2,10 @@
 
 Notes
 ----------
+Load-points are defined as an ID, timeseries-pair of a specific load-point.
+This may be expanded to contain other fields, like customer-type or voltage-level.
+Mostly relates to customers of the grid.
+
 The point of isolating operations relating to load-points is such that the
 chosen way of storing the load-points may be changed at will, without needing to
 change code outside this module.
