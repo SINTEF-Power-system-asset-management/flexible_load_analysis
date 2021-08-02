@@ -12,10 +12,11 @@ change code outside this module.
 
 """
 import datetime as dt
+import numpy as np
 import preprocessing
 import modelling
 import utilities
-import numpy as np
+import plotting
 
 
 def prepare_all_nodes(dict_config, dict_data):
@@ -120,3 +121,10 @@ def add_timeseries(ts_a, ts_b):
         arr_data = ts_a[:, 1] + ts_b[:, 1]
         ts_sum = np.transpose(np.array([arr_time, arr_data]))
     return ts_sum
+
+def graphically_represent_load_point(lp_load):
+    # Nicely present info of load point, i.e. list info such as voltage level,
+    # customer type. Graph timeseries, etc.
+
+    plotting.plot_timeseries([lp_load], ["ID: "], "Time", "Load", "Timeseries of customer: ")
+    return

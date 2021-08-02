@@ -1,4 +1,5 @@
 import network
+import load_points
 import numpy as np
 
 def add_new_load_to_network(n_new_load_name, n_new_load_data, n_parent_node_ID, n_old_loads, g_network):
@@ -12,6 +13,24 @@ def remove_node_from_network(n_loads, g_network, n_node):
     g_network = network.remove_node(g_network, n_node)
     return n_loads, g_network
 
+def interactively_copy_existing_load(n_loads):
+    print("Available load-points to copy from: ")
+    for key in n_loads:
+        print(key, ":")
+        print(n_loads[key])
+    
+    bool_successfully_input_ID = False
+    while not bool_successfully_input_ID:
+        print("Input ID of node you want to copy")
+        n_copy_ID = input()
+        if n_copy_ID in n_loads:
+            n_new_load_data = n_loads[n_copy_ID]
+            print("Successfully copied load", n_copy_ID)
+            bool_successfully_input_ID = True
+        else:
+            print("ID not found in loads, try again!")
+            bool_successfully_input_ID = False
+    return n_new_load_data
 
 def interactively_add_new_loads_to_network(n_loads, g_network):
 
@@ -32,8 +51,7 @@ def interactively_add_new_loads_to_network(n_loads, g_network):
             str_choice = input()
 
             if str_choice == '1':
-                #n_new_load_data = interactively_copy_existing_load(n_loads)
-                n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
+                n_new_load_data = interactively_copy_existing_load(n_loads)
             elif str_choice == '2':
                 #n_new_load_data = interactively_model_based_on_existing_load(n_loads)
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
@@ -49,7 +67,7 @@ def interactively_add_new_loads_to_network(n_loads, g_network):
         
             # graphically represent n_new_load_data
             print("New load generated: ")
-            print(n_new_load_data)
+            load_points.graphically_represent_load_point(n_new_load_data)
             bool_retry_input = True
             while bool_retry_input:
                 print("Is the generated load correct? yes/no")
@@ -154,7 +172,7 @@ def interactively_add_new_loads_to_network(n_loads, g_network):
     return n_loads, g_network
 
 
-def UI(n_loads, g_network):
+def interactively_modify_network(n_loads, g_network):
 
     list_choice_log = []
     bool_continue = True
@@ -164,7 +182,7 @@ def UI(n_loads, g_network):
         for key in n_loads:
             print(key)
         print("Recieved the following network: ")
-        print(g_network)
+        network.plot_network(g_network)
         print(30 * "-" , "MENU" , 30 * "-")
         print("1: Examine loads")    # plot data (timeseries) of chosen customer
         print("2: Add new load")
