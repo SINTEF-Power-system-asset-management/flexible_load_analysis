@@ -1,7 +1,10 @@
 import network
 import load_points
+import modelling
 import numpy as np
 
+# These two functions really should be part of a general network-objects interface
+# of which load_points and the current network.py (renamed to topology?) are subclasses
 def add_new_load_to_network(n_new_load_name, n_new_load_data, n_parent_node_ID, n_old_loads, g_network):
     #n_old_loads[n_load.ID] = n_load
     n_old_loads[n_new_load_name] = n_new_load_data
@@ -17,8 +20,8 @@ def interactively_copy_existing_load(n_loads):
     print("Available load-points to copy from: ")
     for key in n_loads:
         print(key, ":")
-        print(n_loads[key])
-    
+        #print(n_loads[key].customer_type)  
+        # Or similar fields which may be interesting for choosing what customer to copy
     bool_successfully_input_ID = False
     while not bool_successfully_input_ID:
         print("Input ID of node you want to copy")
@@ -32,7 +35,28 @@ def interactively_copy_existing_load(n_loads):
             bool_successfully_input_ID = False
     return n_new_load_data
 
-def interactively_add_new_loads_to_network(n_loads, g_network):
+def interactively_model_based_on_existing_load(n_loads, dict_modelling_config):
+    print("Available load-points to model based on: ")
+    for key in n_loads:
+        print(key, ":")
+        #print(n_loads[key].customer_type)  
+        # Or similar fields which may be interesting for choosing what customer
+    bool_successfully_input_ID = False
+    while not bool_successfully_input_ID:
+        print("Input ID of node you want to model based on")
+        n_copy_ID = input()
+        if n_copy_ID in n_loads:
+            ts_modelling_baseline = n_loads[n_copy_ID]
+            bool_successfully_input_ID = True
+        else:
+            print("ID not found in loads, try again!")
+            bool_successfully_input_ID = False
+            
+    dict_data_ts = {"load": ts_modelling_baseline}
+    dict_model = modelling.model_load(dict_modelling_config, dict_data_ts)
+    return dict_model["load"]
+
+def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
 
     bool_continue_adding_loads = True
     while bool_continue_adding_loads:
@@ -53,8 +77,7 @@ def interactively_add_new_loads_to_network(n_loads, g_network):
             if str_choice == '1':
                 n_new_load_data = interactively_copy_existing_load(n_loads)
             elif str_choice == '2':
-                #n_new_load_data = interactively_model_based_on_existing_load(n_loads)
-                n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
+                n_new_load_data = interactively_model_based_on_existing_load(n_loads, dict_config["modelling"])
             elif str_choice == '3':
                 #n_new_load_data = interactively_model_based_on_max_power(n_loads)
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
@@ -172,7 +195,9 @@ def interactively_add_new_loads_to_network(n_loads, g_network):
     return n_loads, g_network
 
 
-def interactively_modify_network(n_loads, g_network):
+def interactively_modify_network(dict_config, n_loads, g_network):
+
+    print("Beginning interactive modification of network!")
 
     list_choice_log = []
     bool_continue = True
@@ -198,12 +223,12 @@ def interactively_modify_network(n_loads, g_network):
             #inspect_desired_loads_until_exit_signal()
             print("Not yet implemented!")
         elif str_choice == '2':
-            interactively_add_new_loads_to_network(n_loads, g_network)
+            interactively_add_new_loads_to_network(dict_config, n_loads, g_network)
         elif str_choice == '3':
             #modify_load_in_net_work()
             print("Not yet implemented!")
         elif str_choice == '4':
-            #modify_network()
+            #modify_network_topology()
             print("Not yet implemented!")
         elif str_choice == '9':
             print("Exiting grid_modification!")
