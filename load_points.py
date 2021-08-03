@@ -123,13 +123,19 @@ def add_timeseries(ts_a, ts_b):
     return ts_sum
 
 def offset_timeseries(ts, fl):
+    """Offsets all datapoints in a timeseries by some number.
+    """
     for i in range(len(ts)):
         ts[i,1] += fl
     return ts
 
 def graphically_represent_load_point(lp_load):
-    # Nicely present info of load point, i.e. list info such as voltage level,
-    # customer type. Graph timeseries, etc.
+    """Nicely show off data in load-point.
+
+    Notes:
+    ----------
+    May be expanded to list info such as voltage level, customer type etc.
+    """
 
     plotting.plot_timeseries([lp_load], ["ID: "], "Time", "Load", "Timeseries of customer: ")
     return

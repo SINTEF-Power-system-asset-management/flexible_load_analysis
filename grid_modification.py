@@ -3,15 +3,16 @@ import load_points
 import modelling
 import numpy as np
 
-# These two functions really should be part of a general network-objects interface
-# of which load_points and the current network.py (renamed to topology?) are subclasses
 def add_new_load_to_network(n_new_load_name, n_new_load_data, n_parent_node_ID, n_old_loads, g_network):
-    #n_old_loads[n_load.ID] = n_load
+    """Adds a node to both the network and node-container.
+    """
     n_old_loads[n_new_load_name] = n_new_load_data
     network.add_node(g_network, n_new_load_name, n_parent_node_ID)
     return n_old_loads, g_network
 
 def remove_node_from_network(n_loads, g_network, n_node):
+    """Removes a node from both the network and node-container.
+    """
     n_loads.pop(n_node)
     g_network = network.remove_node(g_network, n_node)
     return n_loads, g_network
@@ -94,8 +95,8 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
             print(30 * "-" , "MENU" , 30 * "-")
             print("1: Copy of existing load")
             print("2: Model based on existing load")
-            print("3: Model based on max power")
-            print("4: Model based on load-categorization")
+            print("3: Model based on max power (not yet implemented)")
+            print("4: Model based on load-categorization (not yet implemented)")
             print("9: Abort")
             print(67 * "-")
 
@@ -107,7 +108,7 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
                 n_new_load_data = interactively_model_based_on_existing_load(n_loads, dict_config["modelling"])
             elif str_choice == '3':
                 #n_new_load_data = interactively_model_based_on_max_power(n_loads)
-                print("Warning: Not yet implemented!")
+                print("Warning: Not yet implemented! Returning dummy-load")
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
             elif str_choice == '4':
                 #n_new_load_data = interactively_model_based_on_categorization(n_loads)
@@ -304,7 +305,8 @@ def interactively_increase_loads_in_network(n_loads):
     return n_loads
 
 def interactively_modify_network(dict_config, n_loads, g_network):
-
+    """Text-menu interface for interactively modifying the network at runtime.
+    """
     print("Beginning interactive modification of network!")
 
     list_choice_log = []
@@ -320,7 +322,7 @@ def interactively_modify_network(dict_config, n_loads, g_network):
         print("1: Examine loads")    # plot data (timeseries) of chosen customer
         print("2: Add new load")
         print("3: Increase load")
-        print("4: Modify topology")
+        print("4: Modify topology (not yet implemented)")
         print("9: Exit modification")
         print(67 * "-")
 
