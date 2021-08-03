@@ -106,14 +106,14 @@ def add_timeseries(ts_a, ts_b):
         else:
             ts_shortest, ts_longest = ts_b, ts_a
         int_first_index = utilities.first_matching_index(
-                            ts_longest[:, 0], 
-                            lambda dt: dt == ts_shortest[0, 0])
+            ts_longest[:, 0],
+            lambda dt: dt == ts_shortest[0, 0])
         ts_first_part_of_sum = ts_longest[:int_first_index, :]
         ts_second_part_of_sum = add_timeseries(
-                                    ts_shortest, 
-                                    ts_longest[int_first_index:, :])
-        ts_sum = np.concatenate((ts_first_part_of_sum, 
-                                ts_second_part_of_sum), 
+            ts_shortest,
+            ts_longest[int_first_index:, :])
+        ts_sum = np.concatenate((ts_first_part_of_sum,
+                                ts_second_part_of_sum),
                                 axis=0)
 
     else:
@@ -122,19 +122,22 @@ def add_timeseries(ts_a, ts_b):
         ts_sum = np.transpose(np.array([arr_time, arr_data]))
     return ts_sum
 
+
 def offset_timeseries(ts, fl):
     """Offsets all datapoints in a timeseries by some number.
     """
     for i in range(len(ts)):
-        ts[i,1] += fl
+        ts[i, 1] += fl
     return ts
+
 
 def scale_timeseries(ts, fl):
     """Scales all datapoints in a timeseries by some number.
     """
     for i in range(len(ts)):
-        ts[i,1] *= fl
+        ts[i, 1] *= fl
     return ts
+
 
 def graphically_represent_load_point(lp_load):
     """Nicely show off data in load-point.
@@ -144,5 +147,6 @@ def graphically_represent_load_point(lp_load):
     May be expanded to list info such as voltage level, customer type etc.
     """
 
-    plotting.plot_timeseries([lp_load], ["ID: "], "Time", "Load", "Timeseries of customer: ")
+    plotting.plot_timeseries(
+        [lp_load], ["ID: "], "Time", "Load", "Timeseries of customer: ")
     return

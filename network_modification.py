@@ -4,12 +4,14 @@ import modelling
 import numpy as np
 import copy
 
+
 def add_new_load_to_network(n_new_load_name, n_new_load_data, n_parent_node_ID, n_old_loads, g_network):
     """Adds a node to both the network and node-container.
     """
     n_old_loads[n_new_load_name] = n_new_load_data
     network.add_node(g_network, n_new_load_name, n_parent_node_ID)
     return n_old_loads, g_network
+
 
 def remove_node_from_network(n_loads, g_network, n_node):
     """Removes a node from both the network and node-container.
@@ -18,10 +20,11 @@ def remove_node_from_network(n_loads, g_network, n_node):
     g_network = network.remove_node(g_network, n_node)
     return n_loads, g_network
 
+
 def interactively_inspect_loads(n_loads):
     bool_continue_inspecting = True
     while bool_continue_inspecting:
-            
+
         print("Available load-points to inspect")
         for key in n_loads:
             print(key, ":")
@@ -35,7 +38,7 @@ def interactively_inspect_loads(n_loads):
             else:
                 print("ID not found in loads, try again!")
                 bool_successfully_input_ID = False
-        
+
         print("Exit inspection? (no)/yes")
         str_choice = str.lower(input())
         if str_choice == "yes" or str_choice == "y":
@@ -44,11 +47,12 @@ def interactively_inspect_loads(n_loads):
             bool_continue_inspecting = True
     return
 
+
 def interactively_copy_existing_load(n_loads):
     print("Available load-points to copy from: ")
     for key in n_loads:
-        print(key, ":")
-        #print(n_loads[key].customer_type)  
+        print(key)
+        # print(n_loads[key].customer_type)
         # Or similar fields which may be interesting for choosing what customer to copy
     bool_successfully_input_ID = False
     while not bool_successfully_input_ID:
@@ -63,11 +67,12 @@ def interactively_copy_existing_load(n_loads):
             bool_successfully_input_ID = False
     return n_new_load_data
 
+
 def interactively_model_based_on_existing_load(n_loads, dict_modelling_config):
     print("Available load-points to model based on: ")
     for key in n_loads:
-        print(key, ":")
-        #print(n_loads[key].customer_type)  
+        print(key)
+        # print(n_loads[key].customer_type)
         # Or similar fields which may be interesting for choosing what customer
         # This should be a load_point.show_info-function, which prints matpower-info and ID
     bool_successfully_input_ID = False
@@ -80,20 +85,21 @@ def interactively_model_based_on_existing_load(n_loads, dict_modelling_config):
         else:
             print("ID not found in loads, try again!")
             bool_successfully_input_ID = False
-            
+
     dict_data_ts = {"load": ts_modelling_baseline}
     dict_model = modelling.model_load(dict_modelling_config, dict_data_ts)
     return dict_model["load"]
+
 
 def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
 
     bool_continue_adding_loads = True
     while bool_continue_adding_loads:
-        
+
         bool_successfully_generated_load = False
         while not bool_successfully_generated_load:
             print("Select how to generate the new load")
-            print(30 * "-" , "MENU" , 30 * "-")
+            print(30 * "-", "MENU", 30 * "-")
             print("1: Copy of existing load")
             print("2: Model based on existing load")
             print("3: Model based on max power (not yet implemented)")
@@ -106,14 +112,15 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
             if str_choice == '1':
                 n_new_load_data = interactively_copy_existing_load(n_loads)
             elif str_choice == '2':
-                n_new_load_data = interactively_model_based_on_existing_load(n_loads, dict_config["modelling"])
+                n_new_load_data = interactively_model_based_on_existing_load(
+                    n_loads, dict_config["modelling"])
             elif str_choice == '3':
                 #n_new_load_data = interactively_model_based_on_max_power(n_loads)
                 print("Warning: Not yet implemented! Returning dummy-load")
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
             elif str_choice == '4':
                 #n_new_load_data = interactively_model_based_on_categorization(n_loads)
-                print("Warning: Not yet implemented!")
+                print("Warning: Not yet implemented! Returning dummy-load")
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
             elif str_choice == '9':
                 print("Aborting adding new loads to network!")
@@ -121,16 +128,18 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
             else:
                 print("Input not recognized, try again!")
                 continue
-                
-            fl_old_max_load = np.max(n_new_load_data[:,1])
+
+            fl_old_max_load = np.max(n_new_load_data[:, 1])
             print("The generated new load has max-load:", fl_old_max_load)
-            print("Input wanted new max-load as to scale the generated load (leave blank for no scaling)")
+            print(
+                "Input wanted new max-load as to scale the generated load (leave blank for no scaling)")
             fl_new_max_load = input()
             try:
                 if fl_new_max_load:
                     fl_new_max_load = float(fl_new_max_load)
                     fl_scaling_factor = fl_new_max_load/fl_old_max_load
-                    n_new_load_data = load_points.scale_timeseries(n_new_load_data, fl_scaling_factor)
+                    n_new_load_data = load_points.scale_timeseries(
+                        n_new_load_data, fl_scaling_factor)
             except TypeError:
                 print("Unrecognized input, skipping scaling.")
 
@@ -166,7 +175,7 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
                         return n_loads, g_network
                     else:
                         print("Unrecognizd input, try again")
-                        bool_retry_input = True            
+                        bool_retry_input = True
 
         print("Successfully generated new load data!")
 
@@ -175,7 +184,7 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
         # print network
         print("Set the name of the new load-point:")
         n_new_load_name = input()
-        
+
         bool_happy_with_load_placement = False
         while not bool_happy_with_load_placement:
             print("Network as of right now:")
@@ -191,9 +200,10 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
                 print("Unrecognized parent node, try again!")
                 continue
             else:
-                # Check if not trafo/not compatible node, then 
+                # Check if not trafo/not compatible node, then
                 # add newload to new network
-                n_loads, g_network = add_new_load_to_network(n_new_load_name, n_new_load_data, n_parent_node, n_loads, g_network)
+                n_loads, g_network = add_new_load_to_network(
+                    n_new_load_name, n_new_load_data, n_parent_node, n_loads, g_network)
 
                 print("The new network will look as follows:")
                 network.plot_network(g_network)
@@ -212,7 +222,8 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
                     elif str_choice == "no" or str_choice == "n":
                         bool_retry_input = False
                         bool_retry_input_nested = True
-                        n_loads, g_network = remove_node_from_network(n_loads, g_network, n_new_load_name)
+                        n_loads, g_network = remove_node_from_network(
+                            n_loads, g_network, n_new_load_name)
 
                         while bool_retry_input_nested:
                             print("Retry placing load again or abort? r/a")
@@ -230,7 +241,7 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
                     else:
                         print("Unrecognizd input, try again")
                         bool_retry_input = True
-        
+
         print("Do you want to stop adding loads to netork (No)/Yes?")
         str_choice = str.lower(input())
         if str_choice == "yes" or str_choice == 'y':
@@ -238,6 +249,7 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
 
     print("Finished adding loads to network!")
     return n_loads, g_network
+
 
 def interactively_increase_loads_in_network(n_loads):
     # May add option between increasing load by addition or scaling.
@@ -261,7 +273,7 @@ def interactively_increase_loads_in_network(n_loads):
                 else:
                     print("ID not found in loads, try again!")
                     bool_successfully_input_ID = False
-            
+
             print(n_load_ID, "as of now")
             load_points.graphically_represent_load_point(n_loads[n_load_ID])
 
@@ -275,7 +287,8 @@ def interactively_increase_loads_in_network(n_loads):
                     print("Unrecognized float-format, try again!")
                     bool_successfully_input_float = False
 
-            n_new_load = load_points.offset_timeseries(n_loads[n_load_ID], fl_increase)
+            n_new_load = load_points.offset_timeseries(
+                n_loads[n_load_ID], fl_increase)
 
             print(n_load_ID, "after increase")
             load_points.graphically_represent_load_point(n_new_load)
@@ -291,7 +304,8 @@ def interactively_increase_loads_in_network(n_loads):
                 elif str_choice == "no" or str_choice == "n":
                     bool_retry_input = False
                     bool_retry_input_nested = True
-                    n_new_load = load_points.offset_timeseries(n_loads[n_load_ID], -fl_increase)
+                    n_new_load = load_points.offset_timeseries(
+                        n_loads[n_load_ID], -fl_increase)
 
                     while bool_retry_input_nested:
                         print("Retry increasing load or abort? r/a")
@@ -309,7 +323,7 @@ def interactively_increase_loads_in_network(n_loads):
                 else:
                     print("Unrecognizd input, try again")
                     bool_retry_input = True
-    
+
         print("Do you want to stop increasing loads in the netork (No)/Yes?")
         str_choice = str.lower(input())
         if str_choice == "yes" or str_choice == 'y':
@@ -317,6 +331,7 @@ def interactively_increase_loads_in_network(n_loads):
 
         print("Finished increasing loads!")
     return n_loads
+
 
 def interactively_modify_network(dict_config, n_loads, g_network):
     """Text-menu interface for interactively modifying the network at runtime.
@@ -337,8 +352,9 @@ def interactively_modify_network(dict_config, n_loads, g_network):
             print(key)
         print("Recieved the following network: ")
         network.plot_network(g_network)
-        print(30 * "-" , "MENU" , 30 * "-")
-        print("1: Examine loads")    # plot data (timeseries) of chosen customer
+        print(30 * "-", "MENU", 30 * "-")
+        # plot data (timeseries) of chosen customer
+        print("1: Examine loads")
         print("2: Add new load")
         print("3: Increase load")
         print("4: Modify topology (not yet implemented)")
@@ -351,16 +367,17 @@ def interactively_modify_network(dict_config, n_loads, g_network):
         if str_choice == '1':
             interactively_inspect_loads(n_loads)
         elif str_choice == '2':
-            interactively_add_new_loads_to_network(dict_config, n_loads, g_network)
+            interactively_add_new_loads_to_network(
+                dict_config, n_loads, g_network)
         elif str_choice == '3':
             interactively_increase_loads_in_network(n_loads)
         elif str_choice == '4':
-            #modify_network_topology()  # list branches, remove, add, etc.
+            # modify_network_topology()  # list branches, remove, add, etc.
             print("Not yet implemented!")
         elif str_choice == '9':
             print("Exiting grid_modification!")
             bool_continue = False
         else:
             print("Input not recognized, try again!")
-        
+
     return n_loads, g_network
