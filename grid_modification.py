@@ -67,12 +67,13 @@ def interactively_model_based_on_existing_load(n_loads, dict_modelling_config):
         print(key, ":")
         #print(n_loads[key].customer_type)  
         # Or similar fields which may be interesting for choosing what customer
+        # This should be a load_point.show_info-function, which prints matpower-info and ID
     bool_successfully_input_ID = False
     while not bool_successfully_input_ID:
         print("Input ID of node you want to model based on")
-        n_copy_ID = input()
-        if n_copy_ID in n_loads:
-            ts_modelling_baseline = n_loads[n_copy_ID]
+        n_model_ID = input()
+        if n_model_ID in n_loads:
+            ts_modelling_baseline = n_loads[n_model_ID]
             bool_successfully_input_ID = True
         else:
             print("ID not found in loads, try again!")
@@ -225,6 +226,82 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
     print("Finished adding loads to network!")
     return n_loads, g_network
 
+def interactively_increase_loads_in_network(n_loads):
+    bool_continue_increasing_loads = True
+    while bool_continue_increasing_loads:
+
+        bool_correct_new_load = False
+        while not bool_correct_new_load:
+
+            bool_successfully_input_ID = False
+            while not bool_successfully_input_ID:
+                print("Available ID's to increase: ")
+                for key in n_loads:
+                    print(key)
+
+                print("Input ID of node you want to increase")
+                n_load_ID = input()
+                if n_load_ID in n_loads:
+                    bool_successfully_input_ID = True
+                else:
+                    print("ID not found in loads, try again!")
+                    bool_successfully_input_ID = False
+            
+            print(n_load_ID, "as of now")
+            load_points.graphically_represent_load_point(n_loads[n_load_ID])
+
+            bool_successfully_input_float = False
+            while not bool_successfully_input_float:
+                print("Input float of how much to increase", n_load_ID, "by")
+                try:
+                    fl_increase = float(input())
+                    bool_successfully_input_float = True
+                except TypeError:
+                    print("Unrecognized float-format, try again!")
+                    bool_successfully_input_float = False
+
+            n_new_load = load_points.offset_timeseries(n_loads[n_load_ID], fl_increase)
+
+            print(n_load_ID, "after increase")
+            load_points.graphically_represent_load_point(n_new_load)
+
+            bool_retry_input = True
+            while bool_retry_input:
+                print("Happy with the new load? yes/no")
+                str_choice = str.lower(input())
+                if str_choice == "yes" or str_choice == "y":
+                    bool_correct_new_load = True
+                    bool_retry_input = False
+
+                elif str_choice == "no" or str_choice == "n":
+                    bool_retry_input = False
+                    bool_retry_input_nested = True
+                    n_new_load = load_points.offset_timeseries(n_loads[n_load_ID], -fl_increase)
+
+                    while bool_retry_input_nested:
+                        print("Retry increasing load or abort? r/a")
+                        str_choice = str.lower(input())
+                        if str_choice == 'r':
+                            bool_correct_new_load = False
+                            bool_retry_input_nested = False
+                        elif str_choice == 'a':
+                            print("Aborting adding of new load to network!")
+                            bool_retry_input_nested = False
+                            return n_loads
+                        else:
+                            print("Unrecognizd input, try again")
+                            bool_retry_input_nested = True
+                else:
+                    print("Unrecognizd input, try again")
+                    bool_retry_input = True
+    
+        print("Do you want to stop increasing loads in the netork (No)/Yes?")
+        str_choice = str.lower(input())
+        if str_choice == "yes" or str_choice == 'y':
+            bool_continue_increasing_loads = False
+
+        print("Finished increasing loads!")
+    return n_loads
 
 def interactively_modify_network(dict_config, n_loads, g_network):
 
@@ -242,8 +319,8 @@ def interactively_modify_network(dict_config, n_loads, g_network):
         print(30 * "-" , "MENU" , 30 * "-")
         print("1: Examine loads")    # plot data (timeseries) of chosen customer
         print("2: Add new load")
-        print("3: Modify load")
-        print("4: Modify network")
+        print("3: Increase load")
+        print("4: Modify topology")
         print("9: Exit modification")
         print(67 * "-")
 
@@ -255,10 +332,9 @@ def interactively_modify_network(dict_config, n_loads, g_network):
         elif str_choice == '2':
             interactively_add_new_loads_to_network(dict_config, n_loads, g_network)
         elif str_choice == '3':
-            #modify_load_in_net_work()
-            print("Not yet implemented!")
+            interactively_increase_loads_in_network(n_loads)
         elif str_choice == '4':
-            #modify_network_topology()
+            #modify_network_topology()  # list branches, remove, add, etc.
             print("Not yet implemented!")
         elif str_choice == '9':
             print("Exiting grid_modification!")

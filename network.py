@@ -39,7 +39,7 @@ def convert_network_dictionary_to_graph(dict_network):
             dict_network["branch"]["fbus"],
             dict_network["branch"]["tbus"]),
             axis=1))
-    plot_network(nx_network)
+    #plot_network(nx_network)
 
     print("Successfully converted to internal graph-representation")
     return nx_network

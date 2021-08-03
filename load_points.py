@@ -122,6 +122,11 @@ def add_timeseries(ts_a, ts_b):
         ts_sum = np.transpose(np.array([arr_time, arr_data]))
     return ts_sum
 
+def offset_timeseries(ts, fl):
+    for i in range(len(ts)):
+        ts[i,1] += fl
+    return ts
+
 def graphically_represent_load_point(lp_load):
     # Nicely present info of load point, i.e. list info such as voltage level,
     # customer type. Graph timeseries, etc.
