@@ -16,6 +16,32 @@ def remove_node_from_network(n_loads, g_network, n_node):
     g_network = network.remove_node(g_network, n_node)
     return n_loads, g_network
 
+def interactively_inspect_loads(n_loads):
+    bool_continue_inspecting = True
+    while bool_continue_inspecting:
+            
+        print("Available load-points to inspect")
+        for key in n_loads:
+            print(key, ":")
+        bool_successfully_input_ID = False
+        while not bool_successfully_input_ID:
+            print("Input ID of node you want to inspect")
+            n_ID = input()
+            if n_ID in n_loads:
+                load_points.graphically_represent_load_point(n_loads[n_ID])
+                bool_successfully_input_ID = True
+            else:
+                print("ID not found in loads, try again!")
+                bool_successfully_input_ID = False
+        
+        print("Exit inspection? (no)/yes")
+        str_choice = str.lower(input())
+        if str_choice == "yes" or str_choice == "y":
+            bool_continue_inspecting = False
+        else:
+            bool_continue_inspecting = True
+    return
+
 def interactively_copy_existing_load(n_loads):
     print("Available load-points to copy from: ")
     for key in n_loads:
@@ -69,7 +95,7 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
             print("2: Model based on existing load")
             print("3: Model based on max power")
             print("4: Model based on load-categorization")
-
+            print("9: Abort")
             print(67 * "-")
 
             str_choice = input()
@@ -80,10 +106,15 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
                 n_new_load_data = interactively_model_based_on_existing_load(n_loads, dict_config["modelling"])
             elif str_choice == '3':
                 #n_new_load_data = interactively_model_based_on_max_power(n_loads)
+                print("Warning: Not yet implemented!")
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
             elif str_choice == '4':
                 #n_new_load_data = interactively_model_based_on_categorization(n_loads)
+                print("Warning: Not yet implemented!")
                 n_new_load_data = np.array([[1, 200], [2, 300], [3, 400]])
+            elif str_choice == '9':
+                print("Aborting adding new loads to network!")
+                return n_loads, g_network
             else:
                 print("Input not recognized, try again!")
                 continue
@@ -220,8 +251,7 @@ def interactively_modify_network(dict_config, n_loads, g_network):
         list_choice_log.append(str_choice)
 
         if str_choice == '1':
-            #inspect_desired_loads_until_exit_signal()
-            print("Not yet implemented!")
+            interactively_inspect_loads(n_loads)
         elif str_choice == '2':
             interactively_add_new_loads_to_network(dict_config, n_loads, g_network)
         elif str_choice == '3':
