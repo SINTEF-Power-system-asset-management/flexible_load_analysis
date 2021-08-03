@@ -129,6 +129,13 @@ def offset_timeseries(ts, fl):
         ts[i,1] += fl
     return ts
 
+def scale_timeseries(ts, fl):
+    """Scales all datapoints in a timeseries by some number.
+    """
+    for i in range(len(ts)):
+        ts[i,1] *= fl
+    return ts
+
 def graphically_represent_load_point(lp_load):
     """Nicely show off data in load-point.
 

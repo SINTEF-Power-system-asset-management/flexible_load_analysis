@@ -2,6 +2,7 @@ import network
 import load_points
 import modelling
 import numpy as np
+import copy
 
 def add_new_load_to_network(n_new_load_name, n_new_load_data, n_parent_node_ID, n_old_loads, g_network):
     """Adds a node to both the network and node-container.
@@ -54,7 +55,7 @@ def interactively_copy_existing_load(n_loads):
         print("Input ID of node you want to copy")
         n_copy_ID = input()
         if n_copy_ID in n_loads:
-            n_new_load_data = n_loads[n_copy_ID]
+            n_new_load_data = copy.deepcopy(n_loads[n_copy_ID])
             print("Successfully copied load", n_copy_ID)
             bool_successfully_input_ID = True
         else:
@@ -74,7 +75,7 @@ def interactively_model_based_on_existing_load(n_loads, dict_modelling_config):
         print("Input ID of node you want to model based on")
         n_model_ID = input()
         if n_model_ID in n_loads:
-            ts_modelling_baseline = n_loads[n_model_ID]
+            ts_modelling_baseline = copy.deepcopy(n_loads[n_model_ID])
             bool_successfully_input_ID = True
         else:
             print("ID not found in loads, try again!")
@@ -120,7 +121,19 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
             else:
                 print("Input not recognized, try again!")
                 continue
-        
+                
+            fl_old_max_load = np.max(n_new_load_data[:,1])
+            print("The generated new load has max-load:", fl_old_max_load)
+            print("Input wanted new max-load as to scale the generated load (leave blank for no scaling)")
+            fl_new_max_load = input()
+            try:
+                if fl_new_max_load:
+                    fl_new_max_load = float(fl_new_max_load)
+                    fl_scaling_factor = fl_new_max_load/fl_old_max_load
+                    n_new_load_data = load_points.scale_timeseries(n_new_load_data, fl_scaling_factor)
+            except TypeError:
+                print("Unrecognized input, skipping scaling.")
+
             # graphically represent n_new_load_data
             print("New load generated: ")
             load_points.graphically_represent_load_point(n_new_load_data)
@@ -160,14 +173,13 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
         print("Add the new load to the network")
         # function interactively_add_load_to_network
         # print network
-        print("Input name of new load-point")
+        print("Set the name of the new load-point:")
         n_new_load_name = input()
         
         bool_happy_with_load_placement = False
         while not bool_happy_with_load_placement:
             print("Network as of right now:")
             network.plot_network(g_network)
- 
             print("Nodes in network: ")
             list_nodes_in_network = network.list_nodes(g_network)
             print(list_nodes_in_network)
@@ -228,6 +240,8 @@ def interactively_add_new_loads_to_network(dict_config, n_loads, g_network):
     return n_loads, g_network
 
 def interactively_increase_loads_in_network(n_loads):
+    # May add option between increasing load by addition or scaling.
+
     bool_continue_increasing_loads = True
     while bool_continue_increasing_loads:
 
@@ -306,6 +320,11 @@ def interactively_increase_loads_in_network(n_loads):
 
 def interactively_modify_network(dict_config, n_loads, g_network):
     """Text-menu interface for interactively modifying the network at runtime.
+
+    Notes:
+    ----------
+    All network-data is per now implemented such that assignment is done by
+    reference. New instances therefore must be copied explicitly.
     """
     print("Beginning interactive modification of network!")
 
