@@ -19,9 +19,10 @@ dict_config, dict_data, dict_network = init.initialize_config_and_data(
 n_loads = load_points.prepare_all_nodes(dict_config, dict_data)         # Leaf-Nodes
 g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
 
-n_loads, g_network = network_modification.interactively_modify_network(dict_config, n_loads, g_network)
+bool_continue_modification_and_analysis = True
+while bool_continue_modification_and_analysis:
+    n_loads, g_network = network_modification.interactively_modify_network(dict_config, n_loads, g_network)
 
-# Commented to avoid errors while reconfiguring.
-#plotting.plot_selection(dict_config, dict_data_ts, dict_model)
+    analysis.interactively_choose_analysis(dict_config, n_loads, g_network)
 
-# Todo: write to file
+    # Exit or continue?

@@ -95,6 +95,10 @@ path = "example_data\\example_network_encoded\\"
 separator = ";"
 
 
+[analysis]
+result_storage_path = "example_results\\"
+
+
 [plotting]
 
 # Global plot-parameters
