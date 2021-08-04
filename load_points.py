@@ -2,16 +2,21 @@
 
 Notes
 ----------
+Load-points are defined as an ID, timeseries-pair of a specific load-point.
+This may be expanded to contain other fields, like customer-type or voltage-level.
+Mostly relates to customers of the grid.
+
 The point of isolating operations relating to load-points is such that the
 chosen way of storing the load-points may be changed at will, without needing to
 change code outside this module.
 
 """
 import datetime as dt
+import numpy as np
 import preprocessing
 import modelling
 import utilities
-import numpy as np
+import plotting
 
 
 def prepare_all_nodes(dict_config, dict_data):
@@ -101,14 +106,14 @@ def add_timeseries(ts_a, ts_b):
         else:
             ts_shortest, ts_longest = ts_b, ts_a
         int_first_index = utilities.first_matching_index(
-                            ts_longest[:, 0], 
-                            lambda dt: dt == ts_shortest[0, 0])
+            ts_longest[:, 0],
+            lambda dt: dt == ts_shortest[0, 0])
         ts_first_part_of_sum = ts_longest[:int_first_index, :]
         ts_second_part_of_sum = add_timeseries(
-                                    ts_shortest, 
-                                    ts_longest[int_first_index:, :])
-        ts_sum = np.concatenate((ts_first_part_of_sum, 
-                                ts_second_part_of_sum), 
+            ts_shortest,
+            ts_longest[int_first_index:, :])
+        ts_sum = np.concatenate((ts_first_part_of_sum,
+                                ts_second_part_of_sum),
                                 axis=0)
 
     else:
@@ -116,3 +121,32 @@ def add_timeseries(ts_a, ts_b):
         arr_data = ts_a[:, 1] + ts_b[:, 1]
         ts_sum = np.transpose(np.array([arr_time, arr_data]))
     return ts_sum
+
+
+def offset_timeseries(ts, fl):
+    """Offsets all datapoints in a timeseries by some number.
+    """
+    for i in range(len(ts)):
+        ts[i, 1] += fl
+    return ts
+
+
+def scale_timeseries(ts, fl):
+    """Scales all datapoints in a timeseries by some number.
+    """
+    for i in range(len(ts)):
+        ts[i, 1] *= fl
+    return ts
+
+
+def graphically_represent_load_point(lp_load):
+    """Nicely show off data in load-point.
+
+    Notes:
+    ----------
+    May be expanded to list info such as voltage level, customer type etc.
+    """
+
+    plotting.plot_timeseries(
+        [lp_load], ["ID: "], "Time", "Load", "Timeseries of customer: ")
+    return

@@ -328,7 +328,7 @@ def load_network_from_directory(dict_network_config):
     for str_path in list_paths_to_be_loaded:
         print("Loading", str_path + "...")
 
-        df_network_info = pd.read_csv(str_path, sep=str_separator)
+        df_network_info = pd.read_csv(str_path, sep=str_separator, dtype=str)
         dict_network_info = {}
         for col in df_network_info:
             dict_network_info[col] = np.array(df_network_info[col])

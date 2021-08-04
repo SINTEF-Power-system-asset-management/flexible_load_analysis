@@ -12,6 +12,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def plot_network(nx_network):
+    """Graphically represents the topology
+    """
+    plt.subplot(111)
+    nx.draw(nx_network, with_labels=True, font_weight='bold')
+    plt.show()
+    return
+
+
 def convert_network_dictionary_to_graph(dict_network):
     """Function for converting MATPOWER-formatted array to NetworkX-graph
 
@@ -33,14 +42,34 @@ def convert_network_dictionary_to_graph(dict_network):
             dict_network["branch"]["fbus"],
             dict_network["branch"]["tbus"]),
             axis=1))
-    plt.subplot(111)
-    nx.draw(nx_network, with_labels=True, font_weight='bold')
-    plt.show()
+    # plot_network(nx_network)
 
     print("Successfully converted to internal graph-representation")
     return nx_network
+
+
+def list_nodes(g_network):
+    """Lists all nodes of network.
+    """
+    return list(nx.nodes(g_network))
+
 
 def list_children_of_node(node, g_network):
     """Return child-nodes of a node in directed network.
     """
     return list(g_network.successors(node))
+
+
+def add_node(g_network, n_node, n_parent_node):
+    """Adds a node and edge branching off a parent-node
+    """
+    g_network.add_node(n_node)
+    g_network.add_edge(n_parent_node, n_node)
+    return g_network
+
+
+def remove_node(g_network, n_node):
+    """Removes a node and connected edges from the network
+    """
+    g_network.remove_node(n_node)
+    return g_network
