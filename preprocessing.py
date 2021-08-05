@@ -1,5 +1,4 @@
 import numpy as np
-import datetime as dt
 
 
 def remove_nan_and_none_datapoints(ts_data):

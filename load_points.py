@@ -3,8 +3,6 @@
 Notes
 ----------
 Load-points are defined as an ID, timeseries-pair of a specific load-point.
-This may be expanded to contain other fields, like customer-type or voltage-level.
-Mostly relates to customers of the grid.
 
 The point of isolating operations relating to load-points is such that the
 chosen way of storing the load-points may be changed at will, without needing to
@@ -19,7 +17,7 @@ import utilities
 import plotting
 
 
-def prepare_all_nodes(dict_config, dict_data):
+def prepare_all_loads(dict_config, dict_data):
     """Prepares nodes based on input data and config.
     Parameters
     ----------
@@ -45,7 +43,7 @@ def prepare_all_nodes(dict_config, dict_data):
 
     print("Preparing all loads in network...")
     # Preprocessing and potential modelling of every load-point
-    dict_loads = {}
+    dict_loads_ts = {}
     for str_node_ID in dict_data["load_measurements"]:
         print("--------------------")
         print("Preparing load-point", str_node_ID + "...")
@@ -63,13 +61,23 @@ def prepare_all_nodes(dict_config, dict_data):
             print("Modelling based on dataset", str_node_ID + "...")
             dict_model = modelling.model_load(
                 dict_config["modelling"], dict_node_ts)
-            dict_loads[str_node_ID] = dict_model["load"]
+            dict_loads_ts[str_node_ID] = dict_model["load"]
         else:
-            dict_loads[str_node_ID] = dict_node_ts["load"]
+            dict_loads_ts[str_node_ID] = dict_node_ts["load"]
 
     print("--------------------")
     print("Successfully prepared all load-points")
-    return dict_loads
+    return dict_loads_ts
+
+
+def add_new_load(dict_loads_ts, str_new_load_ID, ts_new_load_data):
+    dict_loads_ts[str_new_load_ID] = ts_new_load_data
+    return dict_loads_ts
+
+
+def remove_load(dict_loads_ts, str_load_ID):
+    dict_loads_ts.pop(str_load_ID)
+    return dict_loads_ts
 
 
 def add_timeseries(ts_a, ts_b):
@@ -137,6 +145,12 @@ def scale_timeseries(ts, fl):
     for i in range(len(ts)):
         ts[i, 1] *= fl
     return ts
+
+
+def print_all_load_points(dict_loads_ts):
+    for key in dict_loads_ts:
+        print(key)
+    return
 
 
 def graphically_represent_load_point(lp_load):
