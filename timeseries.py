@@ -1,4 +1,5 @@
 import numpy as np
+import utilities
 
 def create_standard_time_series(arr_time_dt, arr_data):
     """Returns timeseries on standardized format
@@ -21,7 +22,7 @@ def create_standard_time_series(arr_time_dt, arr_data):
     such that array[i] accesses the ith datapoint.
     """
     return np.transpose(np.array([arr_time_dt, arr_data]))
-    
+
 
 def add_timeseries(ts_a, ts_b):
     """Returns the sum of data-values in two timeseries

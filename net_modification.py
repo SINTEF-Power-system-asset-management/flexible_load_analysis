@@ -1,5 +1,6 @@
 import network
 import load_points
+import timeseries as ts
 import modelling
 import numpy as np
 import copy
@@ -133,7 +134,7 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
                 if fl_new_max_load:
                     fl_new_max_load = float(fl_new_max_load)
                     fl_scaling_factor = fl_new_max_load/fl_old_max_load
-                    ts_new_load_data = load_points.scale_timeseries(
+                    ts_new_load_data = ts.scale_timeseries(
                         ts_new_load_data, fl_scaling_factor)
             except TypeError:
                 print("Unrecognized input, skipping scaling.")
@@ -198,7 +199,8 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
                 # Check if not trafo/not compatible node, then
                 # add newload to new network
                 dict_loads_ts, g_network = add_new_load_to_net(
-                    str_new_load_ID, ts_new_load_data, n_parent_node, dict_loads_ts, g_network)
+                    str_new_load_ID, ts_new_load_data, 
+                    n_parent_node, dict_loads_ts, g_network)
 
                 print("The new network will look as follows:")
                 network.plot_network(g_network)
@@ -281,7 +283,7 @@ def interactively_increase_loads_in_net(dict_loads_ts):
                     print("Unrecognized float-format, try again!")
                     bool_successfully_input_float = False
 
-            n_new_load = load_points.offset_timeseries(
+            n_new_load = ts.offset_timeseries(
                 dict_loads_ts[n_load_ID], fl_increase)
 
             print(n_load_ID, "after increase")
@@ -298,7 +300,7 @@ def interactively_increase_loads_in_net(dict_loads_ts):
                 elif str_choice == "no" or str_choice == "n":
                     bool_retry_input = False
                     bool_retry_input_nested = True
-                    n_new_load = load_points.offset_timeseries(
+                    n_new_load = ts.offset_timeseries(
                         dict_loads_ts[n_load_ID], -fl_increase)
 
                     while bool_retry_input_nested:

@@ -1,5 +1,5 @@
 import network
-import load_points
+import timeseries as ts
 
 def aggregate_load_of_node(n_node, n_load_of_leaf_nodes, g_network):
     """Finds timeseries of total load experienced by a node.
@@ -37,5 +37,5 @@ def aggregate_load_of_node(n_node, n_load_of_leaf_nodes, g_network):
     if list_children:    
         for n_child in list_children:
             ts_child = aggregate_load_of_node(n_child, n_load_of_leaf_nodes, g_network)
-            ts_sum = load_points.add_timeseries(ts_sum, ts_child)
+            ts_sum = ts.add_timeseries(ts_sum, ts_child)
     return ts_sum
