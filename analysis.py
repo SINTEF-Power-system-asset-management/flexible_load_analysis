@@ -13,6 +13,7 @@ The functions for interactively performing analysis should be structured as foll
 4. Interactively store results to file and/or sub-results-dictionary for ability to
 perform some other analysis on results later.
 """
+from network_modification import interactively_inspect_loads
 import network
 import load_points
 import plotting
@@ -20,16 +21,6 @@ import utilities
 import numpy as np
 
 # Helper function
-
-def input_until_expected_type_appears(type):
-    print("Please input a", type)
-    while True:
-        inp = input()
-        try:
-            type_variable = type(inp)
-            return type_variable
-        except ValueError:
-            print("Input failed, try again")
 
 
 def interactively_traverse_nested_dictionary(dict_choices):
@@ -135,7 +126,7 @@ def interactive_max_load(dict_analysis_config, dict_results, dict_loads_ts):
     str_ID, ts_load = interactively_traverse_nested_dictionary(
         {
             "customers" : dict_loads_ts,
-            "previous_results" : dict_results
+            "results" : dict_results
         }
     )
 
@@ -163,7 +154,7 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
         print("Nodes in network: ")
         print(network.list_nodes(g_network))
         print("What node should the aggregation be done from?")
-        str_load_ID = input_until_expected_type_appears(str)
+        str_load_ID = utilities.input_until_expected_type_appears(str)
         if str_load_ID in g_network:
             bool_successfully_input_node_of_network = True
         else:
@@ -186,6 +177,21 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
 
     return dict_results
 
+def interactively_inspect_previous_results(dict_results):
+    print("Beginning inspection of results")
+
+    bool_continue = True
+    while bool_continue:
+        key, result = interactively_traverse_nested_dictionary(dict_results)
+        print(key, ":", result)
+
+        print("Continue (yes)/no")
+        str_choice = str.lower(utilities.input_until_expected_type_appears(str))
+        if str_choice == "no" or str_choice == "n":
+            bool_continue = False
+
+    return
+
 
 def interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_network):
     print("Beggining interactive analysis")
@@ -198,6 +204,7 @@ def interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_ne
         print("1: Max load calculation")
         print("2: Load-aggregation")
         print("3: Power-flow-analysis (not yet implemented)")
+        print("8: Inspect previous results")
         print("9: Exit analysis")
         print(67 * "-")
 
@@ -209,6 +216,8 @@ def interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_ne
             dict_results = interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_ts, g_network)
         elif str_choice == '3':
             print("Not yet implemented")
+        elif str_choice == '8':
+            interactively_inspect_previous_results(dict_results)
         elif str_choice == '9':
             print("Exiting interactive analysis!")
             bool_continue = False

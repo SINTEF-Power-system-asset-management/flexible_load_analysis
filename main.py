@@ -4,6 +4,7 @@ import network
 import network_modification
 import analysis
 import plotting
+import utilities
 
 print()
 print("#############################################################################################")
@@ -11,7 +12,7 @@ print("##                              Generic Load Modelling                   
 print("#############################################################################################")
 print()
 
-STR_CONFIG_PATH = "example_data\\example_config.toml"
+STR_CONFIG_PATH = "config.toml"
 dict_config, dict_data, dict_network = init.initialize_config_and_data(
     STR_CONFIG_PATH)
 
@@ -26,4 +27,7 @@ while bool_continue_modification_and_analysis:
     
     dict_loads_ts, g_network = network_modification.interactively_modify_network(dict_config, dict_loads_ts, g_network)
 
-    # Exit or continue?
+    print("Continue modification and analysis (yes)/no?")
+    str_choice = utilities.input_until_expected_type_appears(str)
+    if str_choice == "no" or str_choice == "n":
+        bool_continue_modification_and_analysis = False
