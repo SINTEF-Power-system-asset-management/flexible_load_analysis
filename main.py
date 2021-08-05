@@ -16,13 +16,14 @@ dict_config, dict_data, dict_network = init.initialize_config_and_data(
     STR_CONFIG_PATH)
 
 # Network datastructures
-n_loads = load_points.prepare_all_nodes(dict_config, dict_data)         # Leaf-Nodes
+dict_loads_ts = load_points.prepare_all_nodes(dict_config, dict_data)         # Leaf-Nodes
 g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
 
+dict_results = {}
 bool_continue_modification_and_analysis = True
 while bool_continue_modification_and_analysis:
-    n_loads, g_network = network_modification.interactively_modify_network(dict_config, n_loads, g_network)
-
-    analysis.interactively_choose_analysis(dict_config, n_loads, g_network)
+    dict_results = analysis.interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_network)
+    
+    dict_loads_ts, g_network = network_modification.interactively_modify_network(dict_config, dict_loads_ts, g_network)
 
     # Exit or continue?
