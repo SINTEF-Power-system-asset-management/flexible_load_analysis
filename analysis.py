@@ -166,7 +166,6 @@ def aggregation_factors(str_bus_ID, dict_loads_ts, g_network):
     fl_max, int_max_index = max_load(ts_aggregate)
 
     dict_aggregation_factors = {}
-    #find children of "str_bus_ID"
     list_children = network.list_children_of_node(str_bus_ID, g_network)
     for  str_child_ID in list_children:
         # find load of child at init_max_index
@@ -187,13 +186,14 @@ def coincidence_factors(str_bus_ID, dict_loads_ts, g_network):
     fl_max, int_max_index = max_load(ts_aggregate)
 
     dict_coincidence_factors = {}
-    dict_customer_load = {}
     list_children = network.list_children_of_node(str_bus_ID, g_network)
-    for  str_child in list_children:
-        dict_customer_load = str_child.get[int_max_index]
-        dict_coincidence_factors = dict_customer_load/f1_max
-    
+    for  str_child_ID in list_children:
+        # find load of child at init_max_index
+        ts_child = dict_loads_ts[str_child_ID]
+        fl_child_load_at_max = ts_child[int_max_index,1]
 
+        dict_coincidence_factors[str_child_ID] = fl_child_load_at_max/fl_max
+    
     return dict_coincidence_factors
 
 

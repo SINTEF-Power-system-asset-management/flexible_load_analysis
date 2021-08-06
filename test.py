@@ -20,4 +20,4 @@ plt.subplot(111)
 nx.draw(g_network, with_labels=True, font_weight='bold')
 plt.show()
 
-print(analysis.aggregation_factors(str_bus_ID, dict_loads_ts, g_network))
+print(analysis.coincidence_factors(str_bus_ID, dict_loads_ts, g_network))
