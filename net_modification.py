@@ -4,6 +4,7 @@ import timeseries as ts
 import modelling
 import numpy as np
 import copy
+import utilities
 
 
 def add_new_load_to_net(str_new_load_ID, ts_new_load_data, str_parent_node_ID, dict_loads_ts, g_network):
@@ -29,16 +30,10 @@ def interactively_inspect_loads(dict_loads_ts):
         print("Available load-points to inspect")
         load_points.print_all_load_points(dict_loads_ts)
 
-        bool_successfully_input_ID = False
-        while not bool_successfully_input_ID:
-            print("Input ID of node you want to inspect")
-            str_ID = str(input())
-            if str_ID in dict_loads_ts:
-                load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
-                bool_successfully_input_ID = True
-            else:
-                print("ID not found in loads, try again!")
-                bool_successfully_input_ID = False
+        
+        print("Input ID of node you want to inspect")
+        str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+        load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
 
         print("Exit inspection? (no)/yes")
         str_choice = str.lower(input())
@@ -53,17 +48,10 @@ def interactively_copy_existing_load(dict_loads_ts):
     print("Available load-points to copy from: ")
     load_points.print_all_load_points(dict_loads_ts)
 
-    bool_successfully_input_ID = False
-    while not bool_successfully_input_ID:
-        print("Input ID of node you want to copy")
-        n_copy_ID = input()
-        if n_copy_ID in dict_loads_ts:
-            ts_new_load_data = copy.deepcopy(dict_loads_ts[n_copy_ID])
-            print("Successfully copied load", n_copy_ID)
-            bool_successfully_input_ID = True
-        else:
-            print("ID not found in loads, try again!")
-            bool_successfully_input_ID = False
+    print("Input ID of node you want to copy")
+    str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+    ts_new_load_data = copy.deepcopy(dict_loads_ts[str_ID])
+
     return ts_new_load_data
 
 
@@ -71,16 +59,9 @@ def interactively_model_based_on_existing_load(dict_loads_ts, dict_modelling_con
     print("Available load-points to model based on: ")
     load_points.print_all_load_points(dict_loads_ts)
 
-    bool_successfully_input_ID = False
-    while not bool_successfully_input_ID:
-        print("Input ID of node you want to model based on")
-        n_model_ID = input()
-        if n_model_ID in dict_loads_ts:
-            ts_modelling_baseline = copy.deepcopy(dict_loads_ts[n_model_ID])
-            bool_successfully_input_ID = True
-        else:
-            print("ID not found in loads, try again!")
-            bool_successfully_input_ID = False
+    print("Input ID of node you want to model based on")
+    str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+    ts_modelling_baseline = copy.deepcopy(dict_loads_ts[str_ID])
 
     dict_data_ts = {"load": ts_modelling_baseline}
     dict_model = modelling.model_load(dict_modelling_config, dict_data_ts)
@@ -125,6 +106,7 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
                 print("Input not recognized, try again!")
                 continue
 
+            # Scaling
             fl_old_max_load = np.max(ts_new_load_data[:, 1])
             print("The generated new load has max-load:", fl_old_max_load)
             print(
@@ -139,7 +121,8 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
             except TypeError:
                 print("Unrecognized input, skipping scaling.")
 
-            # graphically represent ts_new_load_data
+
+            # Graphically represent new load
             print("New load generated: ")
             load_points.graphically_represent_load_point(ts_new_load_data)
             bool_retry_input = True
@@ -176,8 +159,6 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
         print("Successfully generated new load data!")
 
         print("Add the new load to the network")
-        # function interactively_add_load_to_network
-        # print network
         print("Set the name of the new load-point:")
         str_new_load_ID = input()
 
@@ -190,9 +171,9 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
             print(list_nodes_in_network)
 
             print("Input name of parent node of", str_new_load_ID)
-            n_parent_node = input()
+            str_parent_ID = input()
 
-            if not n_parent_node in list_nodes_in_network:
+            if not str_parent_ID in list_nodes_in_network:
                 print("Unrecognized parent node, try again!")
                 continue
             else:
@@ -200,7 +181,7 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
                 # add newload to new network
                 dict_loads_ts, g_network = add_new_load_to_net(
                     str_new_load_ID, ts_new_load_data, 
-                    n_parent_node, dict_loads_ts, g_network)
+                    str_parent_ID, dict_loads_ts, g_network)
 
                 print("The new network will look as follows:")
                 network.plot_network(g_network)
@@ -256,38 +237,24 @@ def interactively_increase_loads_in_net(dict_loads_ts):
 
         bool_correct_new_load = False
         while not bool_correct_new_load:
+            
+            print("Available ID's to increase: ")
+            load_points.print_all_load_points(dict_loads_ts)
 
-            bool_successfully_input_ID = False
-            while not bool_successfully_input_ID:
-                print("Available ID's to increase: ")
-                load_points.print_all_load_points(dict_loads_ts)
+            print("Input ID of node you want to increase")
+            str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
 
-                print("Input ID of node you want to increase")
-                n_load_ID = input()
-                if n_load_ID in dict_loads_ts:
-                    bool_successfully_input_ID = True
-                else:
-                    print("ID not found in loads, try again!")
-                    bool_successfully_input_ID = False
+            print(str_ID, "as of now")
+            load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
 
-            print(n_load_ID, "as of now")
-            load_points.graphically_represent_load_point(dict_loads_ts[n_load_ID])
+            print("Input how much you want to increase", str_ID, "by")
+            fl_increase = utilities.input_until_expected_type_appears(float)
 
-            bool_successfully_input_float = False
-            while not bool_successfully_input_float:
-                print("Input float of how much to increase", n_load_ID, "by")
-                try:
-                    fl_increase = float(input())
-                    bool_successfully_input_float = True
-                except TypeError:
-                    print("Unrecognized float-format, try again!")
-                    bool_successfully_input_float = False
+            ts_new_load = ts.offset_timeseries(
+                dict_loads_ts[str_ID], fl_increase)
 
-            n_new_load = ts.offset_timeseries(
-                dict_loads_ts[n_load_ID], fl_increase)
-
-            print(n_load_ID, "after increase")
-            load_points.graphically_represent_load_point(n_new_load)
+            print(str_ID, "after increase")
+            load_points.graphically_represent_load_point(ts_new_load)
 
             bool_retry_input = True
             while bool_retry_input:
@@ -300,8 +267,8 @@ def interactively_increase_loads_in_net(dict_loads_ts):
                 elif str_choice == "no" or str_choice == "n":
                     bool_retry_input = False
                     bool_retry_input_nested = True
-                    n_new_load = ts.offset_timeseries(
-                        dict_loads_ts[n_load_ID], -fl_increase)
+                    ts_new_load = ts.offset_timeseries(
+                        dict_loads_ts[str_ID], -fl_increase)
 
                     while bool_retry_input_nested:
                         print("Retry increasing load or abort? r/a")

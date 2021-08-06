@@ -57,6 +57,8 @@ def get_first_value_of_dictionary(dict_inp):
         return None
 
 
+# UI
+
 def input_until_expected_type_appears(type):
     print("Please input a", type)
     while True:
@@ -66,3 +68,15 @@ def input_until_expected_type_appears(type):
             return type_variable
         except ValueError:
             print("Input failed, try again")
+
+
+def input_until_node_in_net_apppears(net):
+    bool_ID_in_network = False
+    while not bool_ID_in_network:
+        print("Please select a node")
+        str_ID = input_until_expected_type_appears(str)
+        if str_ID in net:
+            bool_ID_in_network = True
+        else:
+            print("Could not find", str_ID, "in network, try again!")
+    return str_ID

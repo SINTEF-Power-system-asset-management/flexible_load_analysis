@@ -198,16 +198,10 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
     print("Beginning interactive load-aggregation")
 
     # 1. Choose data-source and parameters interactively.
-    bool_successfully_input_node_of_network = False
-    while not bool_successfully_input_node_of_network:
-        print("Nodes in network: ")
-        print(network.list_nodes(g_network))
-        print("What node should the aggregation be done from?")
-        str_load_ID = utilities.input_until_expected_type_appears(str)
-        if str_load_ID in g_network:
-            bool_successfully_input_node_of_network = True
-        else:
-            print("Could not find", str_load_ID, "in network, try again!")
+    print("Nodes in network: ")
+    print(network.list_nodes(g_network))
+    print("What node should the aggregation be done from?")
+    str_load_ID = utilities.input_until_node_in_net_apppears(g_network)
 
     # 2. Perform analysis.
     ts_agg = aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network)
