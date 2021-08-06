@@ -17,7 +17,6 @@ import network
 import load_points
 import plotting
 import utilities
-import numpy as np
 import timeseries as ts
 
 # Helper functions
@@ -114,7 +113,8 @@ def interactively_write_to_file_in_directory(str_results_directory_path, result)
 # Analysis
 
 def max_load(ts_load):
-    return np.max(ts_load[:, 1])
+    i = list(ts_load[:,1]).index(max(ts_load[:,1]))
+    return ts_load[i,1], i
 
 
 def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
@@ -158,6 +158,17 @@ def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
     return ts_sum
 
 
+def coincidence_factors(str_bus_ID, dict_loads_ts, g_network):
+
+    ts_aggregate = aggregate_load_of_node(str_bus_ID, dict_loads_ts, g_network)
+    fl_max, int_max_index = max_load(ts_aggregate)
+
+    dict_coincidence_factors = {}
+    # Susanne her
+
+    return dict_coincidence_factors
+
+
 # Interactive analysis
 
 def interactive_max_load(dict_analysis_config, dict_results, dict_loads_ts):
@@ -175,7 +186,7 @@ def interactive_max_load(dict_analysis_config, dict_results, dict_loads_ts):
     )
 
     # 2. Perform analysis.
-    fl_max_load = max_load(ts_load)
+    fl_max_load, _index = max_load(ts_load)
 
     # 3. Present results graphically or numerically.
     print("Calculated the following max-load:",
