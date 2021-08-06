@@ -157,17 +157,44 @@ def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
             ts_sum = ts.add_timeseries(ts_sum, ts_child)
     return ts_sum
 
+# Aggregation factor: The ratio between a child's load at the point of the node's aggregated max load, and the child's max load
+# Norsk: "Sammenlagringsfaktor"
 
-def coincidence_factors(str_bus_ID, dict_loads_ts, g_network):
+def aggregation_factors(str_bus_ID, dict_loads_ts, g_network): 
+
+    ts_aggregate = aggregate_load_of_node(str_bus_ID, dict_loads_ts, g_network)
+    fl_max, int_max_index = max_load(ts_aggregate)
+
+    dict_aggregation_factors = {}
+    dict_customer_load = {}
+    #find children of "str_bus_ID"
+    list_children = network.list_children_of_node(str_bus_ID, g_network)
+    for  str_child in list_children:
+        # find load of child at init_max_index
+        dict_customer_load = str_child.get[int_max_index]
+        # find child's max load
+        c_max, c_max_index = max_load(str_child)
+        dict_aggregation_factors = dict_customer_load/c_max
+    
+
+    return dict_aggregation_factors
+
+# Coincidence factor: Contribution of each child's load to the node's aggregated max load
+
+def coincidence_factors(str_bus_ID, dict_loads_ts, g_network): 
 
     ts_aggregate = aggregate_load_of_node(str_bus_ID, dict_loads_ts, g_network)
     fl_max, int_max_index = max_load(ts_aggregate)
 
     dict_coincidence_factors = {}
-    # Susanne her
+    dict_customer_load = {}
+    list_children = network.list_children_of_node(str_bus_ID, g_network)
+    for  str_child in list_children:
+        dict_customer_load = str_child.get[int_max_index]
+        dict_coincidence_factors = dict_customer_load/f1_max
+    
 
     return dict_coincidence_factors
-
 
 # Interactive analysis
 
