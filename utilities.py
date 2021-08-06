@@ -1,3 +1,5 @@
+import numpy as np
+
 def print_dictionary_recursive(dictionary, depth=0):
     """Prints a dictionary of nested dictionaries on a nice format.
 
@@ -15,7 +17,10 @@ def print_dictionary_recursive(dictionary, depth=0):
             print()
             print_dictionary_recursive(value, depth + 1)
         else:
-            print(value)
+            if isinstance(value, np.ndarray):
+                print("Numpy-array of length", len(value))
+            else:
+                print(value)
     return
 
 
@@ -50,3 +55,14 @@ def get_first_value_of_dictionary(dict_inp):
             return dict_inp[key]
     else:
         return None
+
+
+def input_until_expected_type_appears(type):
+    print("Please input a", type)
+    while True:
+        inp = input()
+        try:
+            type_variable = type(inp)
+            return type_variable
+        except ValueError:
+            print("Input failed, try again")

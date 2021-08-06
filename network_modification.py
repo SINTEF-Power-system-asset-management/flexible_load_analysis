@@ -352,7 +352,7 @@ def interactively_modify_network(dict_config, n_loads, g_network):
             print(key)
         print("Recieved the following network: ")
         network.plot_network(g_network)
-        print(30 * "-", "MENU", 30 * "-")
+        print(23 * "-", "NETWORK-MODIFICATION", 23 * "-")
         # plot data (timeseries) of chosen customer
         print("1: Examine loads")
         print("2: Add new load")
@@ -375,7 +375,7 @@ def interactively_modify_network(dict_config, n_loads, g_network):
             # modify_network_topology()  # list branches, remove, add, etc.
             print("Not yet implemented!")
         elif str_choice == '9':
-            print("Exiting grid_modification!")
+            print("Exiting interactive net modification!")
             bool_continue = False
         else:
             print("Input not recognized, try again!")

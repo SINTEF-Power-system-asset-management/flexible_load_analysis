@@ -93,6 +93,10 @@ path = "network_data\\ora_H1109_encoded\\"
 separator = ";"
 
 
+[analysis]
+result_storage_path = "results\\"
+
+
 [plotting]
 
 # Global plot-parameters

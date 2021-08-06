@@ -4,6 +4,7 @@ import network
 import network_modification
 import analysis
 import plotting
+import utilities
 
 print()
 print("#############################################################################################")
@@ -11,17 +12,22 @@ print("##                              Generic Load Modelling                   
 print("#############################################################################################")
 print()
 
-STR_CONFIG_PATH = "example_data\\example_config.toml"
+STR_CONFIG_PATH = "config.toml"
 dict_config, dict_data, dict_network = init.initialize_config_and_data(
     STR_CONFIG_PATH)
 
 # Network datastructures
-n_loads = load_points.prepare_all_nodes(dict_config, dict_data)         # Leaf-Nodes
+dict_loads_ts = load_points.prepare_all_nodes(dict_config, dict_data)         # Leaf-Nodes
 g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
 
-n_loads, g_network = network_modification.interactively_modify_network(dict_config, n_loads, g_network)
+dict_results = {}
+bool_continue_modification_and_analysis = True
+while bool_continue_modification_and_analysis:
+    dict_results = analysis.interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_network)
+    
+    dict_loads_ts, g_network = network_modification.interactively_modify_network(dict_config, dict_loads_ts, g_network)
 
-# Commented to avoid errors while reconfiguring.
-#plotting.plot_selection(dict_config, dict_data_ts, dict_model)
-
-# Todo: write to file
+    print("Continue modification and analysis (yes)/no?")
+    str_choice = utilities.input_until_expected_type_appears(str)
+    if str_choice == "no" or str_choice == "n":
+        bool_continue_modification_and_analysis = False
