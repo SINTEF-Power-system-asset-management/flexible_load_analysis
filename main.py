@@ -1,7 +1,7 @@
 import init
 import load_points
 import network
-import network_modification
+import net_modification
 import analysis
 import plotting
 import utilities
@@ -25,7 +25,7 @@ bool_continue_modification_and_analysis = True
 while bool_continue_modification_and_analysis:
     dict_results = analysis.interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_network)
     
-    dict_loads_ts, g_network = network_modification.interactively_modify_network(dict_config, dict_loads_ts, g_network)
+    dict_loads_ts, g_network = net_modification.interactively_modify_net(dict_config, dict_loads_ts, g_network)
 
     print("Continue modification and analysis (yes)/no?")
     str_choice = utilities.input_until_expected_type_appears(str)

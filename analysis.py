@@ -18,6 +18,7 @@ import load_points
 import plotting
 import utilities
 import numpy as np
+import timeseries as ts
 
 # Helper functions
 
@@ -150,10 +151,10 @@ def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
         print("Warning: Load-point", str_load_ID, "is missing timeseries!")
         ts_sum = []
     if list_children:
-        for n_child in list_children:
+        for str_child in list_children:
             ts_child = aggregate_load_of_node(
-                n_child, dict_loads_ts, g_network)
-            ts_sum = load_points.add_timeseries(ts_sum, ts_child)
+                str_child, dict_loads_ts, g_network)
+            ts_sum = ts.add_timeseries(ts_sum, ts_child)
     return ts_sum
 
 

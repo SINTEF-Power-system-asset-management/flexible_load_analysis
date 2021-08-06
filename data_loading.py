@@ -3,6 +3,7 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 import toml
+import timeseries as ts
 
 
 def load_config(str_config_path):
@@ -205,29 +206,6 @@ def convert_general_data_array_to_float_array(arr_data):
     return arr_data_float
 
 
-def create_standard_time_series(arr_time_dt, arr_data):
-    """Returns timeseries on standardized format
-
-    Parameters
-    ----------
-    arr_time_dt : np.array
-        Array of timestamps.
-    arr_data : np.arrary
-        Array of data associated to the timestamps.
-
-    Returns
-    ----------
-    timeseries = np.array([datetime, float])
-        Timeseries-array.
-
-    Notes
-    ----------
-    "Standardized" here means that the timeseries is formatted vertically, 
-    such that array[i] accesses the ith datapoint.
-    """
-    return np.transpose(np.array([arr_time_dt, arr_data]))
-
-
 def load_data_and_create_timeseries(dict_data_config):
     """Loads data based on structured dictionary and creates timeseries.
 
@@ -292,7 +270,7 @@ def load_data_and_create_timeseries(dict_data_config):
             arr_time, str_data_date_format, str_data_first_date_iso)
         arr_data = convert_general_data_array_to_float_array(arr_data)
 
-        ts_data = create_standard_time_series(arr_time_dt, arr_data)
+        ts_data = ts.create_standard_time_series(arr_time_dt, arr_data)
 
         if os.path.isdir(str_data_path):
             str_key_name, _temp = os.path.splitext(

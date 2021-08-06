@@ -3,8 +3,6 @@
 Notes
 ----------
 Load-points are defined as an ID, timeseries-pair of a specific load-point.
-This may be expanded to contain other fields, like customer-type or voltage-level.
-Mostly relates to customers of the grid.
 
 The point of isolating operations relating to load-points is such that the
 chosen way of storing the load-points may be changed at will, without needing to
@@ -12,14 +10,13 @@ change code outside this module.
 
 """
 import datetime as dt
-import numpy as np
 import preprocessing
 import modelling
 import utilities
 import plotting
 
 
-def prepare_all_nodes(dict_config, dict_data):
+def prepare_all_loads(dict_config, dict_data):
     """Prepares nodes based on input data and config.
     Parameters
     ----------
@@ -45,7 +42,7 @@ def prepare_all_nodes(dict_config, dict_data):
 
     print("Preparing all loads in network...")
     # Preprocessing and potential modelling of every load-point
-    dict_loads = {}
+    dict_loads_ts = {}
     for str_node_ID in dict_data["load_measurements"]:
         print("--------------------")
         print("Preparing load-point", str_node_ID + "...")
@@ -63,88 +60,33 @@ def prepare_all_nodes(dict_config, dict_data):
             print("Modelling based on dataset", str_node_ID + "...")
             dict_model = modelling.model_load(
                 dict_config["modelling"], dict_node_ts)
-            dict_loads[str_node_ID] = dict_model["load"]
+            dict_loads_ts[str_node_ID] = dict_model["load"]
         else:
-            dict_loads[str_node_ID] = dict_node_ts["load"]
+            dict_loads_ts[str_node_ID] = dict_node_ts["load"]
 
     print("--------------------")
     print("Successfully prepared all load-points")
-    return dict_loads
+    return dict_loads_ts
 
 
-def add_timeseries(ts_a, ts_b):
-    """Returns the sum of data-values in two timeseries
-
-    Parameters:
-    ----------
-    ts_a, ts_b : timeseries
-
-    Returns:
-    ----------
-    ts_sum : timeseries
-        Sum of input timeseries.
-
-    Notes:
-    ----------
-    This function will cause skewing if both datasets contain similar amount of
-    missing datapoints.
-
-    The function will amend non-equally sized timeseries by searching for
-    matching timestamps.
-
-    """
-    if ts_a == []:
-        return ts_b
-    if ts_b == []:
-        return ts_a
-
-    if len(ts_a) != len(ts_b):
-        print("Warning: Mismatching length when adding timeseries!")
-
-        if len(ts_a[:, 0]) < len(ts_b[:, 0]):
-            ts_shortest, ts_longest = ts_a, ts_b
-        else:
-            ts_shortest, ts_longest = ts_b, ts_a
-        int_first_index = utilities.first_matching_index(
-            ts_longest[:, 0],
-            lambda dt: dt == ts_shortest[0, 0])
-        ts_first_part_of_sum = ts_longest[:int_first_index, :]
-        ts_second_part_of_sum = add_timeseries(
-            ts_shortest,
-            ts_longest[int_first_index:, :])
-        ts_sum = np.concatenate((ts_first_part_of_sum,
-                                ts_second_part_of_sum),
-                                axis=0)
-
-    else:
-        arr_time = ts_a[:, 0]
-        arr_data = ts_a[:, 1] + ts_b[:, 1]
-        ts_sum = np.transpose(np.array([arr_time, arr_data]))
-    return ts_sum
+def add_new_load(dict_loads_ts, str_new_load_ID, ts_new_load_data):
+    dict_loads_ts[str_new_load_ID] = ts_new_load_data
+    return dict_loads_ts
 
 
-def offset_timeseries(ts, fl):
-    """Offsets all datapoints in a timeseries by some number.
-    """
-    for i in range(len(ts)):
-        ts[i, 1] += fl
-    return ts
+def remove_load(dict_loads_ts, str_load_ID):
+    dict_loads_ts.pop(str_load_ID)
+    return dict_loads_ts
 
 
-def scale_timeseries(ts, fl):
-    """Scales all datapoints in a timeseries by some number.
-    """
-    for i in range(len(ts)):
-        ts[i, 1] *= fl
-    return ts
+def print_all_load_points(dict_loads_ts):
+    for key in dict_loads_ts:
+        print(key)
+    return
 
 
 def graphically_represent_load_point(lp_load):
-    """Nicely show off data in load-point.
-
-    Notes:
-    ----------
-    May be expanded to list info such as voltage level, customer type etc.
+    """Nicely show off data in single load-point.
     """
 
     plotting.plot_timeseries(
