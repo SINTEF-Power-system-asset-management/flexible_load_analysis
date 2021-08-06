@@ -35,9 +35,9 @@ def interactively_inspect_loads(dict_loads_ts):
         str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
         load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
 
-        print("Exit inspection? (no)/yes")
+        print("Exit inspection? (n)/y")
         str_choice = str.lower(input())
-        if str_choice == "yes" or str_choice == "y":
+        if str_choice == 'y':
             bool_continue_inspecting = False
         else:
             bool_continue_inspecting = True
@@ -125,14 +125,15 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
             # Graphically represent new load
             print("New load generated: ")
             load_points.graphically_represent_load_point(ts_new_load_data)
+            
             bool_retry_input = True
             while bool_retry_input:
-                print("Is the generated load correct? yes/no")
+                print("Is the generated load correct? y/n")
                 str_choice = str.lower(input())
-                if str_choice == "yes" or str_choice == 'y':
+                if str_choice == 'y':
                     bool_successfully_generated_load = True
                     bool_retry_input = False
-                elif str_choice == "no" or str_choice == 'n':
+                elif str_choice == 'n':
                     bool_successfully_generated_load = False
                     bool_retry_input = False
                 else:
@@ -191,13 +192,13 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
                 # if not: try again or abort?
                 bool_retry_input = True
                 while bool_retry_input:
-                    print("Happy with the placement? yes/no")
+                    print("Happy with the placement? y/n")
                     str_choice = str.lower(input())
-                    if str_choice == "yes" or str_choice == "y":
+                    if str_choice == 'y':
                         bool_happy_with_load_placement = True
                         bool_retry_input = False
 
-                    elif str_choice == "no" or str_choice == "n":
+                    elif str_choice == 'n':
                         bool_retry_input = False
                         bool_retry_input_nested = True
                         dict_loads_ts, g_network = remove_node_from_net(
@@ -220,9 +221,9 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
                         print("Unrecognizd input, try again")
                         bool_retry_input = True
 
-        print("Do you want to stop adding loads to netork (No)/Yes?")
+        print("Do you want to stop adding loads to netork (n)/y?")
         str_choice = str.lower(input())
-        if str_choice == "yes" or str_choice == 'y':
+        if str_choice == 'y':
             bool_continue_adding_loads = False
 
     print("Finished adding loads to network!")
@@ -258,13 +259,13 @@ def interactively_increase_loads_in_net(dict_loads_ts):
 
             bool_retry_input = True
             while bool_retry_input:
-                print("Happy with the new load? yes/no")
+                print("Happy with the new load? y/n")
                 str_choice = str.lower(input())
-                if str_choice == "yes" or str_choice == "y":
+                if str_choice == 'y':
                     bool_correct_new_load = True
                     bool_retry_input = False
 
-                elif str_choice == "no" or str_choice == "n":
+                elif str_choice == 'n':
                     bool_retry_input = False
                     bool_retry_input_nested = True
                     ts_new_load = ts.offset_timeseries(
@@ -287,9 +288,9 @@ def interactively_increase_loads_in_net(dict_loads_ts):
                     print("Unrecognizd input, try again")
                     bool_retry_input = True
 
-        print("Do you want to stop increasing loads in the netork (No)/Yes?")
+        print("Do you want to stop increasing loads in the netork (n)/y?")
         str_choice = str.lower(input())
-        if str_choice == "yes" or str_choice == 'y':
+        if str_choice == 'y':
             bool_continue_increasing_loads = False
 
         print("Finished increasing loads!")

@@ -29,5 +29,5 @@ while bool_continue_modification_and_analysis:
 
     print("Continue modification and analysis (yes)/no?")
     str_choice = utilities.input_until_expected_type_appears(str)
-    if str_choice == "no" or str_choice == "n":
+    if str_choice == 'n':
         bool_continue_modification_and_analysis = False
