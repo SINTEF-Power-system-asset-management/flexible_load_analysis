@@ -70,6 +70,22 @@ def input_until_expected_type_appears(type):
             print("Input failed, try again")
 
 
+def input_until_acceptable_response(list_acceptable_responses):
+    """Acceptable responses must be of same type
+    """
+    acceptable_type = type(list_acceptable_responses[0])
+    bool_acceptable_response = False
+    while not bool_acceptable_response:
+        print("Acceptable responses:", list_acceptable_responses)
+        str_response = input_until_expected_type_appears(acceptable_type)
+        if str_response in list_acceptable_responses:
+            bool_acceptable_response = True
+        else:
+            print("Response not accepted, please retry!")
+
+    return str_response
+
+
 def input_until_node_in_net_apppears(net):
     bool_ID_in_network = False
     while not bool_ID_in_network:
