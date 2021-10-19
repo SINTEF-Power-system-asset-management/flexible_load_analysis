@@ -35,17 +35,15 @@ def interactively_inspect_loads(dict_loads_ts):
         str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
         load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
 
-        print("Exit inspection? (no)/yes")
-        str_choice = str.lower(input())
-        if str_choice == "yes" or str_choice == "y":
-            bool_continue_inspecting = False
-        else:
-            bool_continue_inspecting = True
+        print("Exit inspection?")
+        str_choice = utilities.input_until_acceptable_response(["y", "n"])
+        bool_continue_inspecting = (str_choice == "y")
+        
     return
 
 
 def interactively_copy_existing_load(dict_loads_ts):
-    print("Available load-points to copy from: ")
+    print("Available load-points to copy from:")
     load_points.print_all_load_points(dict_loads_ts)
 
     print("Input ID of node you want to copy")
@@ -125,37 +123,22 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
             # Graphically represent new load
             print("New load generated: ")
             load_points.graphically_represent_load_point(ts_new_load_data)
-            bool_retry_input = True
-            while bool_retry_input:
-                print("Is the generated load correct? yes/no")
-                str_choice = str.lower(input())
-                if str_choice == "yes" or str_choice == 'y':
-                    bool_successfully_generated_load = True
-                    bool_retry_input = False
-                elif str_choice == "no" or str_choice == 'n':
-                    bool_successfully_generated_load = False
-                    bool_retry_input = False
-                else:
-                    print("Unrecognizd input, try again")
-                    bool_retry_input = True
+            
+            print("Is the generated load correct? ")
+            str_choice = utilities.input_until_acceptable_response(["y", "n"])
+            bool_successfully_generated_load = (str_choice == "y")
 
             if not bool_successfully_generated_load:
-                bool_retry_input = True
-                while bool_retry_input:
-                    print("Try generating load again or abort? g/a")
-                    str_choice = str.lower(input())
-                    if str_choice == 'g':
-                        print("Restarting load-generation")
-                        bool_successfully_generated_load = False
-                        bool_retry_input = False
-                    elif str_choice == 'a':
-                        print("Aborting adding of new load to network!")
-                        bool_retry_input = False
-                        return dict_loads_ts, g_network
-                    else:
-                        print("Unrecognizd input, try again")
-                        bool_retry_input = True
-
+                print("Try generating load again or abort?")
+                str_choice = utilities.input_until_acceptable_response(["g", "a"])
+                if (str_choice == "g"):
+                    print("Restarting load-generation")
+                    bool_successfully_generated_load = False
+                else:
+                    print("Aborting adding of new load to network!")
+                    return dict_loads_ts, g_network
+                
+    
         print("Successfully generated new load data!")
 
         print("Add the new load to the network")
@@ -166,64 +149,42 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
         while not bool_happy_with_load_placement:
             print("Network as of right now:")
             network.plot_network(g_network)
-            print("Nodes in network: ")
+            print("Nodes in network:")
             list_nodes_in_network = network.list_nodes(g_network)
             print(list_nodes_in_network)
 
             print("Input name of parent node of", str_new_load_ID)
-            str_parent_ID = input()
+            str_parent_ID = utilities.input_until_node_in_net_apppears(g_network)
+            
+            # Check if not trafo/not compatible node, then
+            # add newload to new network
+            dict_loads_ts, g_network = add_new_load_to_net(
+                str_new_load_ID, ts_new_load_data, 
+                str_parent_ID, dict_loads_ts, g_network)
 
-            if not str_parent_ID in list_nodes_in_network:
-                print("Unrecognized parent node, try again!")
-                continue
-            else:
-                # Check if not trafo/not compatible node, then
-                # add newload to new network
-                dict_loads_ts, g_network = add_new_load_to_net(
-                    str_new_load_ID, ts_new_load_data, 
-                    str_parent_ID, dict_loads_ts, g_network)
+            print("The new network will look as follows:")
+            network.plot_network(g_network)
 
-                print("The new network will look as follows:")
-                network.plot_network(g_network)
+            print("Happy with the placement?")
+            str_choice = utilities.input_until_acceptable_response(["y", "n"])
+            if str_choice == "y":
+                bool_happy_with_load_placement = True
 
-                # Are you happy?
-                # if yes: g_network = g_new_network
-                # if not: try again or abort?
-                bool_retry_input = True
-                while bool_retry_input:
-                    print("Happy with the placement? yes/no")
-                    str_choice = str.lower(input())
-                    if str_choice == "yes" or str_choice == "y":
-                        bool_happy_with_load_placement = True
-                        bool_retry_input = False
+            elif str_choice == 'n':
+                dict_loads_ts, g_network = remove_node_from_net(
+                    dict_loads_ts, g_network, str_new_load_ID)
 
-                    elif str_choice == "no" or str_choice == "n":
-                        bool_retry_input = False
-                        bool_retry_input_nested = True
-                        dict_loads_ts, g_network = remove_node_from_net(
-                            dict_loads_ts, g_network, str_new_load_ID)
+                print("Retry placing load again or abort?")
+                str_choice = utilities.input_until_acceptable_response(["r", "a"])
+                if str_choice == "r":
+                    bool_happy_with_load_placement = False
+                else:
+                    print("Aborting adding of new load to network!")
+                    return dict_loads_ts, g_network
 
-                        while bool_retry_input_nested:
-                            print("Retry placing load again or abort? r/a")
-                            str_choice = str.lower(input())
-                            if str_choice == 'r':
-                                bool_happy_with_load_placement = False
-                                bool_retry_input_nested = False
-                            elif str_choice == 'a':
-                                print("Aborting adding of new load to network!")
-                                bool_retry_input_nested = False
-                                return dict_loads_ts, g_network
-                            else:
-                                print("Unrecognizd input, try again")
-                                bool_retry_input_nested = True
-                    else:
-                        print("Unrecognizd input, try again")
-                        bool_retry_input = True
-
-        print("Do you want to stop adding loads to netork (No)/Yes?")
-        str_choice = str.lower(input())
-        if str_choice == "yes" or str_choice == 'y':
-            bool_continue_adding_loads = False
+        print("Do you want to stop adding loads to network?")
+        str_choice = utilities.input_until_acceptable_response(["y", "n"])
+        bool_continue_adding_loads = (str_choice == "y")
 
     print("Finished adding loads to network!")
     return dict_loads_ts, g_network
@@ -256,43 +217,27 @@ def interactively_increase_loads_in_net(dict_loads_ts):
             print(str_ID, "after increase")
             load_points.graphically_represent_load_point(ts_new_load)
 
-            bool_retry_input = True
-            while bool_retry_input:
-                print("Happy with the new load? yes/no")
-                str_choice = str.lower(input())
-                if str_choice == "yes" or str_choice == "y":
-                    bool_correct_new_load = True
-                    bool_retry_input = False
+            print("Happy with the new load? ")
+            str_choice = utilities.input_until_acceptable_response(["y", "n"])
+            bool_correct_new_load = (str_choice == "y")
 
-                elif str_choice == "no" or str_choice == "n":
-                    bool_retry_input = False
-                    bool_retry_input_nested = True
-                    ts_new_load = ts.offset_timeseries(
-                        dict_loads_ts[str_ID], -fl_increase)
-
-                    while bool_retry_input_nested:
-                        print("Retry increasing load or abort? r/a")
-                        str_choice = str.lower(input())
-                        if str_choice == 'r':
-                            bool_correct_new_load = False
-                            bool_retry_input_nested = False
-                        elif str_choice == 'a':
-                            print("Aborting adding of new load to network!")
-                            bool_retry_input_nested = False
-                            return dict_loads_ts
-                        else:
-                            print("Unrecognizd input, try again")
-                            bool_retry_input_nested = True
+            if not bool_correct_new_load:
+                ts_new_load = ts.offset_timeseries(
+                    dict_loads_ts[str_ID], -fl_increase)
+                
+                print("Retry increasing load or abort?")
+                str_choice = utilities.input_until_acceptable_response(["r", "a"])
+                if str_choice == "r":
+                    bool_correct_new_load = False
                 else:
-                    print("Unrecognizd input, try again")
-                    bool_retry_input = True
+                    print("Aborting adding of new load to network!")
+                    return dict_loads_ts
 
-        print("Do you want to stop increasing loads in the netork (No)/Yes?")
-        str_choice = str.lower(input())
-        if str_choice == "yes" or str_choice == 'y':
-            bool_continue_increasing_loads = False
+        print("Do you want to stop increasing loads in the network?")
+        str_choice = utilities.input_until_acceptable_response(["y", "n"])
+        bool_continue_increasing_loads = (str_choice == "n")
 
-        print("Finished increasing loads!")
+    print("Finished increasing loads!")
     return dict_loads_ts
 
 
@@ -315,7 +260,7 @@ def interactively_modify_net(dict_config, dict_loads_ts, g_network):
         print("Recieved the following network: ")
         network.plot_network(g_network)
 
-        print(30 * "-", "MENU", 30 * "-")
+        print(24 * "-", "NET-MODIFICATION", 24 * "-")
         # plot data (timeseries) of chosen customer
         print("1: Examine loads")
         print("2: Add new load")

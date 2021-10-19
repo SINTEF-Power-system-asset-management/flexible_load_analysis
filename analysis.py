@@ -233,7 +233,7 @@ def interactively_inspect_previous_results(dict_results):
         key, result = interactively_traverse_nested_dictionary(dict_results)
         print(key, ":", result)
 
-        print("Continue (yes)/no")
+        print("Continue inspecting previous results? (y)/n")
         str_choice = str.lower(
             utilities.input_until_expected_type_appears(str))
         if str_choice == "no" or str_choice == "n":
