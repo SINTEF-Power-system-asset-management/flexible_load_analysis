@@ -283,7 +283,7 @@ def load_data_and_create_timeseries(dict_data_config):
 
 
 def load_network_from_directory(dict_network_config):
-    """Loads directory of MATPOWER-formatted csb-files to dictionary.
+    """Loads directory of MATPOWER-formatted csv-files to dictionary.
 
     Parameters
     ----------

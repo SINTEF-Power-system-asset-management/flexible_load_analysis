@@ -6,6 +6,7 @@ import analysis
 import plotting
 import utilities
 import pandapower as pp
+import numpy as np
 
 print()
 print("#############################################################################################")
@@ -21,8 +22,6 @@ dict_config, dict_data, dict_network = init.initialize_config_and_data(
 dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
 g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
 
+n_node = '10001' 
+network.remove_node(dict_network, n_node)
 
-
-pp_network = network.convert_network_dictionary_to_pp(dict_network)
-pp.rundcpp(pp_network)
-print(pp_network.res_bus)
