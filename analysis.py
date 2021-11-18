@@ -201,7 +201,7 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
     print("Nodes in network: ")
     print(network.list_nodes(g_network))
     print("What node should the aggregation be done from?")
-    str_load_ID = utilities.input_until_node_in_net_apppears(g_network)
+    str_load_ID = network.input_until_node_in_network_appears(g_network)
 
     # 2. Perform analysis.
     ts_agg = aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network)

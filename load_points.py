@@ -92,3 +92,14 @@ def graphically_represent_load_point(lp_load):
     plotting.plot_timeseries(
         [lp_load], ["ID: "], "Time", "Load", "Timeseries of customer: ")
     return
+
+def input_until_node_in_load_points_appears(dict_loads_ts):
+    bool_ID_in_network = False
+    while not bool_ID_in_network:
+        print("Please select a node")
+        str_ID = utilities.input_until_expected_type_appears(str)
+        if str_ID in dict_loads_ts:
+            bool_ID_in_network = True
+        else:
+            print("Could not find", str_ID, "in network, try again!")
+    return str_ID

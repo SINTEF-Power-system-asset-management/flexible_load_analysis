@@ -32,7 +32,7 @@ def interactively_inspect_loads(dict_loads_ts):
 
         
         print("Input ID of node you want to inspect")
-        str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+        str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
         load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
 
         print("Exit inspection?")
@@ -47,7 +47,7 @@ def interactively_copy_existing_load(dict_loads_ts):
     load_points.print_all_load_points(dict_loads_ts)
 
     print("Input ID of node you want to copy")
-    str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+    str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
     ts_new_load_data = copy.deepcopy(dict_loads_ts[str_ID])
 
     return ts_new_load_data
@@ -58,7 +58,7 @@ def interactively_model_based_on_existing_load(dict_loads_ts, dict_modelling_con
     load_points.print_all_load_points(dict_loads_ts)
 
     print("Input ID of node you want to model based on")
-    str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+    str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
     ts_modelling_baseline = copy.deepcopy(dict_loads_ts[str_ID])
 
     dict_data_ts = {"load": ts_modelling_baseline}
@@ -154,7 +154,7 @@ def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):
             print(list_nodes_in_network)
 
             print("Input name of parent node of", str_new_load_ID)
-            str_parent_ID = utilities.input_until_node_in_net_apppears(g_network)
+            str_parent_ID = network.input_until_node_in_network_appears(g_network)
             
             # Check if not trafo/not compatible node, then
             # add newload to new network
@@ -203,7 +203,7 @@ def interactively_increase_loads_in_net(dict_loads_ts):
             load_points.print_all_load_points(dict_loads_ts)
 
             print("Input ID of node you want to increase")
-            str_ID = utilities.input_until_node_in_net_apppears(dict_loads_ts)
+            str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
 
             print(str_ID, "as of now")
             load_points.graphically_represent_load_point(dict_loads_ts[str_ID])

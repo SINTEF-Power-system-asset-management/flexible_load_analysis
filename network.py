@@ -11,11 +11,14 @@ import pandapower as pp
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import utilities
 
 
-def plot_network(nx_network):
-    """Graphically represents the topology
+def plot_network(dict_network):
     """
+    Convert to NetworkX and plot the topology
+    """
+    nx_network = convert_network_dictionary_to_graph(dict_network)
     plt.subplot(111)
     nx.draw(nx_network, with_labels=True, font_weight='bold')
     plt.show()
@@ -177,3 +180,15 @@ def remove_node(dict_network, n_node):
         dict_branch['angle'] = np.delete(dict_branch['angle'], i)
         dict_branch['status'] = np.delete(dict_branch['status'], i)
     return dict_network
+
+def input_until_node_in_network_appears(dict_network):
+    # code
+    bool_ID_in_network = False
+    while not bool_ID_in_network:
+        print("Please select a node")
+        str_ID = utilities.input_until_expected_type_appears(str)
+        if str_ID in dict_network['bus']['bus_i']:
+            bool_ID_in_network = True
+        else:
+            print("Could not find", str_ID, "in network, try again!")
+    return str_ID
