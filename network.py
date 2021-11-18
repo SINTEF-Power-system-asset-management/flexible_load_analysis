@@ -101,6 +101,10 @@ def list_children_of_node(node, dict_network):
     return x
 
 
+def node_in_network(n_node, g_network):
+    return (n_node in g_network["bus"]["bus_i"])
+
+
 def add_node(dict_network, n_node, n_parent_node):
     """Adds a node and edge branching off a parent-node
         For the added node and branch, standard values are assumed.
@@ -187,12 +191,13 @@ def remove_node(dict_network, n_node):
         dict_branch['status'] = np.delete(dict_branch['status'], i)
     return dict_network
 
+
 def input_until_node_in_network_appears(dict_network):
     bool_ID_in_network = False
     while not bool_ID_in_network:
         print("Please select a node")
         str_ID = utilities.input_until_expected_type_appears(str)
-        if str_ID in dict_network['bus']['bus_i']:
+        if node_in_network(str_ID, dict_network):
             bool_ID_in_network = True
         else:
             print("Could not find", str_ID, "in network, try again!")

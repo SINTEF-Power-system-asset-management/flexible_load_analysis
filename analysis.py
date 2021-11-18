@@ -107,7 +107,8 @@ def interactively_insert_into_dictionary(dict_content, new_content, str_content_
 
 
 def interactively_write_to_file_in_directory(str_results_directory_path, result):
-    print("Not yet implemented!")
+    print("Beginning to store results locally at machine...")
+    print("WARNING: Not yet implemented!")
     return
 
 
@@ -140,7 +141,7 @@ def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
     are then treated as customers.
 
     """
-    if not str_load_ID in g_network:
+    if not network.node_in_network(str_load_ID, g_network):
         raise Exception("Error: Node missing from network")
     list_children = network.list_children_of_node(str_load_ID, g_network)
 
