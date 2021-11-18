@@ -101,5 +101,5 @@ def input_until_node_in_load_points_appears(dict_loads_ts):
         if str_ID in dict_loads_ts:
             bool_ID_in_network = True
         else:
-            print("Could not find", str_ID, "in network, try again!")
+            print("Could not find", str_ID, "in list of load points!")
     return str_ID

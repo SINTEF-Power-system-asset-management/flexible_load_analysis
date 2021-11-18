@@ -100,6 +100,9 @@ def list_children_of_node(node, dict_network):
 
 def add_node(dict_network, n_node, n_parent_node):
     """Adds a node and edge branching off a parent-node
+        For the added node and branch, standard values are assumed.
+        These standard values effectively assumes no impedance and high 
+        capacity of the new lines.
     """
     dict_bus = dict_network['bus']
 
@@ -182,7 +185,6 @@ def remove_node(dict_network, n_node):
     return dict_network
 
 def input_until_node_in_network_appears(dict_network):
-    # code
     bool_ID_in_network = False
     while not bool_ID_in_network:
         print("Please select a node")
