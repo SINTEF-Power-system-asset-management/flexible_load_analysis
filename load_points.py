@@ -8,6 +8,8 @@ The point of isolating operations relating to load-points is such that the
 chosen way of storing the load-points may be changed at will, without needing to
 change code outside this module.
 
+The unit of the load is implicitly MW (MegaWatt), but changing this will not affect calculations.
+
 """
 import datetime as dt
 import preprocessing

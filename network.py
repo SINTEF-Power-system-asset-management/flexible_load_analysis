@@ -2,6 +2,9 @@
 
 Notes
 ----------
+The network is stored as a dictionary of dictionaries, keyed by 
+MATPOWER-struct names and columns in these structs.
+
 The point of isolating network-related operations is such that the
 chosen graph-representation may be changed at will, without needing to
 change code outside this module.
