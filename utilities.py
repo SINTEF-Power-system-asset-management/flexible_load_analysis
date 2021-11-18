@@ -86,13 +86,3 @@ def input_until_acceptable_response(list_acceptable_responses):
     return str_response
 
 
-def input_until_node_in_net_apppears(net):
-    bool_ID_in_network = False
-    while not bool_ID_in_network:
-        print("Please select a node")
-        str_ID = input_until_expected_type_appears(str)
-        if str_ID in net:
-            bool_ID_in_network = True
-        else:
-            print("Could not find", str_ID, "in network, try again!")
-    return str_ID
