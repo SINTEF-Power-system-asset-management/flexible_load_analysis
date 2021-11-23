@@ -2,7 +2,7 @@ import init
 import load_points
 import network
 import net_modification
-import analysis
+import interactive_analysis
 import plotting
 import utilities
 import pandapower as pp

@@ -2,7 +2,7 @@ import init
 import load_points
 import network
 import net_modification
-import analysis
+import interactive_analysis
 import plotting
 import utilities
 
@@ -22,7 +22,7 @@ dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # 
 dict_results = {}
 bool_continue_modification_and_analysis = True
 while bool_continue_modification_and_analysis:
-    dict_results = analysis.interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, dict_network)
+    dict_results = interactive_analysis.interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, dict_network)
     
     dict_loads_ts, dict_network = net_modification.interactively_modify_net(dict_config, dict_loads_ts, dict_network)
 
