@@ -120,7 +120,7 @@ def plot_deterministic_load(ts_deterministic_model, str_variation_value_alternat
         ax.plot(arr_time, arr_data, label="Deterministic model")
 
         ax.set_xlabel("Time")
-        ax.set_ylabel("Load [kW]")
+        ax.set_ylabel("Load [MW]")
         ax.set_title("Deterministic model for one week")
         ax.grid(True)
         ax.legend(loc='upper left')
@@ -168,7 +168,7 @@ def plot_deterministic_load(ts_deterministic_model, str_variation_value_alternat
             int_months_plotted += 1
 
         ax.set_xlabel("Time")
-        ax.set_ylabel("Load [kW]")
+        ax.set_ylabel("Load [MW]")
         ax.set_title("Deterministic model for one week of each month")
         ax.grid(True)
         ax.legend(loc='upper left')
@@ -203,10 +203,10 @@ def plot_selection(dict_config, dict_data_ts, dict_model):
     print("Plotting figures specified in config.toml...")
     if dict_plot_decider_bool["load_measurements"]:
         plot_timeseries([dict_data_ts["load_measurements"]], [
-                        "Measured load"], "Time", "Load [kW]", "Load measurements")
+                        "Measured load"], "Time", "Load [MW]", "Load measurements")
     if dict_plot_decider_bool["load_measurements_histogram"]:
         plot_histogram(dict_data_ts["load_measurements"][:, 1],
-                       "Load [kW]", "Occurences", "Load measurement histogram")
+                       "Load [MW]", "Occurences", "Load measurement histogram")
     if dict_plot_decider_bool["temperature_measurements"]:
         plot_timeseries(
             [dict_data_ts["temperature_measurements"]], 
@@ -219,7 +219,7 @@ def plot_selection(dict_config, dict_data_ts, dict_model):
             [dict_data_ts["load_measurements"], dict_data_ts["load_temperature_corrected"]],
             ["Measured load", "Temperature-corrected load"],
             "Time",
-            "Load [kW]",
+            "Load [MW]",
             "Load measurements before and after temperature correction")
 
     if dict_config["modelling"]["chosen_model"] == "toenne":
@@ -239,7 +239,7 @@ def plot_selection(dict_config, dict_data_ts, dict_model):
                 [dict_data_ts["load_temperature_corrected"], dict_model["biproducts"]["deterministic_model"]],
                 ["Temperature-corrected load", "Deterministic model"],
                 "Time",
-                "Load [kW]",
+                "Load [MW]",
                 "Measured load vs. deterministic load model"
             )
         if dict_plot_decider_bool["relative_error"]:
@@ -257,7 +257,7 @@ def plot_selection(dict_config, dict_data_ts, dict_model):
                 [dict_data_ts["load_temperature_corrected"], dict_model["load"]],
                 ["Measured load", "Stochastic model"],
                 "Time",
-                "Load [kW]",
+                "Load [MW]",
                 "Temperature-corrected load measurements vs stochastic model (single run)"
             )
     print("Successfully completed all plots")

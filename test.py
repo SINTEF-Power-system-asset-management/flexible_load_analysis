@@ -1,23 +1,24 @@
+import init
+import load_points
+import network
+import net_modification
+import interactive_analysis
+import plotting
+import utilities
+import pandapower as pp
 import numpy as np
-import networkx as nx
-import matplotlib.pyplot as plt
-import analysis
 
-str_bus_ID = "c"
+print()
+print("#############################################################################################")
+print("##                              Generic Load Modelling                                     ##")
+print("#############################################################################################")
+print()
 
-dict_loads_ts = {
-    "a" : np.array([[1, 12.3], [2, 13.3], [3, 14.3]]),
-    "b" : np.array([[1, 40.3], [2, 30.3], [3, 20.3]])
-}
+STR_CONFIG_PATH = "example_data\\example_config.toml"
+dict_config, dict_data, dict_network = init.initialize_config_and_data(
+    STR_CONFIG_PATH)
 
-g_network = nx.DiGraph()
-g_network.add_nodes_from(["a", "b", "c"])
-g_network.add_edge("c", "b")
-g_network.add_edge("c", "a")
+# Network datastructures
+dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
+g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
 
-
-plt.subplot(111)
-nx.draw(g_network, with_labels=True, font_weight='bold')
-plt.show()
-
-print(analysis.coincidence_factors(str_bus_ID, dict_loads_ts, g_network))
