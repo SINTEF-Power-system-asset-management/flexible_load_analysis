@@ -1,4 +1,5 @@
-"""Module for implementing analysis which may be performed.
+"""Module for interactively choose, perform - and store results from - a set
+of accessible analyses.
 
 Notes
 ----------
@@ -65,7 +66,8 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
     str_load_ID = network.input_until_node_in_network_appears(g_network)
 
     # 2. Perform analysis.
-    ts_agg = load_aggregation.aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network)
+    ts_agg = load_aggregation.aggregate_load_of_node(
+        str_load_ID, dict_loads_ts, g_network)
 
     # 3. Present results graphically or numerically.
     print("Got the following aggregated load at node", str_load_ID)
@@ -91,13 +93,13 @@ def interactively_inspect_previous_results(dict_results):
 
     bool_continue = True
     while bool_continue:
-        key, result = utilities.interactively_traverse_nested_dictionary(dict_results)
+        key, result = utilities.interactively_traverse_nested_dictionary(
+            dict_results)
         print(key, ":", result)
 
-        print("Continue inspecting previous results? (y)/n")
-        str_choice = str.lower(
-            utilities.input_until_expected_type_appears(str))
-        if str_choice == "no" or str_choice == "n":
+        print("Continue inspecting previous results?")
+        str_choice = utilities.input_until_acceptable_response(["y", "n"])
+        if str_choice == "n":
             bool_continue = False
 
     return

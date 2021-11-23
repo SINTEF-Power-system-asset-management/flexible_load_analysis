@@ -1,3 +1,6 @@
+"""Aggregation of all loads "downstream" to some other node.
+"""
+
 import timeseries as ts
 import network
 

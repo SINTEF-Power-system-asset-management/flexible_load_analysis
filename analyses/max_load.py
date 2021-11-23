@@ -1,3 +1,6 @@
+"""Max load observed
+"""
+
 import numpy as np
 
 def find_max_load(ts_load):
