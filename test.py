@@ -27,7 +27,7 @@ dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # 
 
 str_node = "30001"
 str_limit = 65.0
-flex_needs = fn.detect_flexibility_need(dict_loads_ts[str_node], str_limit)
+l_overloads = fn.find_overloads(dict_loads_ts[str_node], str_limit)
 
-for i in flex_needs:
+for i in l_overloads:
     print(i)

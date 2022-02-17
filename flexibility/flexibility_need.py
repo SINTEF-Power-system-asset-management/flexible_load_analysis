@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class FlexibilityNeed:
+class OverloadEvent:
 
     # Et ønske at denne klassen ikke bærer med seg for mye, den
     # kan fungere som en naturlig komprimering av datasettet ned i det
@@ -27,7 +27,7 @@ class FlexibilityNeed:
         self.fl_MWh = fl_energy
 
     def __str__(self):
-        return "Flexibility need with properties:\n"                    + \
+        return "Overload Event with properties:\n"                    + \
             "Start      :     " + str(self.dt_start)        + "\n"      + \
             "End        :     " + str(self.dt_end)          + "\n"      + \
             "Duration   :     " + str(self.dt_duration)     + "\n"      + \
@@ -42,11 +42,23 @@ class FlexibilityNeed:
         # Ikke innlysende hvordan dette regnes ut.
         # Denne infoen kan brukes av høyere nivås modul for å fjerne disse
         # hendelsene.
+        # Vil være en kombinasjon av varighet, spike, etc.
         pass
-        
 
-def detect_flexibility_need(ts_data, fl_power_limit):
-    flex_needs = []
+
+class FlexibilityNeed:
+    # En tidsserie har mange tilfeller av overlast.
+    # Flex-behov er en meta-metrikk over disse.
+
+    def __init__(self) -> None:
+        self.l_overloads = []
+        self.fl_frequency = None
+        self.str_flex_category = "" # Hvilken type overlast ser en oftest?
+        # Hvilke andre attributter?
+
+
+def find_overloads(ts_data, fl_power_limit):
+    l_overloads = []
     b_in_overload_event = False
     for i in range(len(ts_data)):
         b_line_overloaded = (ts_data[i, 1] >= fl_power_limit)
@@ -55,10 +67,10 @@ def detect_flexibility_need(ts_data, fl_power_limit):
             i_start = i
         elif not b_line_overloaded and b_in_overload_event:
             i_end = i
-            #if i_end - i_start == 1: print("Flex-event of duration 1")
-            flex_needs.append(FlexibilityNeed(ts_data[i_start:i_end+1,:], fl_power_limit))
+            # Velg mellom disse to
+            #l_overloads.append(OverloadEvent(ts_data[i_start:i_end,:], fl_power_limit))
+            l_overloads.append(OverloadEvent(ts_data[i_start:i_end+1,:], fl_power_limit))
             b_in_overload_event = False
         else:
             continue
-    return flex_needs
-
+    return l_overloads
