@@ -43,15 +43,15 @@ def convert_network_dictionary_to_graph(dict_network): # NetworkX
     """
     print("Converting MATPOWER-network to NetworkX...")
     nx_network = nx.DiGraph()
-    nx_network.add_nodes_from(dict_network["bus"]["bus_i"])
+    nx_network.add_nodes_from(dict_network["bus"]["BUS_I"])
     nx_network.add_edges_from(
         np.stack((
-            dict_network["branch"]["fbus"],
-            dict_network["branch"]["tbus"]),
+            dict_network["branch"]["F_BUS"],
+            dict_network["branch"]["T_BUS"]),
             axis=1))
     # plot_network(nx_network)
 
-    print("Successfully converted to internal graph-representation")
+    #print("Successfully converted to internal graph-representation")
     return nx_network
 
 
@@ -86,7 +86,7 @@ def convert_network_dictionary_to_pp(dict_network):
 def list_nodes(dict_network): 
     """Lists all nodes of network.
     """
-    return list(dict_network['bus']['bus_i'])
+    return list(dict_network['bus']['BUS_I'])
 
 
 def list_children_of_node(node, dict_network):
@@ -95,14 +95,14 @@ def list_children_of_node(node, dict_network):
     dict_branch = dict_network['branch']
     x = []
 
-    for i in range(len(dict_branch['fbus'])):
-        if dict_branch['fbus'][i] == node:
-            x.append(dict_branch['tbus'][i])
+    for i in range(len(dict_branch['F_BUS'])):
+        if dict_branch['F_BUS'][i] == node:
+            x.append(dict_branch['T_BUS'][i])
     return x
 
 
 def node_in_network(n_node, g_network):
-    return (n_node in g_network["bus"]["bus_i"])
+    return (n_node in g_network["bus"]["BUS_I"])
 
 
 def add_node(dict_network, n_node, n_parent_node):
@@ -114,7 +114,7 @@ def add_node(dict_network, n_node, n_parent_node):
     dict_bus = dict_network['bus']
 
     # Adding the node to the dictionary of buses
-    dict_bus['bus_i'] = np.append(dict_bus['bus_i'],n_node)
+    dict_bus['BUS_I'] = np.append(dict_bus['BUS_I'],n_node)
     dict_bus['type'] = np.append(dict_bus['type'],'1')
     dict_bus['Pd'] = np.append(dict_bus['Pd'],'0')
     dict_bus['Qd'] = np.append(dict_bus['Qd'],'0')
@@ -131,8 +131,8 @@ def add_node(dict_network, n_node, n_parent_node):
     dict_branch = dict_network['branch']
 
     # Adding the branch to the dictionary of branches
-    dict_branch['fbus'] = np.append(dict_branch['fbus'], n_parent_node)
-    dict_branch['tbus'] = np.append(dict_branch['tbus'], n_node)
+    dict_branch['FBUS'] = np.append(dict_branch['FBUS'], n_parent_node)
+    dict_branch['TBUS'] = np.append(dict_branch['TBUS'], n_node)
     dict_branch['r'] = np.append(dict_branch['r'], '0')
     dict_branch['x'] = np.append(dict_branch['x'], '0')
     dict_branch['b'] = np.append(dict_branch['b'], '0')
@@ -151,10 +151,10 @@ def remove_node(dict_network, n_node):
     dict_bus = dict_network['bus']
 
     # Find index of the node to be deleted
-    node_index = np.where(dict_bus['bus_i'] == n_node)
+    node_index = np.where(dict_bus['BUS_I'] == n_node)
 
     # Remove node name and all attributes from the bus dictionary
-    dict_bus['bus_i'] = np.delete(dict_bus['bus_i'],node_index[0][0])
+    dict_bus['BUS_I'] = np.delete(dict_bus['BUS_I'],node_index[0][0])
     dict_bus['type'] = np.delete(dict_bus['type'],node_index[0][0])
     dict_bus['Pd'] = np.delete(dict_bus['Pd'],node_index[0][0])
     dict_bus['Qd'] = np.delete(dict_bus['Qd'],node_index[0][0])
@@ -172,14 +172,14 @@ def remove_node(dict_network, n_node):
     dict_branch = dict_network['branch']
 
     # Find index / indices of branches that are connected to the node
-    fbus_index = np.where(dict_branch['fbus'] == n_node)[0].tolist()
-    tbus_index = np.where(dict_branch['tbus'] == n_node)[0].tolist()
-    branch_index = fbus_index+tbus_index # indices of branches to delete
+    FBUS_Index = np.where(dict_branch['F_BUS'] == n_node)[0].tolist()
+    TBUS_Index = np.where(dict_branch['T_BUS'] == n_node)[0].tolist()
+    branch_index = FBUS_Index+TBUS_Index # indices of branches to delete
 
     # Delete all branches that are connected to the node
     for i in branch_index:
-        dict_branch['fbus'] = np.delete(dict_branch['fbus'], i)
-        dict_branch['tbus'] = np.delete(dict_branch['tbus'], i)
+        dict_branch['FBUS'] = np.delete(dict_branch['FBUS'], i)
+        dict_branch['TBUS'] = np.delete(dict_branch['TBUS'], i)
         dict_branch['r'] = np.delete(dict_branch['r'], i)
         dict_branch['x'] = np.delete(dict_branch['x'], i)
         dict_branch['b'] = np.delete(dict_branch['b'], i)

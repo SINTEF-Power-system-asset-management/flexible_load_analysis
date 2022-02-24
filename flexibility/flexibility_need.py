@@ -1,5 +1,9 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
+
+def remove_unimportant_overloads(l_overloads):
+    return list(filter(lambda o: not o.is_unimportant(), l_overloads))
 
 class OverloadEvent:
 
@@ -25,6 +29,7 @@ class OverloadEvent:
 
             fl_energy += fl_val * fl_dur
         self.fl_MWh = fl_energy
+        # Insert calculation of ramping here
 
     def __str__(self):
         return "Overload Event with properties:\n"                    + \
@@ -43,7 +48,12 @@ class OverloadEvent:
         # Denne infoen kan brukes av høyere nivås modul for å fjerne disse
         # hendelsene.
         # Vil være en kombinasjon av varighet, spike, etc.
-        pass
+        dur_hours = self.dt_duration.seconds / 3600 + self.dt_duration.days * 24
+        if dur_hours == 1:
+            b_short = True
+        else:
+            b_short = False
+        return b_short
 
 
 class FlexibilityNeed:
@@ -57,6 +67,7 @@ class FlexibilityNeed:
         # Hvilke andre attributter?
 
 
+# Burde flyttes til analysis?
 def find_overloads(ts_data, fl_power_limit):
     l_overloads = []
     b_in_overload_event = False
@@ -74,3 +85,17 @@ def find_overloads(ts_data, fl_power_limit):
         else:
             continue
     return l_overloads
+
+
+def overload_distribution(l_overloads):
+    arr_spikes = np.array([o.fl_spike for o in l_overloads])
+    arr_energy = np.array([o.fl_MWh for o in l_overloads])
+
+
+    _ = plt.hist(arr_spikes, bins='auto')
+    plt.title("Overload-spikes")
+    plt.show()
+
+    _ = plt.hist(arr_energy, bins='auto')
+    plt.title("Overload-energy")
+    plt.show()
