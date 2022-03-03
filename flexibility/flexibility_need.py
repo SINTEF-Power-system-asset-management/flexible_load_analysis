@@ -22,7 +22,7 @@ class OverloadEvent:
         self.fl_spike = np.max(ts_overload_event[:,1])
         fl_energy = 0
         for i in range(1, len(ts_overload_event)):  # Max Riemann-sum
-            fl_val = max(ts_overload_event[i - 1, 1], ts_overload_event[i, 1])
+            fl_val = max(ts_overload_event[i - 1, 1], ts_overload_event[i, 1]) - fl_power_limit
             # Can be simplified if hour-requirement is assumed
             dt_dur = (ts_overload_event[i, 0] - ts_overload_event[i - 1, 0])
             fl_dur = dt_dur.seconds / 3600 + dt_dur.days * 24
@@ -93,9 +93,13 @@ def overload_distribution(l_overloads):
 
 
     _ = plt.hist(arr_spikes, bins='auto')
+    plt.xlabel("Load [kW]")
+    plt.ylabel("Counts")
     plt.title("Overload-spikes")
     plt.show()
 
     _ = plt.hist(arr_energy, bins='auto')
+    plt.xlabel("Energy over limit [kWh]")
+    plt.ylabel("Counts")
     plt.title("Overload-energy")
     plt.show()

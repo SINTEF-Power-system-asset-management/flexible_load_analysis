@@ -17,7 +17,7 @@ def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylab
         arr_data = ts[:, 1]
         ax.plot(arr_time, arr_data, label=list_labels[i])
     if fl_limit:
-        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g")
+        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Limit")
 
     ax.set_xlabel(str_xlabel)
     ax.set_ylabel(str_ylabel)
