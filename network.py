@@ -5,6 +5,9 @@ Notes
 The network is stored as a dictionary of dictionaries, keyed by 
 MATPOWER-struct names and columns in these structs.
 
+Beware that rates in MATPOWER are given in MegaWatt, while
+the load-timeseries are implicitly in KiloWatt.
+
 The point of isolating network-related operations is such that the
 chosen graph-representation may be changed at will, without needing to
 change code outside this module.
@@ -115,33 +118,33 @@ def add_node(dict_network, n_node, n_parent_node):
 
     # Adding the node to the dictionary of buses
     dict_bus['BUS_I'] = np.append(dict_bus['BUS_I'],n_node)
-    dict_bus['type'] = np.append(dict_bus['type'],'1')
-    dict_bus['Pd'] = np.append(dict_bus['Pd'],'0')
-    dict_bus['Qd'] = np.append(dict_bus['Qd'],'0')
-    dict_bus['Gs'] = np.append(dict_bus['Gs'],'0')
-    dict_bus['Bs'] = np.append(dict_bus['Bs'],'0')
-    dict_bus['area'] = np.append(dict_bus['area'],'1')
-    dict_bus['Vm'] = np.append(dict_bus['Vm'],'0')
-    dict_bus['Va'] = np.append(dict_bus['Va'],'0')
-    dict_bus['baseKV'] = np.append(dict_bus['baseKV'],'0')
-    dict_bus['zone'] = np.append(dict_bus['zone'],'1')
-    dict_bus['Vmax'] = np.append(dict_bus['Vmax'],'1.04')
-    dict_bus['Vmin'] = np.append(dict_bus['Vmin'],'0.96')
+    dict_bus['BUS_TYPE'] = np.append(dict_bus['BUS_TYPE'],'1')
+    dict_bus['PD'] = np.append(dict_bus['PD'],'0')
+    dict_bus['QD'] = np.append(dict_bus['QD'],'0')
+    dict_bus['GS'] = np.append(dict_bus['GS'],'0')
+    dict_bus['BS'] = np.append(dict_bus['BS'],'0')
+    dict_bus['BUS_AREA'] = np.append(dict_bus['BUS_AREA'],'1')
+    dict_bus['VM'] = np.append(dict_bus['VM'],'0')
+    dict_bus['VA'] = np.append(dict_bus['VA'],'0')
+    dict_bus['BASE_KV'] = np.append(dict_bus['BASE_KV'],'0')
+    dict_bus['ZONE'] = np.append(dict_bus['ZONE'],'1')
+    dict_bus['VMAX'] = np.append(dict_bus['VMAX'],'1.04')
+    dict_bus['VMIN'] = np.append(dict_bus['VMIN'],'0.96')
 
     dict_branch = dict_network['branch']
 
     # Adding the branch to the dictionary of branches
-    dict_branch['FBUS'] = np.append(dict_branch['FBUS'], n_parent_node)
-    dict_branch['TBUS'] = np.append(dict_branch['TBUS'], n_node)
-    dict_branch['r'] = np.append(dict_branch['r'], '0')
-    dict_branch['x'] = np.append(dict_branch['x'], '0')
-    dict_branch['b'] = np.append(dict_branch['b'], '0')
-    dict_branch['rateA'] = np.append(dict_branch['rateA'], '1000')
-    dict_branch['rateB'] = np.append(dict_branch['rateB'], '1000')
-    dict_branch['rateC'] = np.append(dict_branch['rateC'], '1000')
-    dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')
-    dict_branch['angle'] = np.append(dict_branch['angle'], '0')
-    dict_branch['status'] = np.append(dict_branch['status'], '1')
+    dict_branch['F_BUS'] = np.append(dict_branch['F_BUS'], n_parent_node)
+    dict_branch['T_BUS'] = np.append(dict_branch['T_BUS'], n_node)
+    dict_branch['BR_R'] = np.append(dict_branch['BR_R'], '0')
+    dict_branch['BR_X'] = np.append(dict_branch['BR_X'], '0')
+    dict_branch['BR_B'] = np.append(dict_branch['BR_B'], '0')
+    dict_branch['RATE_A'] = np.append(dict_branch['RATE_A'], '1000')
+    dict_branch['RATE_B'] = np.append(dict_branch['RATE_B'], '1000')
+    dict_branch['RATE_C'] = np.append(dict_branch['RATE_C'], '1000')
+    # dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')
+    # dict_branch['angle'] = np.append(dict_branch['angle'], '0')
+    dict_branch['BR_STATUS'] = np.append(dict_branch['BR_STATUS'], '1')
     return dict_network
 
 
