@@ -179,3 +179,7 @@ def input_until_acceptable_response(list_acceptable_responses):
     return str_response
 
 
+# Datetime
+
+def duration_to_hours(dt_dur):
+    return dt_dur.seconds / 3600 + dt_dur.days * 24
