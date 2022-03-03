@@ -59,7 +59,7 @@ class OverloadEvent:
         # Denne infoen kan brukes av høyere nivås modul for å fjerne disse
         # hendelsene.
         # Vil være en kombinasjon av varighet, spike, etc.
-        dur_hours = self.dt_duration.seconds / 3600 + self.dt_duration.days * 24
+        dur_hours = duration_to_hours(self.dt_duration)
         if dur_hours == 1:
             b_short = True
         else:
@@ -71,11 +71,21 @@ class FlexibilityNeed:
     # En tidsserie har mange tilfeller av overlast.
     # Flex-behov er en meta-metrikk over disse.
 
-    def __init__(self) -> None:
-        self.l_overloads = []
-        self.fl_frequency = None
+    def __init__(self, l_overloads) -> None:
+        self.l_overloads = l_overloads
         self.str_flex_category = "" # Hvilken type overlast ser en oftest?
         # Hvilke andre attributter?
+
+        l_recovery_times = []
+        num_overloads = len(l_overloads)
+        for i in range(num_overloads):
+            if i != num_overloads - 1:  # cannot find recovery-time for last event
+                dt_recovery_time = l_overloads[i + 1].dt_start - l_overloads[i].dt_end
+                l_recovery_times.append(dt_recovery_time)
+        self.l_recovery_times = l_recovery_times
+
+        self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times]) # dubius, recheck
+        self.fl_avg_spike = np.average([o.fl_spike for o in l_overloads])
 
 
 # Burde flyttes til analysis?
@@ -98,11 +108,12 @@ def find_overloads(ts_data, fl_power_limit):
     return l_overloads
 
 
-def overload_distribution(l_overloads):
+def plot_flexibility_characteristics(flex_need):
+    l_overloads = flex_need.l_overloads
     arr_spikes = np.array([o.fl_spike for o in l_overloads])
     arr_energy = np.array([o.fl_MWh for o in l_overloads])
     arr_duration_h = np.array([o.duration_h for o in l_overloads])
-
+    arr_recovery_time_h = np.array([duration_to_hours(t) for t in flex_need.l_recovery_times])
 
     _ = plt.hist(arr_spikes, bins='auto')
     plt.xlabel("Load [kW]")
@@ -120,4 +131,11 @@ def overload_distribution(l_overloads):
     plt.xlabel("Duration [h]")
     plt.ylabel("Counts")
     plt.title("Overload-duration")
+    plt.show()
+
+
+    _ = plt.hist(arr_recovery_time_h, bins='auto')
+    plt.xlabel("Recovery time [h]")
+    plt.ylabel("Counts")
+    plt.title("Recovery time between overload-events")
     plt.show()

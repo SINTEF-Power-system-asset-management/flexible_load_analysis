@@ -41,7 +41,9 @@ for i in range(101):
         fl_lim_kW = float(dict_network["branch"]["RATE_A"][i_agg_ind])*1000
         ts_agg = load_aggregation.aggregate_load_of_node(str_agg_id, dict_loads_ts, dict_network)
         l_overloads = flexibility_need.find_overloads(ts_agg, fl_lim_kW)
-        l_overloads = flexibility_need.remove_unimportant_overloads(l_overloads)
+        #l_overloads = flexibility_need.remove_unimportant_overloads(l_overloads)
+        if l_overloads: flex_need = flexibility_need.FlexibilityNeed(l_overloads)
+        
         print(l_loads_added)
-        plotting.plot_timeseries([ts_agg], ["Aggregated"], f"Aggregated load and limit after {i} iteration(s)",fl_limit=fl_lim_kW)
-        if l_overloads: flexibility_need.overload_distribution(l_overloads)
+        plotting.plot_timeseries([ts_agg], ["Aggregated"], f"Aggregated load and limit after {i} addition(s)",fl_limit=fl_lim_kW)
+        if l_overloads: flexibility_need.plot_flexibility_characteristics(flex_need)
