@@ -39,7 +39,9 @@ class OverloadEvent:
         self.fl_rms_load = fl_rms_load
         self.percentage_overload = 100 * fl_rms_load / fl_power_limit
         
-        # Insert calculation of ramping here
+        spike_dur = ts_overload_event[np.argmax(ts_overload_event[:,1]),0] - self.dt_start
+        spike_dur_h = duration_to_hours(spike_dur)
+        self.fl_ramping = (self.fl_spike - fl_power_limit)/spike_dur_h if spike_dur_h else -1
 
     def __str__(self):
         return "Overload Event with properties:\n"                                  + \
@@ -50,7 +52,8 @@ class OverloadEvent:
             "Spike              :     " + str(self.fl_spike)            + "   kW\n"      + \
             "RMS load           :     " + str(self.fl_rms_load)         + "   kW\n"      + \
             "Energy over limit  :     " + str(self.fl_MWh)              + "   kWh\n"      + \
-            "% Overload         :     " + str(self.percentage_overload) + "   %\n"
+            "% Overload         :     " + str(self.percentage_overload) + "   %\n"  + \
+            "Ramping            :     " + str(self.fl_ramping)          + "   kW/h\n"
 
 
     def is_unimportant(self):
@@ -88,6 +91,19 @@ class FlexibilityNeed:
         self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times[:-1]]) # dubius, recheck
         self.fl_avg_spike = np.average([o.fl_spike for o in l_overloads])
 
+    def extract_arrays(self):
+        arrs = {}
+        l_overloads = self.l_overloads
+        
+        arrs["spike"] = np.array([o.fl_spike for o in l_overloads])
+        arrs["energy"] = np.array([o.fl_MWh for o in l_overloads])
+        arrs["duration"] = np.array([o.duration_h for o in l_overloads])
+        arrs["season"] = np.array([datetime_to_season(o.dt_start) for o in l_overloads])
+        arrs["month"] = np.array([o.dt_start.month for o in l_overloads])
+        arrs["recovery"] = np.array([duration_to_hours(t) if t else None for t in self.l_recovery_times])
+
+        return arrs
+
 
 # Burde flyttes til analysis?
 def find_overloads(ts_data, fl_power_limit):
@@ -110,30 +126,26 @@ def find_overloads(ts_data, fl_power_limit):
 
 
 def plot_flexibility_histograms(flex_need):
-    l_overloads = flex_need.l_overloads
-    arr_spikes = np.array([o.fl_spike for o in l_overloads])
-    arr_energy = np.array([o.fl_MWh for o in l_overloads])
-    arr_duration_h = np.array([o.duration_h for o in l_overloads])
-    arr_recovery_time_h = np.array([duration_to_hours(t) if t else None for t in flex_need.l_recovery_times])
+    arrs = flex_need.extract_arrays()
 
     fig,axs = plt.subplots(2,2, sharey=True)
 
-    axs[0, 0].hist(arr_spikes, bins='auto')
+    axs[0, 0].hist(arrs["spike"], bins='auto')
     axs[0, 0].set_xlabel("Load [kW]")
     axs[0, 0].set_ylabel("Counts")
     axs[0, 0].set_title("Overload-spikes")
 
-    axs[0, 1].hist(arr_energy, bins='auto')
+    axs[0, 1].hist(arrs["energy"], bins='auto')
     axs[0, 1].set_xlabel("Energy over limit [kWh]")
     axs[0, 1].set_ylabel("Counts")
     axs[0, 1].set_title("Overload-energy")
     
-    axs[1, 0].hist(arr_duration_h, bins='auto')
+    axs[1, 0].hist(arrs["duration"], bins='auto')
     axs[1, 0].set_xlabel("Duration [h]")
     axs[1, 0].set_ylabel("Counts")
     axs[1, 0].set_title("Overload-duration")
     
-    axs[1, 1].hist(arr_recovery_time_h[:-1], bins='auto')
+    axs[1, 1].hist(arrs["recovery"][:-1], bins='auto')
     axs[1, 1].set_xlabel("Recovery time [h]")
     axs[1, 1].set_ylabel("Counts")
     axs[1, 1].set_title("Recovery time between events")
@@ -143,6 +155,8 @@ def plot_flexibility_histograms(flex_need):
     plt.show()
 
 def plot_flexibility_clustering(flex_need):
+    #arrs = flex_need.extract_arrays()  # TODO:
+    
     l_overloads = flex_need.l_overloads
     arr_spikes = np.array([o.fl_spike for o in l_overloads])
     arr_energy = np.array([o.fl_MWh for o in l_overloads])

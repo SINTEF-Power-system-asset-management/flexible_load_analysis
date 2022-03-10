@@ -124,7 +124,7 @@ if __name__ == "__main__":
     dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)
     
     # add_random_loads_flex_analysis(dict_loads_ts, dict_network, 1, 50, plot_aggregate=True, plot_histogram=True)
-    increase_single_load_flex_analysis(dict_loads_ts, dict_network, 18, 1, 1500)
+    increase_single_load_flex_analysis(dict_loads_ts, dict_network, 18, 1, 1200)
     
 
 
