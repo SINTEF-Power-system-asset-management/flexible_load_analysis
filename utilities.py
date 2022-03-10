@@ -183,3 +183,13 @@ def input_until_acceptable_response(list_acceptable_responses):
 
 def duration_to_hours(dt_dur):
     return dt_dur.seconds / 3600 + dt_dur.days * 24
+
+def datetime_to_season(dt):
+    # 1 = winter
+    # 2 = spring
+    # 3 = summer
+    # 4 = autumn
+
+    month = dt.month
+    season = month%12 // 3 + 1 
+    return season

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from utilities import duration_to_hours
+from utilities import duration_to_hours, datetime_to_season
 
 
 def remove_unimportant_overloads(l_overloads):
@@ -109,12 +109,12 @@ def find_overloads(ts_data, fl_power_limit):
     return l_overloads
 
 
-def plot_flexibility_characteristics(flex_need):
+def plot_flexibility_histograms(flex_need):
     l_overloads = flex_need.l_overloads
     arr_spikes = np.array([o.fl_spike for o in l_overloads])
     arr_energy = np.array([o.fl_MWh for o in l_overloads])
     arr_duration_h = np.array([o.duration_h for o in l_overloads])
-    arr_recovery_time_h = np.array([duration_to_hours(t) for t in flex_need.l_recovery_times])
+    arr_recovery_time_h = np.array([duration_to_hours(t) if t else None for t in flex_need.l_recovery_times])
 
     fig,axs = plt.subplots(2,2, sharey=True)
 
@@ -133,11 +133,41 @@ def plot_flexibility_characteristics(flex_need):
     axs[1, 0].set_ylabel("Counts")
     axs[1, 0].set_title("Overload-duration")
     
-    axs[1, 1].hist(arr_recovery_time_h, bins='auto')
+    axs[1, 1].hist(arr_recovery_time_h[:-1], bins='auto')
     axs[1, 1].set_xlabel("Recovery time [h]")
     axs[1, 1].set_ylabel("Counts")
     axs[1, 1].set_title("Recovery time between events")
 
     plt.tight_layout()
 
+    plt.show()
+
+def plot_flexibility_clustering(flex_need):
+    l_overloads = flex_need.l_overloads
+    arr_spikes = np.array([o.fl_spike for o in l_overloads])
+    arr_energy = np.array([o.fl_MWh for o in l_overloads])
+    arr_duration_h = np.array([o.duration_h for o in l_overloads])
+    arr_season = np.array([datetime_to_season(o.dt_start) for o in l_overloads])
+    arr_month = np.array([o.dt_start.month for o in l_overloads])
+    arr_recovery_time_h = np.array([duration_to_hours(t) if t else None for t in flex_need.l_recovery_times])
+
+    fig,axs = plt.subplots(2,2)
+
+    axs[0, 0].scatter(arr_duration_h, arr_spikes)
+    axs[0, 0].set_xlabel("Duration [h]")
+    axs[0, 0].set_ylabel("Spike [kW]")
+
+    axs[0, 1].scatter(arr_season, arr_spikes)
+    axs[0, 1].set_xlabel("Season (1=winter)")
+    axs[0, 1].set_ylabel("Spike [kW]")
+
+    axs[1, 0].scatter(arr_season, arr_recovery_time_h)
+    axs[1, 0].set_xlabel("Season (1=winter)")
+    axs[1, 0].set_ylabel("Recovery time [h]")
+
+    axs[1, 1].scatter(arr_month, arr_spikes)
+    axs[1, 1].set_xlabel("Month")
+    axs[1, 1].set_ylabel("Spike [kW]")
+    
+    plt.tight_layout()
     plt.show()
