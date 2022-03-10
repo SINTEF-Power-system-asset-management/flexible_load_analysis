@@ -82,9 +82,10 @@ class FlexibilityNeed:
             if i != num_overloads - 1:  # cannot find recovery-time for last event
                 dt_recovery_time = l_overloads[i + 1].dt_start - l_overloads[i].dt_end
                 l_recovery_times.append(dt_recovery_time)
+        l_recovery_times.append(None)   # Last overload-event has undefined recovery-time
         self.l_recovery_times = l_recovery_times
 
-        self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times]) # dubius, recheck
+        self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times[:-1]]) # dubius, recheck
         self.fl_avg_spike = np.average([o.fl_spike for o in l_overloads])
 
 
