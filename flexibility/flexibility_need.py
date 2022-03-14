@@ -165,6 +165,14 @@ def plot_flexibility_histograms(flex_need):
             axs[i, j].set_xlabel(metric_annotation(metric))
             axs[i, j].set_ylabel("Counts")
 
+            if metric == "recovery":
+                days_to_ignore = 100
+                num_ignored = np.count_nonzero(arrs[metric] > days_to_ignore*24)
+                if num_ignored > 0:
+                    right_lim = np.max(arrs[metric][arrs[metric] <= days_to_ignore*24])
+                    axs[i, j].set_xlim(left=-1,right=right_lim)
+                    print(f"Warning: {num_ignored} data-points not displayed because recovery-time succeeded {days_to_ignore} days")
+
     plt.show()
 
 def plot_flexibility_clustering(flex_need):
@@ -186,6 +194,22 @@ def plot_flexibility_clustering(flex_need):
             axs[i, j].scatter(arrs[first], arrs[last])
             axs[i, j].set_xlabel(metric_annotation(first))
             axs[i, j].set_ylabel(metric_annotation(last))
+
+            if first == "recovery" or last == "recovery":
+                metric = first if first == "recovery" else last
+                
+                days_to_ignore = 100
+                num_ignored = np.count_nonzero(arrs[metric] > days_to_ignore*24)
+                if num_ignored > 0:
+                    upper_lim = np.max(arrs[metric][arrs[metric] <= days_to_ignore*24])
+
+                    if metric == first:
+                        axs[i, j].set_xlim(left=-1,right=upper_lim)
+                    else: 
+                        axs[i, j].set_ylim(bottom=-1,top=upper_lim)
+                    
+                    print(f"Warning: {num_ignored} data-points not displayed because recovery-time succeeded {days_to_ignore} days")
+            
 
         if stop: break
             
