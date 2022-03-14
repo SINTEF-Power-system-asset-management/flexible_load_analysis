@@ -101,8 +101,28 @@ class FlexibilityNeed:
         arrs["season"] = np.array([util.datetime_to_season(o.dt_start) for o in l_overloads])
         arrs["month"] = np.array([o.dt_start.month for o in l_overloads])
         arrs["recovery"] = np.array([util.duration_to_hours(t) for t in self.l_recovery_times])
+        arrs["ramping"] = np.array([o.fl_ramping for o in l_overloads])
 
         return arrs
+
+def metric_annotation(metric_name):
+    # TODO: Change to match case when python 3.10 ubiquitous
+    ann = ""
+    if metric_name == "spike":
+        ann = "Spike [kW]"
+    elif metric_name == "energy":
+        ann = "Energy [kWh]"
+    elif metric_name == "duration":
+        ann = "Duration [h]"
+    elif metric_name == "season":
+        ann = "Season"
+    elif metric_name == "month":
+        ann = "Month"
+    elif metric_name == "recovery":
+        ann = "Recovery-time [h]"
+    elif metric_name == "ramping":
+        ann = "Ramping [kW/h]"
+    return ann
 
 
 # Burde flyttes til analysis?
@@ -142,7 +162,7 @@ def plot_flexibility_histograms(flex_need):
                 break
             metric = l_metrics[index]
             axs[i, j].hist(arrs[metric], bins='auto')
-            axs[i, j].set_xlabel(metric)
+            axs[i, j].set_xlabel(metric_annotation(metric))
             axs[i, j].set_ylabel("Counts")
 
     plt.show()
@@ -164,8 +184,8 @@ def plot_flexibility_clustering(flex_need):
                 break
             (first, last) = l_metric_combos[index]
             axs[i, j].scatter(arrs[first], arrs[last])
-            axs[i, j].set_xlabel(first)
-            axs[i, j].set_ylabel(last)
+            axs[i, j].set_xlabel(metric_annotation(first))
+            axs[i, j].set_ylabel(metric_annotation(last))
 
         if stop: break
             
