@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from utilities import duration_to_hours, datetime_to_season
+from utilities import undef_timedelta, duration_to_hours, datetime_to_season
 
 
 def remove_unimportant_overloads(l_overloads):
@@ -85,10 +85,10 @@ class FlexibilityNeed:
             if i != num_overloads - 1:  # cannot find recovery-time for last event
                 dt_recovery_time = l_overloads[i + 1].dt_start - l_overloads[i].dt_end
                 l_recovery_times.append(dt_recovery_time)
-        l_recovery_times.append(None)   # Last overload-event has undefined recovery-time
+        l_recovery_times.append(undef_timedelta())   # Last overload-event has undefined recovery-time
         self.l_recovery_times = l_recovery_times
 
-        self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times[:-1]]) # dubius, recheck
+        self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times])
         self.fl_avg_spike = np.average([o.fl_spike for o in l_overloads])
 
     def extract_arrays(self):
@@ -100,7 +100,7 @@ class FlexibilityNeed:
         arrs["duration"] = np.array([o.duration_h for o in l_overloads])
         arrs["season"] = np.array([datetime_to_season(o.dt_start) for o in l_overloads])
         arrs["month"] = np.array([o.dt_start.month for o in l_overloads])
-        arrs["recovery"] = np.array([duration_to_hours(t) if t else None for t in self.l_recovery_times])
+        arrs["recovery"] = np.array([duration_to_hours(t) for t in self.l_recovery_times])
 
         return arrs
 
@@ -145,7 +145,7 @@ def plot_flexibility_histograms(flex_need):
     axs[1, 0].set_ylabel("Counts")
     axs[1, 0].set_title("Overload-duration")
     
-    axs[1, 1].hist(arrs["recovery"][:-1], bins='auto')
+    axs[1, 1].hist(arrs["recovery"], bins='auto')
     axs[1, 1].set_xlabel("Recovery time [h]")
     axs[1, 1].set_ylabel("Counts")
     axs[1, 1].set_title("Recovery time between events")
@@ -155,31 +155,23 @@ def plot_flexibility_histograms(flex_need):
     plt.show()
 
 def plot_flexibility_clustering(flex_need):
-    #arrs = flex_need.extract_arrays()  # TODO:
-    
-    l_overloads = flex_need.l_overloads
-    arr_spikes = np.array([o.fl_spike for o in l_overloads])
-    arr_energy = np.array([o.fl_MWh for o in l_overloads])
-    arr_duration_h = np.array([o.duration_h for o in l_overloads])
-    arr_season = np.array([datetime_to_season(o.dt_start) for o in l_overloads])
-    arr_month = np.array([o.dt_start.month for o in l_overloads])
-    arr_recovery_time_h = np.array([duration_to_hours(t) if t else None for t in flex_need.l_recovery_times])
+    arrs = flex_need.extract_arrays()
 
     fig,axs = plt.subplots(2,2)
 
-    axs[0, 0].scatter(arr_duration_h, arr_spikes)
+    axs[0, 0].scatter(arrs["duration"], arrs["spike"])
     axs[0, 0].set_xlabel("Duration [h]")
     axs[0, 0].set_ylabel("Spike [kW]")
 
-    axs[0, 1].scatter(arr_season, arr_spikes)
+    axs[0, 1].scatter(arrs["season"], arrs["spike"])
     axs[0, 1].set_xlabel("Season (1=winter)")
     axs[0, 1].set_ylabel("Spike [kW]")
 
-    axs[1, 0].scatter(arr_season, arr_recovery_time_h)
+    axs[1, 0].scatter(arrs["season"], arrs["recovery"])
     axs[1, 0].set_xlabel("Season (1=winter)")
     axs[1, 0].set_ylabel("Recovery time [h]")
 
-    axs[1, 1].scatter(arr_month, arr_spikes)
+    axs[1, 1].scatter(arrs["month"], arrs["spike"])
     axs[1, 1].set_xlabel("Month")
     axs[1, 1].set_ylabel("Spike [kW]")
     

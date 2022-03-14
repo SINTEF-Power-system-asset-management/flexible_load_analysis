@@ -1,4 +1,5 @@
 import numpy as np
+import datetime as dt
 
 # Dictionary utility
 
@@ -180,6 +181,9 @@ def input_until_acceptable_response(list_acceptable_responses):
 
 
 # Datetime
+
+def undef_timedelta():
+    return dt.timedelta(hours=-1)
 
 def duration_to_hours(dt_dur):
     return dt_dur.seconds / 3600 + dt_dur.days * 24
