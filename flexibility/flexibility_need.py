@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from utilities import undef_timedelta, duration_to_hours, datetime_to_season
+import utilities as util
 
 
 def remove_unimportant_overloads(l_overloads):
@@ -18,7 +18,7 @@ class OverloadEvent:
         self.dt_start = ts_overload_event[0,0]
         self.dt_end = ts_overload_event[-1,0]
         self.dt_duration = self.dt_end - self.dt_start
-        self.duration_h = duration_to_hours(self.dt_duration)
+        self.duration_h = util.duration_to_hours(self.dt_duration)
 
         # Power-metrics
         self.fl_spike = np.max(ts_overload_event[:,1])
@@ -29,7 +29,7 @@ class OverloadEvent:
             
             # Can be simplified if hour-requirement is assumed
             dt_dur = (ts_overload_event[i, 0] - ts_overload_event[i - 1, 0])
-            fl_dur = duration_to_hours(dt_dur)
+            fl_dur = util.duration_to_hours(dt_dur)
 
             fl_energy += fl_max_overload * fl_dur
             fl_rms_load += ts_overload_event[i - 1, 1] * fl_dur
@@ -40,7 +40,7 @@ class OverloadEvent:
         self.percentage_overload = 100 * fl_rms_load / fl_power_limit
         
         spike_dur = ts_overload_event[np.argmax(ts_overload_event[:,1]),0] - self.dt_start
-        spike_dur_h = duration_to_hours(spike_dur)
+        spike_dur_h = util.duration_to_hours(spike_dur)
         self.fl_ramping = (self.fl_spike - fl_power_limit)/spike_dur_h if spike_dur_h else -1
 
     def __str__(self):
@@ -62,7 +62,7 @@ class OverloadEvent:
         # Denne infoen kan brukes av høyere nivås modul for å fjerne disse
         # hendelsene.
         # Vil være en kombinasjon av varighet, spike, etc.
-        dur_hours = duration_to_hours(self.dt_duration)
+        dur_hours = util.duration_to_hours(self.dt_duration)
         if dur_hours == 1:
             b_short = True
         else:
@@ -85,10 +85,10 @@ class FlexibilityNeed:
             if i != num_overloads - 1:  # cannot find recovery-time for last event
                 dt_recovery_time = l_overloads[i + 1].dt_start - l_overloads[i].dt_end
                 l_recovery_times.append(dt_recovery_time)
-        l_recovery_times.append(undef_timedelta())   # Last overload-event has undefined recovery-time
+        l_recovery_times.append(util.undef_timedelta())   # Last overload-event has undefined recovery-time
         self.l_recovery_times = l_recovery_times
 
-        self.fl_avg_frequency = np.average([1 / duration_to_hours(t) for t in self.l_recovery_times])
+        self.fl_avg_frequency = np.average([1 / util.duration_to_hours(t) for t in self.l_recovery_times])
         self.fl_avg_spike = np.average([o.fl_spike for o in l_overloads])
 
     def extract_arrays(self):
@@ -98,9 +98,9 @@ class FlexibilityNeed:
         arrs["spike"] = np.array([o.fl_spike for o in l_overloads])
         arrs["energy"] = np.array([o.fl_MWh for o in l_overloads])
         arrs["duration"] = np.array([o.duration_h for o in l_overloads])
-        arrs["season"] = np.array([datetime_to_season(o.dt_start) for o in l_overloads])
+        arrs["season"] = np.array([util.datetime_to_season(o.dt_start) for o in l_overloads])
         arrs["month"] = np.array([o.dt_start.month for o in l_overloads])
-        arrs["recovery"] = np.array([duration_to_hours(t) for t in self.l_recovery_times])
+        arrs["recovery"] = np.array([util.duration_to_hours(t) for t in self.l_recovery_times])
 
         return arrs
 
@@ -128,52 +128,45 @@ def find_overloads(ts_data, fl_power_limit):
 def plot_flexibility_histograms(flex_need):
     arrs = flex_need.extract_arrays()
 
-    fig,axs = plt.subplots(2,2, sharey=True)
+    l_metrics = [metric for metric in arrs]
+    num_sides = int(np.ceil(np.sqrt(len(l_metrics))))
 
-    axs[0, 0].hist(arrs["spike"], bins='auto')
-    axs[0, 0].set_xlabel("Load [kW]")
-    axs[0, 0].set_ylabel("Counts")
-    axs[0, 0].set_title("Overload-spikes")
+    fix,axs = plt.subplots(num_sides,num_sides,sharey=True,constrained_layout=True)
 
-    axs[0, 1].hist(arrs["energy"], bins='auto')
-    axs[0, 1].set_xlabel("Energy over limit [kWh]")
-    axs[0, 1].set_ylabel("Counts")
-    axs[0, 1].set_title("Overload-energy")
-    
-    axs[1, 0].hist(arrs["duration"], bins='auto')
-    axs[1, 0].set_xlabel("Duration [h]")
-    axs[1, 0].set_ylabel("Counts")
-    axs[1, 0].set_title("Overload-duration")
-    
-    axs[1, 1].hist(arrs["recovery"], bins='auto')
-    axs[1, 1].set_xlabel("Recovery time [h]")
-    axs[1, 1].set_ylabel("Counts")
-    axs[1, 1].set_title("Recovery time between events")
-
-    plt.tight_layout()
+    stop = False
+    for i in range(num_sides):
+        for j in range(num_sides):
+            index = i * num_sides + j
+            if index >= len(l_metrics): 
+                stop = True
+                break
+            metric = l_metrics[index]
+            axs[i, j].hist(arrs[metric], bins='auto')
+            axs[i, j].set_xlabel(metric)
+            axs[i, j].set_ylabel("Counts")
 
     plt.show()
 
 def plot_flexibility_clustering(flex_need):
     arrs = flex_need.extract_arrays()
 
-    fig,axs = plt.subplots(2,2)
+    l_metric_combos = util.all_unordered_pairs([metric for metric in arrs])
+    num_sides = int(np.ceil(np.sqrt(len(l_metric_combos))))
 
-    axs[0, 0].scatter(arrs["duration"], arrs["spike"])
-    axs[0, 0].set_xlabel("Duration [h]")
-    axs[0, 0].set_ylabel("Spike [kW]")
+    fix,axs = plt.subplots(num_sides,num_sides,constrained_layout=True)
 
-    axs[0, 1].scatter(arrs["season"], arrs["spike"])
-    axs[0, 1].set_xlabel("Season (1=winter)")
-    axs[0, 1].set_ylabel("Spike [kW]")
+    stop = False
+    for i in range(num_sides):
+        for j in range(num_sides):
+            index = i * num_sides + j
+            if index >= len(l_metric_combos): 
+                stop = True
+                break
+            (first, last) = l_metric_combos[index]
+            axs[i, j].scatter(arrs[first], arrs[last])
+            axs[i, j].set_xlabel(first)
+            axs[i, j].set_ylabel(last)
 
-    axs[1, 0].scatter(arrs["season"], arrs["recovery"])
-    axs[1, 0].set_xlabel("Season (1=winter)")
-    axs[1, 0].set_ylabel("Recovery time [h]")
-
-    axs[1, 1].scatter(arrs["month"], arrs["spike"])
-    axs[1, 1].set_xlabel("Month")
-    axs[1, 1].set_ylabel("Spike [kW]")
-    
-    plt.tight_layout()
+        if stop: break
+            
     plt.show()

@@ -197,3 +197,17 @@ def datetime_to_season(dt):
     month = dt.month
     season = month%12 // 3 + 1 
     return season
+
+
+# Other
+
+def all_unordered_pairs(lst):
+    """
+    Notes:
+    Warning! Destructive on lst
+    """
+    pairs = []
+    while lst:
+        first = lst.pop()
+        for second in lst: pairs.append((first, second))
+    return pairs
