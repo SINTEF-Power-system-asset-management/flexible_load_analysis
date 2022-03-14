@@ -21,7 +21,7 @@ class OverloadEvent:
         self.duration_h = util.duration_to_hours(self.dt_duration)
 
         # Power-metrics
-        self.fl_spike = np.max(ts_overload_event[:,1])
+        self.fl_spike = np.max(ts_overload_event[:,1]) - fl_power_limit
         fl_energy = 0
         fl_rms_load = 0
         for i in range(1, len(ts_overload_event)):  # Max Riemann-sum
@@ -41,7 +41,7 @@ class OverloadEvent:
         
         spike_dur = ts_overload_event[np.argmax(ts_overload_event[:,1]),0] - self.dt_start
         spike_dur_h = util.duration_to_hours(spike_dur)
-        self.fl_ramping = (self.fl_spike - fl_power_limit)/spike_dur_h if spike_dur_h else -1
+        self.fl_ramping = (np.max(ts_overload_event[:,1]) - fl_power_limit)/spike_dur_h if spike_dur_h else -1
 
     def __str__(self):
         return "Overload Event with properties:\n"                                  + \
@@ -49,7 +49,7 @@ class OverloadEvent:
             "End                :     " + str(self.dt_end)              + "   \n"      + \
             "Duration           :     " + str(self.dt_duration)         + "   \n"      + \
             "------------\n"                                                        + \
-            "Spike              :     " + str(self.fl_spike)            + "   kW\n"      + \
+            "Spike over limit   :     " + str(self.fl_spike)            + "   kW\n"      + \
             "RMS load           :     " + str(self.fl_rms_load)         + "   kW\n"      + \
             "Energy over limit  :     " + str(self.fl_MWh)              + "   kWh\n"      + \
             "% Overload         :     " + str(self.percentage_overload) + "   %\n"  + \
