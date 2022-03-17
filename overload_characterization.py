@@ -10,6 +10,7 @@ import copy
 import numpy as np
 import network
 import matplotlib.pyplot as plt
+import utilities as util
 
 
 def add_random_loads_flex_analysis(loads, network, agg_index, num_iterations, 
@@ -44,33 +45,86 @@ def add_random_loads_flex_analysis(loads, network, agg_index, num_iterations,
                 if plot_clustering: plotting.plot_flexibility_clustering(flex_need)
 
 
-def increase_single_load_flex_analysis(loads, network, customer_index, aggregation_index, fl_increase):
-    str_agg_id = network["branch"]["F_BUS"][aggregation_index]
+
+def increase_single_load_flex_analysis(loads, network, customer_index, aggregation_index, fl_increase, do_plotting=True):
+    # Load to aggregate at
+    str_agg_id = network["branch"]["T_BUS"][aggregation_index]
+    # Customer to increase
+    str_customer_id = network["bus"]["BUS_I"][customer_index]
+    # Line-limit at aggregation point
     fl_limit_kW = float(network["branch"]["RATE_A"][aggregation_index])*1000
 
-    ts_agg = load_aggregation.aggregate_load_of_node(
+    ts_agg_before = load_aggregation.aggregate_load_of_node(
                 str_agg_id, loads, network)
-    plotting.plot_timeseries([ts_agg], [
-                                     "Aggregated"], f"Aggregated load and limit before increasing load", fl_limit=fl_limit_kW)
 
-    str_customer_id = network["bus"]["BUS_I"][customer_index]
+    # Increasing load of customer to induce overloads
     ts_customer = loads[str_customer_id]
     ts_customer = ts.normalize_timeseries(ts_customer, (fl_increase + np.max(ts_customer[:,1])/2))
     ts_customer = ts.offset_timeseries(ts_customer, fl_increase/2)
     loads[str_customer_id] = ts_customer
 
-    ts_agg = load_aggregation.aggregate_load_of_node(
+    ts_agg_after = load_aggregation.aggregate_load_of_node(
                 str_agg_id, loads, network)
+    if do_plotting:
+        plotting.plot_timeseries([ts_agg_before],
+                                ["Aggregated"],
+                                f"Aggregated load and limit before increasing load",
+                                fl_limit=fl_limit_kW)
+        plotting.plot_timeseries([ts_agg_after],
+                                ["Aggregated"],
+                                f"Aggregated load and limit after increasing load",
+                                fl_limit=fl_limit_kW)
 
-    plotting.plot_timeseries([ts_agg], [
-                                     "Aggregated"], f"Aggregated load and limit after increasing load", fl_limit=fl_limit_kW)
+    list_overloads = flexibility_need.find_overloads(ts_agg_after, fl_limit_kW)
+    if list_overloads:
+        flex_need = flexibility_need.FlexibilityNeed(list_overloads)
+        if do_plotting:
+            plotting.plot_flexibility_histograms(flex_need)
+            plotting.plot_flexibility_clustering(flex_need)
 
-    l_overloads = flexibility_need.find_overloads(ts_agg, fl_limit_kW)
-    if l_overloads:
-        flex_need = flexibility_need.FlexibilityNeed(l_overloads)
-        plotting.plot_flexibility_histograms(flex_need)
-        plotting.plot_flexibility_clustering(flex_need)
+    # Fourier-test (unused)
+    """
+    load_over_limit = ts_agg_after
+    load_over_limit[:, 1] = np.maximum(load_over_limit[:,1] - fl_limit_kW, np.zeros_like(load_over_limit[:,1])) / fl_limit_kW
+    
+    plotting.plot_timeseries([load_over_limit], [""], [""])
 
+    load_ol_hat = np.fft.rfft(load_over_limit[:, 1])
+    plt.plot(np.abs(load_ol_hat)**2)
+    plt.title("Energy spectral density")
+    plt.show()
+
+    data = load_over_limit[:,1]
+    ps = np.abs(np.fft.fft(data))**2
+
+    time_step = 1
+    freqs = np.fft.fftfreq(data.size, time_step)
+    idx = np.argsort(freqs)
+
+    plt.plot(freqs[idx], ps[idx])
+    plt.show()
+    """
+    
+    return flex_need
+    
+
+def overload_temperature_correlation(ts_temperature_historical, flex_need):
+    temps = {}
+    for temp_measurement in ts_temperature_historical:
+        temps[temp_measurement[0].date()] = temp_measurement[1]
+    
+    temps = np.array([temps[o.dt_start.date()] for o in flex_need.l_overloads])
+
+    plotting.plot_timeseries([ts_temperature_historical], [""], [""], str_ylabel="Temperature [C]")
+
+    arr_spikes = np.array([o.fl_spike for o in flex_need.l_overloads])
+
+    plt.scatter(temps, arr_spikes)
+    plt.xlabel("Temperature [deg C]")
+    plt.ylabel("Spike [kW]")
+    plt.show()
+
+    print(np.corrcoef(temps, arr_spikes))
 
 
 
@@ -125,8 +179,11 @@ if __name__ == "__main__":
     dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)
     
     # add_random_loads_flex_analysis(dict_loads_ts, dict_network, 1, 50, plot_aggregate=True, plot_histogram=True)
-    increase_single_load_flex_analysis(dict_loads_ts, dict_network, 18, 1, 1200)
-    
+    # Pr. now, choice to increase load nr. 18 is chosen arbritarily
+    flex_need = increase_single_load_flex_analysis(dict_loads_ts, dict_network, 18, 1, 1200)
+
+    # Temperature-correlation
+    ts_temperature_historical = util.get_first_value_of_dictionary(dict_data["temperature_measurements"])
+    overload_temperature_correlation(ts_temperature_historical, flex_need)
 
 
-    
