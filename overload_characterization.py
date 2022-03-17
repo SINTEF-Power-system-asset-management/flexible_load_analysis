@@ -40,8 +40,8 @@ def add_random_loads_flex_analysis(loads, network, agg_index, num_iterations,
             #l_overloads = flexibility_need.remove_unimportant_overloads(l_overloads)
             if l_overloads:
                 flex_need = flexibility_need.FlexibilityNeed(l_overloads)
-                if plot_histogram: flexibility_need.plot_flexibility_histograms(flex_need)
-                if plot_clustering: flexibility_need.plot_flexibility_clustering(flex_need)
+                if plot_histogram: plotting.plot_flexibility_histograms(flex_need)
+                if plot_clustering: plotting.plot_flexibility_clustering(flex_need)
 
 
 def increase_single_load_flex_analysis(loads, network, customer_index, aggregation_index, fl_increase):
@@ -55,7 +55,8 @@ def increase_single_load_flex_analysis(loads, network, customer_index, aggregati
 
     str_customer_id = network["bus"]["BUS_I"][customer_index]
     ts_customer = loads[str_customer_id]
-    ts_customer = ts.offset_timeseries(ts_customer, fl_increase)
+    ts_customer = ts.normalize_timeseries(ts_customer, (fl_increase + np.max(ts_customer[:,1])/2))
+    ts_customer = ts.offset_timeseries(ts_customer, fl_increase/2)
     loads[str_customer_id] = ts_customer
 
     ts_agg = load_aggregation.aggregate_load_of_node(
@@ -67,8 +68,8 @@ def increase_single_load_flex_analysis(loads, network, customer_index, aggregati
     l_overloads = flexibility_need.find_overloads(ts_agg, fl_limit_kW)
     if l_overloads:
         flex_need = flexibility_need.FlexibilityNeed(l_overloads)
-        flexibility_need.plot_flexibility_histograms(flex_need)
-        flexibility_need.plot_flexibility_clustering(flex_need)
+        plotting.plot_flexibility_histograms(flex_need)
+        plotting.plot_flexibility_clustering(flex_need)
 
 
 

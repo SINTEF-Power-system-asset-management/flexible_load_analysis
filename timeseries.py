@@ -90,7 +90,7 @@ def scale_timeseries(ts, fl):
 
 
 def normalize_timeseries(ts, new_max=1):
-    old_max = ts[:,1]
+    old_max = np.max(ts[:,1])
     scale = new_max/old_max
     ts = scale_timeseries(ts, scale)
     return ts
