@@ -48,7 +48,7 @@ def add_random_loads_flex_analysis(loads, network, agg_index, num_iterations,
 
 def increase_single_load_flex_analysis(loads, network, customer_index, aggregation_index, fl_increase, do_plotting=True):
     # Load to aggregate at
-    str_agg_id = network["branch"]["T_BUS"][aggregation_index]
+    str_agg_id = network["branch"]["F_BUS"][aggregation_index]
     # Customer to increase
     str_customer_id = network["bus"]["BUS_I"][customer_index]
     # Line-limit at aggregation point
