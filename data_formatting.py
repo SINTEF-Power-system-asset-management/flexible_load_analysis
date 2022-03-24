@@ -127,25 +127,26 @@ def format_data_files(dict_data_unsplit, dict_network, str_path_encoding):
     return
 
 
-# Change these fields when running this script.
-# Delete the directories "example_network_encoded" and
-# "example_load_data_split" before running this script, or else it will do
-# nothing.
-dict_data_unsplit = {
-    "path": "example_data\\example_load_data.txt",
-    "separator": ";",
-    "ID_column": 0
-}
-dict_network = {
-    "path": "example_data\\example_network\\",
-    "separator": ";"
-}
-str_path_encoding = "example_data\\example_encoding.xlsx"
+if __name__=="__main__":
+    # Change these fields when running this script.
+    # Delete the directories "example_network_encoded" and
+    # "example_load_data_split" before running this script, or else it will do
+    # nothing.
+    dict_data_unsplit = {
+        "path": "example_data/example_load_data.txt",
+        "separator": ";",
+        "ID_column": 0
+    }
+    dict_network = {
+        "path": "example_data/example_network/",
+        "separator": ";"
+    }
+    str_path_encoding = "example_data/example_encoding.xlsx"
 
 
-# Do not change this.
-format_data_files(
-    dict_data_unsplit,
-    dict_network,
-    str_path_encoding
-)
+    # Do not change this.
+    format_data_files(
+        dict_data_unsplit,
+        dict_network,
+        str_path_encoding
+    )

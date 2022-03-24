@@ -45,9 +45,9 @@ def add_timeseries(ts_a, ts_b):
     matching timestamps.
 
     """
-    if ts_a == []:
+    if not ts_a.size > 0:
         return ts_b
-    if ts_b == []:
+    if not ts_b.size > 0:
         return ts_a
 
     if len(ts_a) != len(ts_b):

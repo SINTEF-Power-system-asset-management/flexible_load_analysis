@@ -26,7 +26,7 @@ while bool_continue_modification_and_analysis:
     
     dict_loads_ts, dict_network = net_modification.interactively_modify_net(dict_config, dict_loads_ts, dict_network)
 
-    print("Continue modification and analysis (yes)/no?")
-    str_choice = utilities.input_until_expected_type_appears(str)
+    print("Continue modification and analysis?")
+    str_choice = utilities.input_until_acceptable_response(['y','n'])
     if str_choice == 'n':
         bool_continue_modification_and_analysis = False

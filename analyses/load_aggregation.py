@@ -3,6 +3,7 @@
 
 import timeseries as ts
 import network
+import numpy as np
 
 def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
     """Finds timeseries of total load experienced by a node.
@@ -31,12 +32,12 @@ def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
         raise Exception("Error: Node \"" + str_load_ID + "\" missing from network")
     list_children = network.list_children_of_node(str_load_ID, g_network)
 
-    ts_sum = []
-    try:
+    ts_sum = np.empty((0))
+    if str(str_load_ID) in dict_loads_ts:
         ts_sum = dict_loads_ts[str(str_load_ID)]
-    except KeyError:
+    else:
         print("Warning: Load-point", str_load_ID, "is missing timeseries!")
-        ts_sum = []
+        ts_sum = np.empty((0))
     if list_children:
         for str_child in list_children:
             ts_child = aggregate_load_of_node(

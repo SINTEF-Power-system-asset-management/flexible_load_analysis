@@ -35,7 +35,7 @@ def interactively_inspect_loads(dict_loads_ts):
         str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
         load_points.graphically_represent_load_point(dict_loads_ts[str_ID])
 
-        print("Exit inspection?")
+        print("Continue inspection?")
         str_choice = utilities.input_until_acceptable_response(["y", "n"])
         bool_continue_inspecting = (str_choice == "y")
         

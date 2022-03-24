@@ -37,7 +37,7 @@ name = "Stochastic Load Modelling"
     # data_column = int         --      Zero-indexed column the data occupies
 
     [data.load_measurements]
-    path = "example_data\\example_load_data_split\\"
+    path = "example_data/example_load_data_split/"
     date_format = "%H"
     first_date_iso = "2020-01-01"
     last_date_iso = "2020-12-31"
@@ -50,7 +50,7 @@ name = "Stochastic Load Modelling"
 
 
     [data.temperature_measurements]
-    path = "example_data\\example_temp_data.xlsx"
+    path = "example_data/example_temperature_data/" # example_temp_data.xlsx
     date_format = "%d.%m.%Y"
     first_date_iso = "2000-01-01"
 

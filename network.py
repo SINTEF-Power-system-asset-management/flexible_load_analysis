@@ -205,3 +205,14 @@ def input_until_node_in_network_appears(dict_network):
         else:
             print("Could not find", str_ID, "in network, try again!")
     return str_ID
+
+
+def customers_below(node, loads, g_network):
+    if node in loads:
+        return [node]
+    else:
+        res = []
+        children = list_children_of_node(node, g_network)
+        for id in children:
+            res += customers_below(id, loads, g_network)
+        return res
