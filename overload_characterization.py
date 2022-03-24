@@ -81,30 +81,6 @@ def increase_single_load_flex_analysis(loads, network, customer_index, aggregati
         if do_plotting:
             plotting.plot_flexibility_histograms(flex_need)
             plotting.plot_flexibility_clustering(flex_need)
-
-    # Fourier-test (unused)
-    """
-    load_over_limit = ts_agg_after
-    load_over_limit[:, 1] = np.maximum(load_over_limit[:,1] - fl_limit_kW, np.zeros_like(load_over_limit[:,1])) / fl_limit_kW
-    
-    plotting.plot_timeseries([load_over_limit], [""], [""])
-
-    load_ol_hat = np.fft.rfft(load_over_limit[:, 1])
-    plt.plot(np.abs(load_ol_hat)**2)
-    plt.title("Energy spectral density")
-    plt.show()
-
-    data = load_over_limit[:,1]
-    ps = np.abs(np.fft.fft(data))**2
-
-    time_step = 1
-    freqs = np.fft.fftfreq(data.size, time_step)
-    idx = np.argsort(freqs)
-
-    plt.plot(freqs[idx], ps[idx])
-    plt.show()
-    """
-    
     return flex_need
     
 
@@ -142,20 +118,10 @@ def find_branch_closest_to_overload(loads, network):
             maxs.append((i, rate_A - fl_max, fbus, rate_A))
     return sorted(maxs,key=lambda x: x[1], reverse=False)[0]
 
-def customers_below(node, loads, g_network):
-    if node in loads:
-        return [node]
-    else:
-        res = []
-        children = network.list_children_of_node(node, g_network)
-        for id in children:
-            res += customers_below(id, loads, g_network)
-        return res
-
 
 """ Fungerer ikke
 def plot_stacked_area_of_children(node, loads, g_network):
-    children = customers_below(node, loads, g_network)
+    children = network.customers_below(node, loads, g_network)
     children_loads = []
     for id in children:
         if id in loads:
@@ -178,12 +144,10 @@ if __name__ == "__main__":
     # Data-structure
     dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)
     
-    # add_random_loads_flex_analysis(dict_loads_ts, dict_network, 1, 50, plot_aggregate=True, plot_histogram=True)
+    add_random_loads_flex_analysis(dict_loads_ts, dict_network, 1, 50, plot_aggregate=True, plot_histogram=True)
     # Pr. now, choice to increase load nr. 18 is chosen arbritarily
     flex_need = increase_single_load_flex_analysis(dict_loads_ts, dict_network, 18, 1, 1200)
 
     # Temperature-correlation
     ts_temperature_historical = util.get_first_value_of_dictionary(dict_data["temperature_measurements"])
     overload_temperature_correlation(ts_temperature_historical, flex_need)
-
-

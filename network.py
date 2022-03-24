@@ -31,7 +31,7 @@ def plot_network(dict_network):
     return
 
 
-def convert_network_dictionary_to_graph(dict_network): # NetworkX
+def convert_network_dictionary_to_graph(dict_network, directed=False): # NetworkX
     """Function for converting MATPOWER-formatted array to NetworkX-graph
 
     Parameters
@@ -45,7 +45,10 @@ def convert_network_dictionary_to_graph(dict_network): # NetworkX
         Graph representation of network.
     """
     print("Converting MATPOWER-network to NetworkX...")
-    nx_network = nx.DiGraph()
+    if directed:
+        nx_network = nx.DiGraph()
+    else:
+        nx_network = nx.Graph()
     nx_network.add_nodes_from(dict_network["bus"]["BUS_I"])
     nx_network.add_edges_from(
         np.stack((
@@ -142,8 +145,8 @@ def add_node(dict_network, n_node, n_parent_node):
     dict_branch['RATE_A'] = np.append(dict_branch['RATE_A'], '1000')
     dict_branch['RATE_B'] = np.append(dict_branch['RATE_B'], '1000')
     dict_branch['RATE_C'] = np.append(dict_branch['RATE_C'], '1000')
-    # dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')
-    # dict_branch['angle'] = np.append(dict_branch['angle'], '0')
+    dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')
+    dict_branch['angle'] = np.append(dict_branch['angle'], '0')
     dict_branch['BR_STATUS'] = np.append(dict_branch['BR_STATUS'], '1')
     return dict_network
 
@@ -158,18 +161,18 @@ def remove_node(dict_network, n_node):
 
     # Remove node name and all attributes from the bus dictionary
     dict_bus['BUS_I'] = np.delete(dict_bus['BUS_I'],node_index[0][0])
-    dict_bus['type'] = np.delete(dict_bus['type'],node_index[0][0])
-    dict_bus['Pd'] = np.delete(dict_bus['Pd'],node_index[0][0])
-    dict_bus['Qd'] = np.delete(dict_bus['Qd'],node_index[0][0])
-    dict_bus['Gs'] = np.delete(dict_bus['Gs'],node_index[0][0])
-    dict_bus['Bs'] = np.delete(dict_bus['Bs'],node_index[0][0])
-    dict_bus['area'] = np.delete(dict_bus['area'],node_index[0][0])
-    dict_bus['Vm'] = np.delete(dict_bus['Vm'],node_index[0][0])
-    dict_bus['Va'] = np.delete(dict_bus['Va'],node_index[0][0])
-    dict_bus['baseKV'] = np.delete(dict_bus['baseKV'],node_index[0][0])
-    dict_bus['zone'] = np.delete(dict_bus['zone'],node_index[0][0])
-    dict_bus['Vmax'] = np.delete(dict_bus['Vmax'],node_index[0][0])
-    dict_bus['Vmin'] = np.delete(dict_bus['Vmin'],node_index[0][0])
+    dict_bus['BUS_TYPE'] = np.delete(dict_bus['BUS_TYPE'],node_index[0][0])
+    dict_bus['PD'] = np.delete(dict_bus['PD'],node_index[0][0])
+    dict_bus['QD'] = np.delete(dict_bus['QD'],node_index[0][0])
+    dict_bus['GS'] = np.delete(dict_bus['GS'],node_index[0][0])
+    dict_bus['BS'] = np.delete(dict_bus['BS'],node_index[0][0])
+    dict_bus['BUS_AREA'] = np.delete(dict_bus['BUS_AREA'],node_index[0][0])
+    dict_bus['VM'] = np.delete(dict_bus['VM'],node_index[0][0])
+    dict_bus['VA'] = np.delete(dict_bus['VA'],node_index[0][0])
+    dict_bus['BASE_KV'] = np.delete(dict_bus['BASE_KV'],node_index[0][0])
+    dict_bus['ZONE'] = np.delete(dict_bus['ZONE'],node_index[0][0])
+    dict_bus['VMAX'] = np.delete(dict_bus['VMAX'],node_index[0][0])
+    dict_bus['VMIN'] = np.delete(dict_bus['VMIN'],node_index[0][0])
 
 
     dict_branch = dict_network['branch']
@@ -181,17 +184,17 @@ def remove_node(dict_network, n_node):
 
     # Delete all branches that are connected to the node
     for i in branch_index:
-        dict_branch['FBUS'] = np.delete(dict_branch['FBUS'], i)
-        dict_branch['TBUS'] = np.delete(dict_branch['TBUS'], i)
-        dict_branch['r'] = np.delete(dict_branch['r'], i)
-        dict_branch['x'] = np.delete(dict_branch['x'], i)
-        dict_branch['b'] = np.delete(dict_branch['b'], i)
-        dict_branch['rateA'] = np.delete(dict_branch['rateA'], i)
-        dict_branch['rateB'] = np.delete(dict_branch['rateB'], i)
-        dict_branch['rateC'] = np.delete(dict_branch['rateC'], i)
+        dict_branch['F_BUS'] = np.delete(dict_branch['F_BUS'], i)
+        dict_branch['T_BUS'] = np.delete(dict_branch['T_BUS'], i)
+        dict_branch['BR_R'] = np.delete(dict_branch['BR_R'], i)
+        dict_branch['BR_X'] = np.delete(dict_branch['BR_X'], i)
+        dict_branch['BR_B'] = np.delete(dict_branch['BR_B'], i)
+        dict_branch['RATE_A'] = np.delete(dict_branch['RATE_A'], i)
+        dict_branch['RATE_B'] = np.delete(dict_branch['RATE_B'], i)
+        dict_branch['RATE_C'] = np.delete(dict_branch['RATE_C'], i)
         dict_branch['ratio'] = np.delete(dict_branch['ratio'], i)
         dict_branch['angle'] = np.delete(dict_branch['angle'], i)
-        dict_branch['status'] = np.delete(dict_branch['status'], i)
+        dict_branch['BR_STATUS'] = np.delete(dict_branch['BR_STATUS'], i)
     return dict_network
 
 

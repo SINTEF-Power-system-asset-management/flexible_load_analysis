@@ -20,5 +20,5 @@ dict_config, dict_data, dict_network = init.initialize_config_and_data(
 
 # Network datastructures
 dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
-g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
+#g_network = network.convert_network_dictionary_to_graph(dict_network)   # Graph
 
