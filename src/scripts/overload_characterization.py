@@ -1,15 +1,15 @@
-import analyses
-import init
-import load_points
-from flexibility import flexibility_need
-from analyses import load_aggregation
-import net_modification
-import timeseries as ts
-import plotting
 import copy
+
 import numpy as np
-import network
 import matplotlib.pyplot as plt
+
+import analysis.methods.load_aggregation as load_aggregation
+import objects.net_modification as net_modification
+import objects.timeseries as ts
+import objects.load_points as load_points
+import flexibility.flexibility_need as flexibility_need
+import init.data_loading as init
+import plotting
 import utilities as util
 
 
