@@ -78,14 +78,19 @@ def add_timeseries(ts_a, ts_b):
 def offset_timeseries(ts, fl):
     """Offsets all datapoints in a timeseries by some number.
     """
-    for i in range(len(ts)):
-        ts[i, 1] += fl
+    ts[:, 1] += fl
     return ts
 
 
 def scale_timeseries(ts, fl):
     """Scales all datapoints in a timeseries by some number.
     """
-    for i in range(len(ts)):
-        ts[i, 1] *= fl
+    ts[:,1] *= fl
+    return ts
+
+
+def normalize_timeseries(ts, new_max=1):
+    old_max = np.max(ts[:,1])
+    scale = new_max/old_max
+    ts = scale_timeseries(ts, scale)
     return ts

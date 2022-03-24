@@ -1,4 +1,5 @@
 import numpy as np
+import datetime as dt
 
 # Dictionary utility
 
@@ -179,3 +180,34 @@ def input_until_acceptable_response(list_acceptable_responses):
     return str_response
 
 
+# Datetime
+
+def undef_timedelta():
+    return dt.timedelta(hours=-1)
+
+def duration_to_hours(dt_dur):
+    return dt_dur.seconds / 3600 + dt_dur.days * 24
+
+def datetime_to_season(dt):
+    # 1 = winter
+    # 2 = spring
+    # 3 = summer
+    # 4 = autumn
+
+    month = dt.month
+    season = month%12 // 3 + 1 
+    return season
+
+
+# Other
+
+def all_unordered_pairs(lst):
+    """
+    Notes:
+    Warning! Destructive on lst
+    """
+    pairs = []
+    while lst:
+        first = lst.pop()
+        for second in lst: pairs.append((first, second))
+    return pairs

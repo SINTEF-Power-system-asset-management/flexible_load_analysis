@@ -28,7 +28,7 @@ def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):
 
     """
     if not network.node_in_network(str_load_ID, g_network):
-        raise Exception("Error: Node missing from network")
+        raise Exception("Error: Node \"" + str_load_ID + "\" missing from network")
     list_children = network.list_children_of_node(str_load_ID, g_network)
 
     ts_sum = []

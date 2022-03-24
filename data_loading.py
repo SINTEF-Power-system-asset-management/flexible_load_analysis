@@ -233,7 +233,12 @@ def load_data_and_create_timeseries(dict_data_config):
         for str_file_path in os.listdir(str_data_path):
             list_paths_to_be_loaded.append(str_data_path + str_file_path)
     else:
+        raise(Exception("Directory \"" + str_data_path +"\" does not exist!"))
         list_paths_to_be_loaded.append(str_data_path)
+        # This yanky if-check was originally intended in the case you want
+        # to load a singular data-file, but functionality has been changed to
+        # require all data-files to be stored in a directory.
+        # This change means temperature-data now must be stored in a directory.
 
     dict_loaded_ts = {}
     for str_path in list_paths_to_be_loaded:
