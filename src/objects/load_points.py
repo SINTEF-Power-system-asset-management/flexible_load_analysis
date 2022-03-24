@@ -12,8 +12,8 @@ The unit of the load is implicitly kW (KiloWatt), but changing this will not aff
 
 """
 import datetime as dt
-import preprocessing
-import modelling
+import init.preprocessing as preprocessing
+import modelling.modelling as modelling
 import utilities
 import plotting
 

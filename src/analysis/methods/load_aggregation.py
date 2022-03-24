@@ -1,8 +1,8 @@
 """Aggregation of all loads "downstream" to some other node.
 """
 
-import timeseries as ts
-import network
+import objects.timeseries as ts
+import objects.network as network
 import numpy as np
 
 def aggregate_load_of_node(str_load_ID, dict_loads_ts, g_network):

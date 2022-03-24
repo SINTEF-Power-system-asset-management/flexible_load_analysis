@@ -1,7 +1,7 @@
-import network
-import load_points
-import timeseries as ts
-import modelling
+import objects.network as network
+import objects.load_points as load_points
+import objects.timeseries as ts
+import modelling.modelling as modelling
 import numpy as np
 import copy
 import utilities
