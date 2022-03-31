@@ -17,7 +17,7 @@ perform some other analysis on results later.
 import objects.network as network
 import plotting
 import utilities
-from analysis.methods import *
+from analysis.methods import max_load, load_aggregation, load_duration_curve
 
 
 # Interactive analysis
@@ -86,6 +86,40 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
     return dict_results
 
 
+def interactive_load_duration_curve(dict_analysis_config, dict_results, dict_loads_ts):
+    """Interactively create load-duration-curves
+    """
+    print("Beginning interactive creation of load-duration")
+
+    # 1. Choose data-source and parameters interactively.
+    print("Choose timeseries to create load-duration curve of:")
+    str_ID, ts_load = utilities.interactively_traverse_nested_dictionary(
+        {
+            "customers": dict_loads_ts,
+            "results": dict_results
+        }
+    )
+    print("Input limit of relevant line load is connected to (input 0 to skip):")
+    inp = utilities.input_until_expected_type_appears(float)
+    fl_limit = inp if inp else None
+
+    # 2. Perform analysis.
+    ldc = load_duration_curve.create_load_duration_curve(ts_load)
+
+    # 3. Present results graphically or numerically.
+    plotting.plot_load_duration_curve(ldc, fl_limit=fl_limit)
+
+    # 4. Interactively store results to file and/or sub-results-dictionary for ability to
+    # perform some other analysis on results later.
+    dict_results = utilities.interactively_insert_into_dictionary(
+        dict_results, ldc, "load duration curve")
+    str_results_directory_path = dict_analysis_config["result_storage_path"]
+    utilities.interactively_write_to_file_in_directory(
+        str_results_directory_path, ldc)
+
+    return dict_results
+
+
 def interactively_inspect_previous_results(dict_results):
     """Interactively inspect results
     """
@@ -118,6 +152,7 @@ def interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_ne
         print("1: Max load calculation")
         print("2: Load-aggregation")
         print("3: Power-flow-analysis (not yet implemented)")
+        print("4: Load-duration curve")
         print("8: Inspect previous results")
         print("9: Exit analysis")
         print(67 * "-")
@@ -132,6 +167,10 @@ def interactively_choose_analysis(dict_config, dict_results, dict_loads_ts, g_ne
                 dict_analysis_config, dict_results, dict_loads_ts, g_network)
         elif str_choice == '3':
             print("Not yet implemented")
+        elif str_choice == '4':
+            dict_results = interactive_load_duration_curve(
+                dict_analysis_config, dict_results, dict_loads_ts
+            )
         elif str_choice == '8':
             interactively_inspect_previous_results(dict_results)
         elif str_choice == '9':

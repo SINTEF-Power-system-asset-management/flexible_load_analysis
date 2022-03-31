@@ -348,3 +348,23 @@ def plot_flexibility_clustering(flex_need):
     """
     
     plt.show()
+
+
+
+def plot_load_duration_curve(ldc, fl_limit=None):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    arr_time = ldc[:, 0]
+    arr_data = ldc[:, 1]
+    ax.plot(arr_time, arr_data, label="Load duration curve")
+    if fl_limit:
+        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Limit")
+
+    ax.set_xlabel("Number")
+    ax.set_ylabel("Load [MW]")
+    ax.set_title("Load duration curve")
+    ax.grid(True)
+    ax.legend(loc='upper right')
+
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.show()
