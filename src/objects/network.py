@@ -145,8 +145,8 @@ def add_node(dict_network, n_node, n_parent_node):
     dict_branch['RATE_A'] = np.append(dict_branch['RATE_A'], '1000')
     dict_branch['RATE_B'] = np.append(dict_branch['RATE_B'], '1000')
     dict_branch['RATE_C'] = np.append(dict_branch['RATE_C'], '1000')
-    dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')
-    dict_branch['angle'] = np.append(dict_branch['angle'], '0')
+    #dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')    # TODO!
+    #dict_branch['angle'] = np.append(dict_branch['angle'], '0')
     dict_branch['BR_STATUS'] = np.append(dict_branch['BR_STATUS'], '1')
     return dict_network
 
@@ -192,8 +192,8 @@ def remove_node(dict_network, n_node):
         dict_branch['RATE_A'] = np.delete(dict_branch['RATE_A'], i)
         dict_branch['RATE_B'] = np.delete(dict_branch['RATE_B'], i)
         dict_branch['RATE_C'] = np.delete(dict_branch['RATE_C'], i)
-        dict_branch['ratio'] = np.delete(dict_branch['ratio'], i)
-        dict_branch['angle'] = np.delete(dict_branch['angle'], i)
+        #dict_branch['ratio'] = np.delete(dict_branch['ratio'], i)
+        #dict_branch['angle'] = np.delete(dict_branch['angle'], i)
         dict_branch['BR_STATUS'] = np.delete(dict_branch['BR_STATUS'], i)
     return dict_network
 
