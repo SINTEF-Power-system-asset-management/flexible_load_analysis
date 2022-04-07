@@ -145,9 +145,20 @@ def add_node(dict_network, n_node, n_parent_node):
     dict_branch['RATE_A'] = np.append(dict_branch['RATE_A'], '1000')
     dict_branch['RATE_B'] = np.append(dict_branch['RATE_B'], '1000')
     dict_branch['RATE_C'] = np.append(dict_branch['RATE_C'], '1000')
-    #dict_branch['ratio'] = np.append(dict_branch['ratio'], '0')    # TODO!
-    #dict_branch['angle'] = np.append(dict_branch['angle'], '0')
+    dict_branch['TAP'] = np.append(dict_branch['TAP'], '1')
+    dict_branch['SHIFT'] = np.append(dict_branch['SHIFT'], '0')
     dict_branch['BR_STATUS'] = np.append(dict_branch['BR_STATUS'], '1')
+    dict_branch['ANGMIN'] = np.append(dict_branch['ANGMIN'], '0')
+    dict_branch['ANGMAX'] = np.append(dict_branch['ANGMAX'], '0')
+    dict_branch['PF'] = np.append(dict_branch['PF'], '0')
+    dict_branch['QF'] = np.append(dict_branch['QF'], '0')
+    dict_branch['PT'] = np.append(dict_branch['PT'], '0')
+    dict_branch['QT'] = np.append(dict_branch['QT'], '0')
+    dict_branch['MU_SF'] = np.append(dict_branch['MU_SF'], '0')
+    dict_branch['MU_ST'] = np.append(dict_branch['MU_ST'], '0')
+    dict_branch['MU_ANGMIN'] = np.append(dict_branch['MU_ANGMIN'], '0')
+    dict_branch['MU_ANGMAX'] = np.append(dict_branch['MU_ANGMAX'], '0')
+    
     return dict_network
 
 
@@ -192,9 +203,19 @@ def remove_node(dict_network, n_node):
         dict_branch['RATE_A'] = np.delete(dict_branch['RATE_A'], i)
         dict_branch['RATE_B'] = np.delete(dict_branch['RATE_B'], i)
         dict_branch['RATE_C'] = np.delete(dict_branch['RATE_C'], i)
-        #dict_branch['ratio'] = np.delete(dict_branch['ratio'], i)
-        #dict_branch['angle'] = np.delete(dict_branch['angle'], i)
+        dict_branch['TAP'] = np.delete(dict_branch['TAP'], i)
+        dict_branch['SHIFT'] = np.delete(dict_branch['SHIFT'], i)
         dict_branch['BR_STATUS'] = np.delete(dict_branch['BR_STATUS'], i)
+        dict_branch['ANGMIN'] = np.delete(dict_branch['ANGMIN'], i)
+        dict_branch['ANGMAX'] = np.delete(dict_branch['ANGMAX'], i)
+        dict_branch['PF'] = np.delete(dict_branch['PF'], i)
+        dict_branch['QF'] = np.delete(dict_branch['QF'], i)
+        dict_branch['PT'] = np.delete(dict_branch['PT'], i)
+        dict_branch['QT'] = np.delete(dict_branch['QT'], i)
+        dict_branch['MU_SF'] = np.delete(dict_branch['MU_SF'], i)
+        dict_branch['MU_ST'] = np.delete(dict_branch['MU_ST'], i)
+        dict_branch['MU_ANGMIN'] = np.delete(dict_branch['MU_ANGMIN'], i)
+        dict_branch['MU_ANGMAX'] = np.delete(dict_branch['MU_ANGMAX'], i)
     return dict_network
 
 
