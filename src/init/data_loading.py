@@ -1,11 +1,13 @@
-import os.path
+import os
 import datetime as dt
 import pandas as pd
 import numpy as np
 import toml
+from objects import timeseries as ts
+from utilities import print_dictionary_recursive
 
 
-def load_config():
+def load_config(str_config_path):
     """Loads config.toml.
 
     Returns
@@ -17,7 +19,7 @@ def load_config():
     ----------
     Requires toml as dependency.
     """
-    dict_config = toml.load("config.toml")
+    dict_config = toml.load(str_config_path)
     return dict_config
 
 
@@ -119,8 +121,7 @@ def load_time_and_data_from_txt(
     arr_contents = np.array(arr_contents)
     if not vertical_data:
         arr_contents = np.transpose(arr_contents)
-    # Hard-coded last datapoint for testing purposes
-    arr_contents = arr_contents[1:19753, :]
+    arr_contents = arr_contents[1:,:]
     arr_time = arr_contents[:, int_time_column]
     arr_data = arr_contents[:, int_data_column]
     return arr_time, arr_data
@@ -148,10 +149,9 @@ def convert_general_time_array_to_datetime_array(
     """
     arr_time_dt = [None] * len(arr_time_general)
     for i in range(len(arr_time_general)):
-        if isinstance(arr_time_general[i], (int, np.float64)):
-            if 'H' in list_time_format:
-                arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
-                                  + dt.timedelta(hours=arr_time_general[i]))
+        if 'H' in list_time_format:
+            arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
+                              + dt.timedelta(hours=int(arr_time_general[i])))
         else:
             if isinstance(list_time_format, list):
                 for str_format in list_time_format:
@@ -207,29 +207,6 @@ def convert_general_data_array_to_float_array(arr_data):
     return arr_data_float
 
 
-def create_standard_time_series(arr_time_dt, arr_data):
-    """Returns timeseries on standardized format
-
-    Parameters
-    ----------
-    arr_time_dt : np.array
-        Array of timestamps.
-    arr_data : np.arrary
-        Array of data associated to the timestamps.
-
-    Returns
-    ----------
-    timeseries = np.array([datetime, float])
-        Timeseries-array.
-
-    Notes
-    ----------
-    "Standardized" here means that the timeseries is formatted vertically, 
-    such that array[i] accesses the ith datapoint.
-    """
-    return np.transpose(np.array([arr_time_dt, arr_data]))
-
-
 def load_data_and_create_timeseries(dict_data_config):
     """Loads data based on structured dictionary and creates timeseries.
 
@@ -252,38 +229,139 @@ def load_data_and_create_timeseries(dict_data_config):
     str_data_date_format = dict_data_config["date_format"]
     str_data_first_date_iso = dict_data_config["first_date_iso"]
 
-    _str_data_filename, str_data_filetype = os.path.splitext(str_data_path)
+    list_paths_to_be_loaded = []
+    if os.path.isdir(str_data_path):
+        for str_file_path in os.listdir(str_data_path):
+            list_paths_to_be_loaded.append(str_data_path + str_file_path)
+    else:
+        raise(Exception("Directory \"" + str_data_path +"\" does not exist!"))
+        list_paths_to_be_loaded.append(str_data_path)
+        # This yanky if-check was originally intended in the case you want
+        # to load a singular data-file, but functionality has been changed to
+        # require all data-files to be stored in a directory.
+        # This change means temperature-data now must be stored in a directory.
 
-    if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
-        int_sheet = dict_data_config["sheet"]
-        int_time_column = dict_data_config["time_column"]
-        int_data_column = dict_data_config["data_column"]
-        bool_vertical_data = dict_data_config["vertical_data"]
+    dict_loaded_ts = {}
+    for str_path in list_paths_to_be_loaded:
+        print("Loading", str_path + "...")
+        _str_data_filename, str_data_filetype = os.path.splitext(str_path)
 
-        arr_time, arr_data = load_time_and_data_from_excel(
-            str_data_path, int_sheet,
-            int_time_column, int_data_column, bool_vertical_data)
+        if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
+            int_sheet = dict_data_config["sheet"]
+            int_time_column = dict_data_config["time_column"]
+            int_data_column = dict_data_config["data_column"]
+            bool_vertical_data = dict_data_config["vertical_data"]
 
-    elif str_data_filetype == ".txt":
-        str_separator = dict_data_config["separator"]
-        int_time_column = dict_data_config["time_column"]
-        int_data_column = dict_data_config["data_column"]
-        bool_vertical_data = dict_data_config["vertical_data"]
+            arr_time, arr_data = load_time_and_data_from_excel(
+                str_path, int_sheet,
+                int_time_column, int_data_column, bool_vertical_data)
 
-        arr_time, arr_data = load_time_and_data_from_txt(
-            str_data_path, str_separator,
-            int_time_column, int_data_column, bool_vertical_data)
+        elif str_data_filetype == ".txt":
+            str_separator = dict_data_config["separator"]
+            int_time_column = dict_data_config["time_column"]
+            int_data_column = dict_data_config["data_column"]
+            bool_vertical_data = dict_data_config["vertical_data"]
 
-    elif str_data_filetype == ".csv":
-        raise Exception("Not yet implemented")
+            arr_time, arr_data = load_time_and_data_from_txt(
+                str_path, str_separator,
+                int_time_column, int_data_column, bool_vertical_data)
 
-    # elif str_data_filetype == ".example"
-    #   Code for additional formats
+        elif str_data_filetype == ".csv":
+            raise Exception("Not yet implemented")
 
-    arr_time_dt = convert_general_time_array_to_datetime_array(
-        arr_time, str_data_date_format, str_data_first_date_iso)
-    arr_data = convert_general_data_array_to_float_array(arr_data)
+        # elif str_data_filetype == ".example"
+        #   Code for additional formats
 
-    ts_data = create_standard_time_series(arr_time_dt, arr_data)
+        arr_time_dt = convert_general_time_array_to_datetime_array(
+            arr_time, str_data_date_format, str_data_first_date_iso)
+        arr_data = convert_general_data_array_to_float_array(arr_data)
 
-    return ts_data
+        ts_data = ts.create_standard_time_series(arr_time_dt, arr_data)
+
+        if os.path.isdir(str_data_path):
+            str_key_name, _temp = os.path.splitext(
+                str_path.replace(str_data_path, ""))
+        else:
+            str_key_name = str_data_path
+        dict_loaded_ts[str_key_name] = ts_data
+
+    return dict_loaded_ts
+
+
+def load_network_from_directory(dict_network_config):
+    """Loads directory of MATPOWER-formatted csv-files to dictionary.
+
+    Parameters
+    ----------
+    dict_network_config : dict
+        Dictionary of file-configuration, including path.
+
+    Returns
+    ----------
+    dict_network : dict
+        Dictionary of network-information required to build graph-representation.
+    """
+    str_dir_path = dict_network_config["path"]
+    str_separator = dict_network_config["separator"]
+
+    list_paths_to_be_loaded = []
+    for str_file_path in os.listdir(str_dir_path):
+        list_paths_to_be_loaded.append(str_dir_path + str_file_path)
+
+    dict_network = {}
+    for str_path in list_paths_to_be_loaded:
+        print("Loading", str_path + "...")
+
+        df_network_info = pd.read_csv(str_path, sep=str_separator, dtype=str)
+        dict_network_info = {}
+        for col in df_network_info:
+            dict_network_info[col] = np.array(df_network_info[col])
+
+        str_data_filename, _str_data_filetype = os.path.splitext(str_path)
+        str_key_name = str_data_filename.replace(str_dir_path, "")
+        dict_network[str_key_name] = dict_network_info
+
+    return dict_network
+
+
+def initialize_config_and_data(str_config_path):
+    """Loads configuration file and creates timeseries from the data-sources.
+
+    Returns
+    ----------
+    dict_config : dict
+        Dictionary containing loaded configuration-file.
+    dict_data : dict
+        Pairs of data-sources as strings and loaded datafiles on timeseries-format.
+    dict_network : dict
+        Dictionary of network-information required to build graph-representation.
+    """
+    ## Loading config ###
+    print("Preparing to load config-file:", str_config_path)
+    dict_config = load_config(str_config_path)
+    print("Loaded the following config-file:")
+    print("----------------------------------------")
+    print_dictionary_recursive(dict_config)
+    print("----------------------------------------")
+    print("Do you want to override any parameters (No)/Yes?")
+    str_input = str.lower(input())
+    if str_input == 'y' or str_input == 'yes':
+        raise(Exception("Not configured yet"))
+
+    ### Loading data ###
+    print("Beginning to load data...")
+    dict_data_config = dict_config["data"]
+    dict_data = {}
+    for data_source in dict_data_config:
+        dict_data[data_source] = load_data_and_create_timeseries(
+            dict_data_config[data_source])
+        print("Successfully loaded:", data_source)
+
+    ### Loading network ###
+    print("Beginning to load network...")
+    dict_network_config = dict_config["network"]
+    dict_network = load_network_from_directory(
+        dict_network_config)
+
+    print("Successfully loaded all components")
+    return dict_config, dict_data, dict_network
