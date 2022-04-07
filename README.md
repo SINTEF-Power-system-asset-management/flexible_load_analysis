@@ -1,5 +1,5 @@
-# Stochastic Load Analysis
-Stochastic Load Analysis is a Python script for modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
+# Flexible Load Analysis
+Flexible Load Analysis is a Python script for modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
 The program was originally made to test load-modelling methods described in [Erling Tønne's Doctoral Thesis](http://hdl.handle.net/11250/2476389).  
 The script is created by SINTEF Energi AS in conjunction with CINELDI WP1.
 

@@ -1,8 +1,8 @@
-# Configuration-file for stochastic load analysis.
+# Configuration-file for flexible load analysis.
 # Change values to achieve the desired functionality.
 # Non-empty strings equate to boolean True, empty strings equate to False.
 
-name = "Stochastic Load Modelling"
+name = "Flexible Load Modelling"
 
 [data]
 
