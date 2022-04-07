@@ -1,16 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import utilities as util
-
 
 def remove_unimportant_overloads(l_overloads):
     return list(filter(lambda o: not o.is_unimportant(), l_overloads))
 
 class OverloadEvent:
-
-    # Et ønske at denne klassen ikke bærer med seg for mye, den
-    # kan fungere som en naturlig komprimering av datasettet ned i det
-    # interessante området.
 
     def __init__(self, ts_overload_event, fl_power_limit) -> None:
         
@@ -57,11 +51,7 @@ class OverloadEvent:
 
 
     def is_unimportant(self):
-        # Trenger måte å si at en overlasts-hendelse kun var en "liten" overlast
-        # Ikke innlysende hvordan dette regnes ut.
-        # Denne infoen kan brukes av høyere nivås modul for å fjerne disse
-        # hendelsene.
-        # Vil være en kombinasjon av varighet, spike, etc.
+        # TODO: Other ways of characterizing "unimportant load"
         dur_hours = util.duration_to_hours(self.dt_duration)
         if dur_hours == 1:
             b_short = True
@@ -71,13 +61,14 @@ class OverloadEvent:
 
 
 class FlexibilityNeed:
-    # En tidsserie har mange tilfeller av overlast.
-    # Flex-behov er en meta-metrikk over disse.
+    """
+    A timeseries may have many occurences of overloads.
+    A flexibility need is defined as a meta-metric over all the overload-events.
+    """
 
     def __init__(self, l_overloads) -> None:
         self.l_overloads = l_overloads
-        self.str_flex_category = "" # Hvilken type overlast ser en oftest?
-        # Hvilke andre attributter?
+        self.str_flex_category = "" 
 
         l_recovery_times = []
         num_overloads = len(l_overloads)
@@ -123,23 +114,3 @@ def metric_annotation(metric_name):
     elif metric_name == "ramping":
         ann = "Ramping [kW/h]"
     return ann
-
-
-# Burde flyttes til analysis?
-def find_overloads(ts_data, fl_power_limit):
-    l_overloads = []
-    b_in_overload_event = False
-    for i in range(len(ts_data)):
-        b_line_overloaded = (ts_data[i, 1] >= fl_power_limit)
-        if b_line_overloaded and not b_in_overload_event:
-            b_in_overload_event = True
-            i_start = i
-        elif not b_line_overloaded and b_in_overload_event:
-            i_end = i
-            # Velg mellom disse to
-            #l_overloads.append(OverloadEvent(ts_data[i_start:i_end,:], fl_power_limit))
-            l_overloads.append(OverloadEvent(ts_data[i_start:i_end+1,:], fl_power_limit))
-            b_in_overload_event = False
-        else:
-            continue
-    return l_overloads
