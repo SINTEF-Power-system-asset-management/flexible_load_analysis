@@ -1,12 +1,9 @@
 # Stochastic Load Analysis
-
-Stochastic Load Analysis is a Python script for performing load modelling,
-with a focus on the method described in 
-[Erling Tønne's Doctoral Thesis](http://hdl.handle.net/11250/2476389). 
+Stochastic Load Analysis is a Python script for modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
+The program was originally made to test load-modelling methods described in [Erling Tønne's Doctoral Thesis](http://hdl.handle.net/11250/2476389).  
 The script is created by SINTEF Energi AS in conjunction with CINELDI WP1.
 
 ## Installation
-
 The script is installed by cloning this repository to your own local machine.
 Running the script requires the following dependencies:
 
@@ -19,27 +16,26 @@ Running the script requires the following dependencies:
 * [networkx](https://networkx.org/)
 * [pandapower](https://www.pandapower.org/)
 
-## Usage
+Install all dependencies by running  
+```Powershell
+python3 -m pip install -r requirements.txt
+```
 
-To use this script, change config.toml to reflect placement and structure of
-dataset, as well as changing any other fields.
+## Usage
+To use this script, change config.toml to reflect placement and structure of your load-timeseries dataset, as well as changing any other relevant fields.
 Remember to update the path of the config in main.py as well.
 
-Which data-files the program requires is described in example_data\TUTORIAL.md
+Required data-files and supported formats is described in example_data\TUTORIAL.md
 
 After this, the program may be ran by running
 ```Bash
-python main.py
+python src/main.py
 ```
 
-See the source-code for how to implement custom preprocessing-steps as well
-as other models.
+See the source-code for how to implement custom preprocessing-steps as well as other models.
 
 ## Development
-Development follows issues reported at the project's 
-[Jira](https://jira.code.sintef.no/projects/CINELDI/summary).
-
-The project follows PEP8-styling and numpy 
+The project follows PEP8-styling and the numpydoc-standard 
 [docstring-styling](https://numpydoc.readthedocs.io/en/latest/format.html).
 
 ## License
@@ -56,8 +52,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 # Authors
 Contributors: Eirik Haugen, Daniel Bjerkehagen, Iver Bakken Sperstad, Susanne Sandell
 
-Copyright (C) 2021 SINTEF Energi AS
+Copyright &copy; 2021 SINTEF Energi AS
