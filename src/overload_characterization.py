@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
     np.random.seed(0)
 
-    STR_CONFIG_PATH = "ora_data/config_ORA.toml"
+    STR_CONFIG_PATH = "in_data/ora_data/config_ORA.toml"
     dict_config, dict_data, dict_network = init.initialize_config_and_data(
         STR_CONFIG_PATH)
 
