@@ -103,6 +103,7 @@ def encode_directory_contents(str_dir_path, dict_encoding):
 
 
 def automatic_encoding(str_network_dir_path):
+    # Automatic naming as "R(adial)xS(voltage)yT(number)"
     df_bus = pd.read_csv(str_network_dir_path + "bus.csv", sep=";")
 
     df_bus['zone_and_voltage'] = df_bus.apply(lambda x: f"R{x.BUS_AREA}S{x.BASE_KV}", axis=1)
