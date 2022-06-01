@@ -121,7 +121,7 @@ def create_n_day_average_dict(ts_basis, date_start, date_end,  n):
             return dict_averages
         else:
             int_starting_index += 1
-    raise(Exception("End date missing from basis-timeseries"))
+    raise(Exception("Start or end date missing from basis-timeseries"))
 
 
 def correct_load_for_temperature_deviations(
@@ -160,10 +160,14 @@ def correct_load_for_temperature_deviations(
         # Removed, but should in theory be performed according to Tønne
         # if 11 <= dt_time_i.month or dt_time_i.month <= 4:
         if True:
-            Tn = dict_daily_normal_temperature[datetime_to_yearless_iso_string(
-                dt_time_i)]
-            Ti = dict_temperature_n_day_average[dt_time_i.date()]
-            fl_load_corrected_i = fl_load_i + fl_load_i*k*x*(Tn - Ti)
+            try:
+                Tn = dict_daily_normal_temperature[datetime_to_yearless_iso_string(
+                    dt_time_i)]
+                Ti = dict_temperature_n_day_average[dt_time_i.date()]
+                fl_load_corrected_i = fl_load_i + fl_load_i*k*x*(Tn - Ti)
+            except KeyError:
+                print(f"Temperature for {dt_time_i} missing, skipping correction")
+                fl_load_corrected_i = fl_load_i
         else:
             fl_load_corrected_i = fl_load_i
 
