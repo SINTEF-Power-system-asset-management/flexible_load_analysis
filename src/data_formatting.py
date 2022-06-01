@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 
 
-def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs, dict_ID_encoding):
+def split_txt_by_ID_and_encode(str_path_txt, str_separator, int_column_IDs, dict_ID_encoding):
     """Splits rows of txt into multiple files based on ID-field.
 
     Parameters
@@ -49,7 +49,7 @@ def split_txt_by_ID(str_path_txt, str_separator, int_column_IDs, dict_ID_encodin
 
 
     str_input_filename, _str_data_filetype = os.path.splitext(str_path_txt)
-    str_folder = str_input_filename + "_split\\"
+    str_folder = str_input_filename + "_split_and_encoded\\"
     if not os.path.exists(str_folder):
         os.mkdir(str_folder)
     for key in dict_uniques:
@@ -102,21 +102,39 @@ def encode_directory_contents(str_dir_path, dict_encoding):
     return
 
 
-def format_data_files(dict_data_unsplit, dict_network, str_path_encoding):
+def automatic_encoding(str_network_dir_path):
+    df_bus = pd.read_csv(str_network_dir_path + "bus.csv", sep=";")
 
+    df_bus['zone_and_voltage'] = df_bus.apply(lambda x: f"R{x.BUS_AREA}S{x.BASE_KV}", axis=1)
+    df_bus['instances'] = df_bus.groupby('zone_and_voltage').cumcount()+1
+    df_bus["IDs"] = df_bus.apply(lambda x: f"{x.zone_and_voltage}T{x.instances}", axis=1)
+
+    dict_encoding = dict(zip(df_bus.BUS_I, df_bus.IDs))
+
+    print(dict_encoding)
+
+    return dict_encoding
+
+
+def format_data_files(dict_data_unsplit, dict_network, str_path_encoding=None, auto_encode=True):
     print("Loading encoding...")
-    df_encoding = pd.read_excel(str_path_encoding, 0)
-    arr_old_ID = np.array(df_encoding["old_ID"])
-    arr_new_ID = np.array(df_encoding["new_ID"])
-    dict_encoding = {}
-    for i in range(len(arr_old_ID)):
-        dict_encoding[str(arr_old_ID[i])] = str(arr_new_ID[i])
-
+    if auto_encode:
+        dict_encoding = automatic_encoding(dict_network["path"])
+        print("Generated the following encoding automatically:")
+        print(dict_encoding)
+    else:
+        df_encoding = pd.read_excel(str_path_encoding, 0)
+        arr_old_ID = np.array(df_encoding["old_ID"])
+        arr_new_ID = np.array(df_encoding["new_ID"])
+        dict_encoding = {}
+        for i in range(len(arr_old_ID)):
+            dict_encoding[str(arr_old_ID[i])] = str(arr_new_ID[i])
+    
     print("Splitting data-file...")
     str_path = dict_data_unsplit["path"]
     str_separator = dict_data_unsplit["separator"]
     int_ID_column = dict_data_unsplit["ID_column"]
-    split_txt_by_ID(str_path, str_separator, int_ID_column, dict_encoding)
+    split_txt_by_ID_and_encode(str_path, str_separator, int_ID_column, dict_encoding)
 
     print("Encoding network-data...")
     str_path = dict_network["path"]
@@ -133,20 +151,20 @@ if __name__=="__main__":
     # "example_load_data_split" before running this script, or else it will do
     # nothing.
     dict_data_unsplit = {
-        "path": "example_data/example_load_data.txt",
+        "path": "../in_data/example_data/example_load_data.txt",
         "separator": ";",
         "ID_column": 0
     }
     dict_network = {
-        "path": "example_data/example_network/",
+        "path": "../in_data/example_data/example_network/",
         "separator": ";"
     }
-    str_path_encoding = "example_data/example_encoding.xlsx"
-
+    str_path_encoding = "../in_data/example_data/example_encoding.xlsx"
 
     # Do not change this.
     format_data_files(
         dict_data_unsplit,
         dict_network,
-        str_path_encoding
+        str_path_encoding=str_path_encoding,
+        auto_encode=True
     )
