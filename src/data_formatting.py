@@ -89,7 +89,7 @@ def encode_directory_contents(str_dir_path, dict_encoding):
         for i in range(len(arr_contents)):
             for old_ID in dict_encoding:
                 new_ID = dict_encoding[old_ID]
-                arr_contents[i] = arr_contents[i].replace(old_ID, new_ID)
+                arr_contents[i] = arr_contents[i].replace(old_ID + ";", new_ID + ";")
 
         str_new_file_path = str_new_dir_path + str_file_path
         if not os.path.exists(str_new_file_path):
