@@ -26,7 +26,25 @@ def plot_network(dict_network):
     """
     nx_network = convert_network_dictionary_to_graph(dict_network)
     plt.subplot(111)
-    nx.draw(nx_network, with_labels=True, font_weight='bold')
+    pos = nx.kamada_kawai_layout(nx_network)
+
+    node_voltage_lvls = dict_network["bus"]["BASE_KV"].astype(np.float64)
+
+    nx_edges = list(nx_network.edges)
+    not_active_inds = np.where(dict_network["branch"]["BR_STATUS"] == "0")[0]
+    not_active_edges = np.stack((
+            dict_network["branch"]["F_BUS"],
+            dict_network["branch"]["T_BUS"]),
+            axis=1)[not_active_inds]
+    not_active_edges_mp = np.array([str((a[0], a[1])) for a in not_active_edges])
+    not_active_edges_nx = np.array([str(tup) for tup in nx_edges])
+    not_active_idx = np.in1d(not_active_edges_nx, not_active_edges_mp).nonzero()[0]
+    
+    edge_status = np.array(["#006600"] * len(nx_edges))
+    edge_status[not_active_idx] = "#660000"
+    edge_status = list(edge_status)
+
+    nx.draw(nx_network, pos=pos, with_labels=True, font_weight='bold', cmap="Set1" ,node_color=node_voltage_lvls, edge_color=edge_status)
     plt.show()
     return
 
