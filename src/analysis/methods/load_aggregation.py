@@ -8,17 +8,17 @@ def voltage_for_node_id(node, d_network):
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)
     return d_network["bus"]["BASE_KV"][node_idx]
 
-def aggregate_load_of_node(agg_node, d_network, d_loads, reference_node):
+def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node):
     """Finds timeseries of total load experienced by a node.
 
     Parameters:
     ----------
     agg_node : node-name
         Node which to aggregate load at.
-    d_network : Dict
-        Matpower-formatted dictionary of network.
     d_loads : nodes
         Container indexable by node-names of load-timeseries at that node.
+    d_network : Dict
+        Matpower-formatted dictionary of network.
     reference_node : node-name
         Supply (reference) node of network. 
 
