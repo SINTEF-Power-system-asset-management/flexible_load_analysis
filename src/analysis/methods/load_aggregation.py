@@ -34,28 +34,32 @@ def aggregate_load_of_node(agg_node, d_network, d_loads, reference_node):
     prev_node = None
     explored = []
     queue = [reference_node]
-    # Bredde-først-søk for å finne node som leder fra reference til agg_node
-    while queue:
-        prev_node = queue.pop()
-        explored.append(prev_node)
-        # Denne funksjonen fungerer fortsatt? Bør endres til å gi alle noder som er knyttet til input-noden,
-        # altså uavhengig om branch-en går A->B eller B->A, dette er egentlig samme.
-        new_children = network.list_children_of_node(prev_node, d_network)
-        if agg_node in new_children:
-            break
-        # Kun søk noder med lavere eller lik spenning
-        for n in new_children:
-            if (not n in explored) and (voltage_for_node_id(n, d_network) <= voltage_for_node_id(prev_node, d_network)):
-                queue.append(n)
+    if agg_node != reference_node:
+        # Bredde-først-søk for å finne node som leder fra reference til agg_node
+        while queue:
+            prev_node = queue.pop()
+            explored.append(prev_node)
+            # Denne funksjonen fungerer fortsatt? Bør endres til å gi alle noder som er knyttet til input-noden,
+            # altså uavhengig om branch-en går A->B eller B->A, dette er egentlig samme.
+            new_children = network.list_children_of_node(prev_node, d_network)
+            if agg_node in new_children:
+                break
+            # Kun søk noder med lavere eller lik spenning
+            for n in new_children:
+                if (not n in explored) and (voltage_for_node_id(n, d_network) <= voltage_for_node_id(prev_node, d_network)):
+                    queue.append(n)
+        else:
+            raise Exception(f"Unable to find route from [{reference_node}] to [{agg_node}] without breaking voltage restriction")
+
+        # Siden vi antar radielt nett er det kun én buss som "leder fra referansen til node".
+        # Dette er prev_node fra BFS. Altså: I radielle nett har man i enhver driftssituasjon kun
+        # én "forelder", og denne har vi nå funnet.
+        parent_node = prev_node
     else:
-        raise Exception(f"Unable to find route from [{reference_node}] to [{agg_node}] without breaking voltage restriction")
+        # I tilfellet hvor vi aggregerer på referansen
+        parent_node = None
 
-    # Siden vi antar radielt nett er det kun én buss som "leder fra referansen til node".
-    # Dette er prev_node fra BFS. Altså: I radielle nett har man i enhver driftssituasjon kun
-    # én "forelder", og denne har vi nå funnet.
-    parent_node = prev_node
-
-    # Aggregering blir samme bredde-først søk fra agg_node til alle dens koblinger UNNTATT prev_node
+    # Aggregering blir samme bredde-først søk fra agg_node til alle dens koblinger UNNTATT forelderen
     ts_agg = np.empty((0))
     prev_node = agg_node
     # Vi skal søke for alle koblinger unntatt parent_node fra forrige BFS
