@@ -355,23 +355,23 @@ def plots_for_SEST(flex_need):
     mpl.rc('font',family='Times New Roman')
     mpl.rc('font', size=8)
     
-    # 5a
-    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.hist(arrs['duration'],bins = 8, edgecolor='black', linewidth=0.8)
-    ax.set_xlabel("Duration [h]")
-    ax.set_ylabel("Counts")
-    plt.tight_layout()
-    plt.savefig('fig5a.pdf')
-    plt.close()
+    # # 5a
+    # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    # ax.hist(arrs['duration'],bins = 8, edgecolor='black', linewidth=0.8)
+    # ax.set_xlabel("Duration [h]")
+    # ax.set_ylabel("Counts")
+    # plt.tight_layout()
+    # plt.savefig('fig5a.pdf')
+    # plt.close()
     
-    # 5b
-    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.hist(arrs['spike'],bins = 12, edgecolor='black', linewidth=0.8)
-    ax.set_xlabel("Overload peak [kW]")
-    ax.set_ylabel("Counts")
-    plt.tight_layout()
-    plt.savefig('fig5b.pdf')
-    plt.close()
+    # # 5b
+    # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    # ax.hist(arrs['spike'],bins = 12, edgecolor='black', linewidth=0.8)
+    # ax.set_xlabel("Overload peak [kW]")
+    # ax.set_ylabel("Counts")
+    # plt.tight_layout()
+    # plt.savefig('fig5b.pdf')
+    # plt.close()
     
     # # 6a
     # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
@@ -413,20 +413,22 @@ def plots_for_SEST(flex_need):
     return
 
 
-def plot_load_duration_curve(ldc, fl_limit=None):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    arr_time = ldc[:, 0]
-    arr_data = ldc[:, 1]
-    ax.plot(arr_time, arr_data, label="Load duration curve")
-    if fl_limit:
-        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Limit")
+def plot_load_duration_curve(ldc, fl_limit):
+    ldc = ldc[0:8760,:]
+    ldc = ldc[ldc[:, 1].argsort()[::-1]]
+    
+    mpl.rc('font',family='Times New Roman')
+    mpl.rc('font', size=8)
+    
+    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    ax.plot(ldc[:,1], label="Load duration curve")
+    ax.plot([0,8760], [fl_limit, fl_limit], "--", color="g", label="Power capacity")
 
-    ax.set_xlabel("Number")
+    ax.set_xlabel("Time [h]")
     ax.set_ylabel("Load [MW]")
-    ax.set_title("Load duration curve")
-    ax.grid(True)
-    ax.legend(loc='upper right')
+    ax.legend(loc='center right')
 
-    plt.xticks(rotation=90)
+    #plt.xticks(rotation=90)
     plt.tight_layout()
-    plt.show()
+    plt.savefig('fig8.pdf')
+    plt.close()
