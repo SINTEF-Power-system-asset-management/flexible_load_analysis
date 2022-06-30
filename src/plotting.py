@@ -355,42 +355,51 @@ def plots_for_SEST(flex_need):
     mpl.rc('font',family='Times New Roman')
     mpl.rc('font', size=8)
     
-    # 6a
+    # 5a
     fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.scatter(arrs['month'],arrs['spike'])
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Overload peak [kW]")
-    plt.tight_layout()
-    plt.savefig('fig6a.pdf')
-    plt.close()
-    
-    # 6b
-    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.scatter(arrs['month'],arrs['duration'])
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Duration [h]")
-    plt.tight_layout()
-    plt.savefig('fig6b.pdf')
-    plt.close()
-    
-    # 7a
-    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.scatter(arrs['duration'],arrs['spike'])
+    ax.hist(arrs['duration'],bins = 8, edgecolor='black', linewidth=0.8)
     ax.set_xlabel("Duration [h]")
-    ax.set_ylabel("Overload peak [kW]")
+    ax.set_ylabel("Counts")
     plt.tight_layout()
-    plt.savefig('fig7a.pdf')
+    plt.savefig('fig5a.pdf')
     plt.close()
     
-    # 7b
-    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.scatter(arrs['recovery'],arrs['energy'])
-    ax.set_xlabel("Recovery time [h]")
-    ax.set_xlim([0,180])
-    ax.set_ylabel("Energy [kWh]")
-    plt.tight_layout()
-    plt.savefig('fig7b.pdf')
-    plt.close()
+    # # 6a
+    # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    # ax.scatter(arrs['month'],arrs['spike'])
+    # ax.set_xlabel("Month")
+    # ax.set_ylabel("Overload peak [kW]")
+    # plt.tight_layout()
+    # plt.savefig('fig6a.pdf')
+    # plt.close()
+    
+    # # 6b
+    # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    # ax.scatter(arrs['month'],arrs['duration'])
+    # ax.set_xlabel("Month")
+    # ax.set_ylabel("Duration [h]")
+    # plt.tight_layout()
+    # plt.savefig('fig6b.pdf')
+    # plt.close()
+    
+    # # 7a
+    # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    # ax.scatter(arrs['duration'],arrs['spike'])
+    # ax.set_xlabel("Duration [h]")
+    # ax.set_ylabel("Overload peak [kW]")
+    # plt.tight_layout()
+    # plt.savefig('fig7a.pdf')
+    # plt.close()
+    
+    # # 7b
+    # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    # ax.scatter(arrs['recovery'],arrs['energy'])
+    # ax.set_xlabel("Recovery time [h]")
+    # ax.set_xlim([0,180])
+    # ax.set_ylabel("Energy [kWh]")
+    # plt.tight_layout()
+    # plt.savefig('fig7b.pdf')
+    # plt.close()
     
     return
 
