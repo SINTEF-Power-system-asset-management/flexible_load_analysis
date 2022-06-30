@@ -61,17 +61,16 @@ def increase_single_load(loads, network, customer_index, aggregation_index, fl_i
     ts_agg_after = remove_zeros(ts_agg_after)
 
     if do_plotting:
-        plotting.plot_timeseries([ts_agg_after],
-                                ["Aggregated"],
+        plotting.plot_timeseries([ts_agg_after[0:26304,:]],
+                                ["Aggregated load"],
                                 f"Aggregated load and limit after increasing load",
                                 fl_limit=fl_limit_kW)
 
-    list_overloads = flexibility_analysis.find_overloads(ts_agg_after, fl_limit_kW)
+    list_overloads = flexibility_analysis.find_overloads(ts_agg_after[0:26304,:], fl_limit_kW)
     if list_overloads:
         flex_need = flexibility_need.FlexibilityNeed(list_overloads)
         if do_plotting:
-            plotting.plot_flexibility_histograms(flex_need)
-            plotting.plot_flexibility_clustering(flex_need)
+            plotting.plots_for_SEST(flex_need)
     else:
         flex_need = None
     return flex_need

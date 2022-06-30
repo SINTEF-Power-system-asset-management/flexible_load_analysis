@@ -21,7 +21,7 @@ def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylab
         arr_data = ts[:, 1]
         ax.plot(arr_time, arr_data, label=list_labels[i])
     if fl_limit:
-        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Limit")
+        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Power capacity")
 
     ax.set_xlabel(str_xlabel)
     ax.set_ylabel(str_ylabel)
@@ -349,7 +349,50 @@ def plot_flexibility_clustering(flex_need):
     """
     
     plt.show()
-
+def plots_for_SEST(flex_need):
+    arrs = flex_need.extract_arrays()
+    
+    mpl.rc('font',family='Times New Roman')
+    mpl.rc('font', size=8)
+    
+    # 6a
+    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    ax.scatter(arrs['month'],arrs['spike'])
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Overload peak [kW]")
+    plt.tight_layout()
+    plt.savefig('fig6a.pdf')
+    plt.close()
+    
+    # 6b
+    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    ax.scatter(arrs['month'],arrs['duration'])
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Duration [h]")
+    plt.tight_layout()
+    plt.savefig('fig6b.pdf')
+    plt.close()
+    
+    # 7a
+    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    ax.scatter(arrs['duration'],arrs['spike'])
+    ax.set_xlabel("Duration [h]")
+    ax.set_ylabel("Overload peak [kW]")
+    plt.tight_layout()
+    plt.savefig('fig7a.pdf')
+    plt.close()
+    
+    # 7b
+    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    ax.scatter(arrs['recovery'],arrs['energy'])
+    ax.set_xlabel("Recovery time [h]")
+    ax.set_xlim([0,180])
+    ax.set_ylabel("Energy [kWh]")
+    plt.tight_layout()
+    plt.savefig('fig7b.pdf')
+    plt.close()
+    
+    return
 
 
 def plot_load_duration_curve(ldc, fl_limit=None):
