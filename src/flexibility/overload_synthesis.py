@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import pandas as pd
 import plotting
 import analysis.methods.load_aggregation as load_aggregation
 import flexibility.flexibility_need as flexibility_need
@@ -38,32 +39,28 @@ def add_N_random_loads(loads, network, agg_index, num_iterations,
                 if plot_histogram: plotting.plot_flexibility_histograms(flex_need)
                 if plot_clustering: plotting.plot_flexibility_clustering(flex_need)
 
-
+def remove_zeros(ts):
+    df = pd.DataFrame(ts)
+    df = df[(df != 0).all(1)]
+    ts = df.to_numpy()
+    return ts
 
 def increase_single_load(loads, network, customer_index, aggregation_index, fl_increase, do_plotting=True):
     # Load to aggregate at
     str_agg_id = network["branch"]["F_BUS"][aggregation_index]
     # Customer to increase
-    str_customer_id = network["bus"]["BUS_I"][customer_index]
+    #str_customer_id = network["bus"]["BUS_I"][customer_index]
     # Line-limit at aggregation point
     fl_limit_kW = float(network["branch"]["RATE_A"][aggregation_index])*1000
 
-    ts_agg_before = load_aggregation.aggregate_load_of_node(
-                str_agg_id, loads, network)
-
-    # Increasing load of customer to induce overloads
-    ts_customer = loads[str_customer_id]
-    ts_customer = ts.normalize_timeseries(ts_customer, (fl_increase + np.max(ts_customer[:,1])/2))
-    ts_customer = ts.offset_timeseries(ts_customer, fl_increase/2)
-    loads[str_customer_id] = ts_customer
-
     ts_agg_after = load_aggregation.aggregate_load_of_node(
                 str_agg_id, loads, network)
+    
+    # Increasing load of ts_agg_before induce overloads
+    ts_agg_after = ts.normalize_timeseries(ts_agg_after, (1.42*np.max(ts_agg_after[:,1])))
+    ts_agg_after = remove_zeros(ts_agg_after)
+
     if do_plotting:
-        plotting.plot_timeseries([ts_agg_before],
-                                ["Aggregated"],
-                                f"Aggregated load and limit before increasing load",
-                                fl_limit=fl_limit_kW)
         plotting.plot_timeseries([ts_agg_after],
                                 ["Aggregated"],
                                 f"Aggregated load and limit after increasing load",

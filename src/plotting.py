@@ -8,10 +8,13 @@ import matplotlib.dates as mdates
 from calendar import month_abbr
 import utilities as util
 from flexibility.flexibility_need import metric_annotation
-
+import matplotlib as mpl
 
 def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylabel="Load [kW]", fl_limit=None):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    mpl.rc('font',family='Times New Roman')
+    mpl.rc('font', size=8)
+    
+    fig, ax = plt.subplots(figsize=(3.54,1.77),dpi=600)
     for i in range(len(list_ts)):
         ts = list_ts[i]
         arr_time = ts[:, 0]
@@ -22,14 +25,12 @@ def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylab
 
     ax.set_xlabel(str_xlabel)
     ax.set_ylabel(str_ylabel)
-    ax.set_title(str_title)
-    ax.grid(True)
+    ax.grid(False)
     ax.legend(loc='upper left')
-    ax.xaxis.set_major_locator(mdates.DayLocator(interval=30))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    plt.xticks(rotation=90)
+    plt.xticks([]) # Hide xticks
     plt.tight_layout()
-    plt.show()
+    plt.savefig('fig4.pdf')
+    plt.close()
     return
 
 
