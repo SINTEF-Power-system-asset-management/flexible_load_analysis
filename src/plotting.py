@@ -364,6 +364,15 @@ def plots_for_SEST(flex_need):
     plt.savefig('fig5a.pdf')
     plt.close()
     
+    # 5b
+    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
+    ax.hist(arrs['spike'],bins = 12, edgecolor='black', linewidth=0.8)
+    ax.set_xlabel("Overload peak [kW]")
+    ax.set_ylabel("Counts")
+    plt.tight_layout()
+    plt.savefig('fig5b.pdf')
+    plt.close()
+    
     # # 6a
     # fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
     # ax.scatter(arrs['month'],arrs['spike'])
