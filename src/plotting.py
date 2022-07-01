@@ -31,7 +31,7 @@ def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylab
     ax.legend(loc='upper left')
     plt.xticks([]) # Hide xticks
     plt.tight_layout()
-    plt.savefig('fig4.pdf')
+    plt.savefig('fig4.pdf',bbox_inches='tight', pad_inches=0)
     plt.close()
     return
 
@@ -359,12 +359,12 @@ def plots_for_SEST(flex_need):
     
     # 5a
     fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.hist(arrs['duration'],bins = 9, edgecolor='black', linewidth=0.8)
+    ax.hist(arrs['duration'],bins = 8, edgecolor='black', linewidth=0.8)
     ax.set_xlabel("Duration [h]")
     ax.set_ylabel("Counts")
     ax.set_yticklabels([0,5,10,15,20])
     plt.tight_layout()
-    plt.savefig('fig5a.pdf')
+    plt.savefig('fig5a.pdf', bbox_inches='tight', pad_inches=0)
     plt.close()
     
     # 5b
@@ -372,8 +372,9 @@ def plots_for_SEST(flex_need):
     ax.hist(arrs['spike'],bins = 12, edgecolor='black', linewidth=0.8)
     ax.set_xlabel("Overload peak [kW]")
     ax.set_ylabel("Counts")
+    ax.set_yticklabels([0,5,10,15])
     plt.tight_layout()
-    plt.savefig('fig5b.pdf')
+    plt.savefig('fig5b.pdf',bbox_inches='tight', pad_inches=0)
     plt.close()
     
     # 6a
@@ -382,7 +383,7 @@ def plots_for_SEST(flex_need):
     ax.set_xlabel("Month")
     ax.set_ylabel("Overload peak [kW]")
     plt.tight_layout()
-    plt.savefig('fig6a.pdf')
+    plt.savefig('fig6a.pdf',bbox_inches='tight', pad_inches=0)
     plt.close()
     
     # 6b
@@ -391,7 +392,7 @@ def plots_for_SEST(flex_need):
     ax.set_xlabel("Month")
     ax.set_ylabel("Duration [h]")
     plt.tight_layout()
-    plt.savefig('fig6b.pdf')
+    plt.savefig('fig6b.pdf',bbox_inches='tight', pad_inches=0)
     plt.close()
     
     # 7a
@@ -400,7 +401,7 @@ def plots_for_SEST(flex_need):
     ax.set_xlabel("Duration [h]")
     ax.set_ylabel("Overload peak [kW]")
     plt.tight_layout()
-    plt.savefig('fig7a.pdf')
+    plt.savefig('fig7a.pdf',bbox_inches='tight', pad_inches=0)
     plt.close()
     
     # 7b
@@ -410,7 +411,7 @@ def plots_for_SEST(flex_need):
     ax.set_xlim([0,180])
     ax.set_ylabel("Energy [kWh]")
     plt.tight_layout()
-    plt.savefig('fig7b.pdf')
+    plt.savefig('fig7b.pdf',bbox_inches='tight', pad_inches=0)
     plt.close()
     
     return
@@ -449,19 +450,7 @@ def plot_load_duration_curve(ldc, fl_limit):
 
     #plt.xticks(rotation=90)
     plt.tight_layout()
-    plt.savefig('fig8.pdf')
+    plt.savefig('fig8.pdf',bbox_inches="tight",pad_inches=0)
     plt.close()
     
     
-    fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
-    ax.plot(ldc[:,1], label="Load duration curve")
-    ax.plot([0,8760], [fl_limit, fl_limit], "--", color="g", label="Power capacity")
-
-    ax.set_xlabel("Time [h]")
-    ax.set_ylabel("Load [MW]")
-    ax.legend(loc='lower left')
-
-    #plt.xticks(rotation=90)
-    plt.tight_layout()
-    plt.savefig('fig8.pdf')
-    plt.close()
