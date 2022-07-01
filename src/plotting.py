@@ -12,7 +12,7 @@ import matplotlib as mpl
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 
-def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylabel="Load [kW]", fl_limit=None):
+def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Time [h]", str_ylabel="Load [kW]", fl_limit=None):
     mpl.rc('font',family='Times New Roman')
     mpl.rc('font', size=8)
     
@@ -355,7 +355,7 @@ def plots_for_SEST(flex_need):
     arrs = flex_need.extract_arrays()
     
     mpl.rc('font',family='Times New Roman')
-    mpl.rc('font', size=8)
+    mpl.rc('font', size=10)
     
     # 5a
     fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
@@ -364,7 +364,7 @@ def plots_for_SEST(flex_need):
     ax.set_ylabel("Counts")
     ax.set_yticklabels([0,5,10,15,20])
     plt.tight_layout()
-    plt.savefig('fig5a.pdf', bbox_inches='tight', pad_inches=0)
+    plt.savefig('fig5a.pdf', bbox_inches='tight')
     plt.close()
     
     # 5b
@@ -374,7 +374,7 @@ def plots_for_SEST(flex_need):
     ax.set_ylabel("Counts")
     ax.set_yticklabels([0,5,10,15])
     plt.tight_layout()
-    plt.savefig('fig5b.pdf',bbox_inches='tight', pad_inches=0)
+    plt.savefig('fig5b.pdf',bbox_inches='tight')
     plt.close()
     
     # 6a
@@ -422,7 +422,7 @@ def plot_load_duration_curve(ldc, fl_limit):
     ldc = ldc[ldc[:, 1].argsort()[::-1]]
     
     mpl.rc('font',family='Times New Roman')
-    mpl.rc('font', size=8)
+    mpl.rc('font', size=10)
     
     fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
     ax.plot(ldc[:,1], label="Load duration curve")
