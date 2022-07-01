@@ -23,5 +23,5 @@ if __name__ == "__main__":
     flex_need = increase_single_load(dict_loads_ts, dict_network, customer_index=8, aggregation_index=1, fl_increase=1200)
 
     # Temperature-correlation
-    ts_temperature_historical = util.get_first_value_of_dictionary(dict_data["temperature_measurements"])
-    overload_temperature_correlation(ts_temperature_historical, flex_need)
+    #ts_temperature_historical = util.get_first_value_of_dictionary(dict_data["temperature_measurements"])
+    #overload_temperature_correlation(ts_temperature_historical, flex_need)

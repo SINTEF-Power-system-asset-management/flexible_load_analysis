@@ -71,7 +71,7 @@ def increase_single_load(loads, network, customer_index, aggregation_index, fl_i
         flex_need = flexibility_need.FlexibilityNeed(list_overloads)
         if do_plotting:
             plotting.plots_for_SEST(flex_need)
-            plotting.plot_load_duration_curve(ts_agg_after, fl_limit_kW)
+            #plotting.plot_load_duration_curve(ts_agg_after, fl_limit_kW)
     else:
         flex_need = None
     return flex_need
