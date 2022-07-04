@@ -1,7 +1,12 @@
 # Flexible Load Analysis
-Flexible Load Analysis is a Python script for modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
-The program was originally made to test load-modelling methods described in [Erling Tønne's Doctoral Thesis](http://hdl.handle.net/11250/2476389).  
-The script is created by SINTEF Energi AS in conjunction with CINELDI WP1.
+Flexible Load Analysis (FLANLAN – FLexible (loading, storing and) ANalysis of Load And Net-data-correspondences) is a code platform implemented in Python. It performs loading, parsing, managing, anonymization, preprocessing, modification and analysis of mass load and grid data. Load analysis functionalities currently implemented include 
+* a stochastic load model (based on http://hdl.handle.net/11250/2476389), 
+* time series analysis to characterize the need for flexibility in the grid area, and
+* "what-if" (or scenario) analyses to study the effects of grid connection of potential new loads with a certain load behaviour
+
+The application of the code platform for characterizing the need for flexibility in an industrial distribution grid is demonstrated in a paper available as a preprint at https://doi.org/10.36227/techrxiv.20219964.
+
+The code is developed by SINTEF Energi AS in conjunction with CINELDI WP1.
 
 ## Installation
 The script is installed by cloning this repository to your own local machine.
@@ -22,17 +27,17 @@ python3 -m pip install -r requirements.txt
 ```
 
 ## Usage
-To use this script, change config.toml to reflect placement and structure of your load-timeseries dataset, as well as changing any other relevant fields.
+To use this script, change config.toml to reflect placement and structure of your load time series dataset, as well as changing any other relevant fields.
 Remember to update the path of the config in main.py as well.
 
 Required data-files and supported formats is described in example_data\TUTORIAL.md
 
-After this, the program may be ran by running
+After this, the program may be run by running
 ```Bash
 python src/main.py
 ```
 
-See the source-code for how to implement custom preprocessing-steps as well as other models.
+See the source code for how to implement custom preprocessing steps as well as other models.
 
 ## Development
 The project follows PEP8-styling and the numpydoc-standard 
@@ -53,6 +58,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Authors
-Contributors: Eirik Haugen, Daniel Bjerkehagen, Iver Bakken Sperstad, Susanne Sandell
+Contributors: Daniel Bjerkehagen, Susanne Sandell, Eirik Haugen, Iver Bakken Sperstad
 
-Copyright &copy; 2021 SINTEF Energi AS
+## Funding
+This work has been funded by CINELDI – Centre for intelligent electricity distribution, an 8-year Research Centre under the FME scheme (Centre for Environment-friendly Energy Research, 257626/E20) of the Norwegian Research Council.
+
+Copyright &copy; 2022 SINTEF Energi AS
