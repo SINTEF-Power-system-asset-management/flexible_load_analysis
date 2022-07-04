@@ -13,26 +13,26 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 
 def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Time [h]", str_ylabel="Load [kW]", fl_limit=None):
-    mpl.rc('font',family='Times New Roman')
-    mpl.rc('font', size=8)
+    # mpl.rc('font',family='Times New Roman')
+    # mpl.rc('font', size=8)
     
-    fig, ax = plt.subplots(figsize=(3.54,1.77),dpi=600)
-    for i in range(len(list_ts)):
-        ts = list_ts[i]
-        arr_time = ts[:, 0]
-        arr_data = ts[:, 1]
-        ax.plot(arr_time, arr_data, label=list_labels[i])
-    if fl_limit:
-        ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Power capacity")
+    # fig, ax = plt.subplots(figsize=(3.54,1.77),dpi=600)
+    # for i in range(len(list_ts)):
+    #     ts = list_ts[i]
+    #     arr_time = ts[:, 0]
+    #     arr_data = ts[:, 1]
+    #     ax.plot(arr_time, arr_data, label=list_labels[i])
+    # if fl_limit:
+    #     ax.plot([arr_time[0], arr_time[-1]], [fl_limit, fl_limit], "--", color="g", label="Power capacity")
 
-    ax.set_xlabel(str_xlabel)
-    ax.set_ylabel(str_ylabel)
-    ax.grid(False)
-    ax.legend(loc='upper left')
-    plt.xticks([]) # Hide xticks
-    plt.tight_layout()
-    plt.savefig('fig4.pdf',bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # ax.set_xlabel(str_xlabel)
+    # ax.set_ylabel(str_ylabel)
+    # ax.grid(False)
+    # ax.legend(loc='upper left')
+    # plt.xticks([]) # Hide xticks
+    # plt.tight_layout()
+    # plt.savefig('fig4.pdf',bbox_inches='tight', pad_inches=0)
+    # plt.close()
     return
 
 
@@ -357,62 +357,62 @@ def plots_for_SEST(flex_need):
     mpl.rc('font',family='Times New Roman')
     mpl.rc('font', size=10)
     
-    # 5a
-    fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.hist(arrs['duration'],bins = 8, edgecolor='black', linewidth=0.8)
-    ax.set_xlabel("Duration [h]")
-    ax.set_ylabel("Counts")
-    ax.set_yticklabels([0,5,10,15,20])
-    plt.tight_layout()
-    plt.savefig('fig5a.pdf', bbox_inches='tight')
-    plt.close()
+    # # 5a
+    # fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
+    # ax.hist(arrs['duration'],bins = 8, edgecolor='black', linewidth=0.8)
+    # ax.set_xlabel("Duration [h]")
+    # ax.set_ylabel("Counts")
+    # ax.set_yticklabels([0,5,10,15,20])
+    # plt.tight_layout()
+    # plt.savefig('fig5a.pdf', bbox_inches='tight')
+    # plt.close()
     
-    # 5b
-    fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.hist(arrs['spike'],bins = 12, edgecolor='black', linewidth=0.8)
-    ax.set_xlabel("Overload peak [kW]")
-    ax.set_ylabel("Counts")
-    ax.set_yticklabels([0,5,10,15])
-    plt.tight_layout()
-    plt.savefig('fig5b.pdf',bbox_inches='tight')
-    plt.close()
+    # # 5b
+    # fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
+    # ax.hist(arrs['spike'],bins = 12, edgecolor='black', linewidth=0.8)
+    # ax.set_xlabel("Overload peak [kW]")
+    # ax.set_ylabel("Counts")
+    # ax.set_yticklabels([0,5,10,15])
+    # plt.tight_layout()
+    # plt.savefig('fig5b.pdf',bbox_inches='tight')
+    # plt.close()
     
-    # 6a
-    fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.scatter(arrs['month'],arrs['spike'])
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Overload peak [kW]")
-    plt.tight_layout()
-    plt.savefig('fig6a.pdf',bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # # 6a
+    # fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
+    # ax.scatter(arrs['month'],arrs['spike'])
+    # ax.set_xlabel("Month")
+    # ax.set_ylabel("Overload peak [kW]")
+    # plt.tight_layout()
+    # plt.savefig('fig6a.pdf',bbox_inches='tight', pad_inches=0)
+    # plt.close()
     
-    # 6b
-    fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.scatter(arrs['month'],arrs['duration'])
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Duration [h]")
-    plt.tight_layout()
-    plt.savefig('fig6b.pdf',bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # # 6b
+    # fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
+    # ax.scatter(arrs['month'],arrs['duration'])
+    # ax.set_xlabel("Month")
+    # ax.set_ylabel("Duration [h]")
+    # plt.tight_layout()
+    # plt.savefig('fig6b.pdf',bbox_inches='tight', pad_inches=0)
+    # plt.close()
     
-    # 7a
-    fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.scatter(arrs['duration'],arrs['spike'])
-    ax.set_xlabel("Duration [h]")
-    ax.set_ylabel("Overload peak [kW]")
-    plt.tight_layout()
-    plt.savefig('fig7a.pdf',bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # # 7a
+    # fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
+    # ax.scatter(arrs['duration'],arrs['spike'])
+    # ax.set_xlabel("Duration [h]")
+    # ax.set_ylabel("Overload peak [kW]")
+    # plt.tight_layout()
+    # plt.savefig('fig7a.pdf',bbox_inches='tight', pad_inches=0)
+    # plt.close()
     
-    # 7b
-    fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
-    ax.scatter(arrs['recovery'],arrs['energy'])
-    ax.set_xlabel("Recovery time [h]")
-    ax.set_xlim([0,180])
-    ax.set_ylabel("Energy [kWh]")
-    plt.tight_layout()
-    plt.savefig('fig7b.pdf',bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # # 7b
+    # fig, ax = plt.subplots(figsize=(3.54,1.86),dpi=600)
+    # ax.scatter(arrs['recovery'],arrs['energy'])
+    # ax.set_xlabel("Recovery time [h]")
+    # ax.set_xlim([0,180])
+    # ax.set_ylabel("Energy [kWh]")
+    # plt.tight_layout()
+    # plt.savefig('fig7b.pdf',bbox_inches='tight', pad_inches=0)
+    # plt.close()
     
     return
 
@@ -422,7 +422,7 @@ def plot_load_duration_curve(ldc, fl_limit):
     ldc = ldc[ldc[:, 1].argsort()[::-1]]
     
     mpl.rc('font',family='Times New Roman')
-    mpl.rc('font', size=10)
+    mpl.rc('font', size=8)
     
     fig, ax = plt.subplots(figsize=(3.54,2.66),dpi=600)
     ax.plot(ldc[:,1], label="Load duration curve")
@@ -437,8 +437,12 @@ def plot_load_duration_curve(ldc, fl_limit):
     x1, x2, y1, y2 = 0, 50, 7500, 8600
     axins.set_xlim(x1, x2)
     axins.set_ylim(y1, y2)
-    axins.set_xticklabels([])
-    axins.set_yticklabels([])
+    axins.set_xticks([0, 40])
+    axins.set_yticks([7621, 8569])
+    xvalues= 0, 40
+    yvalues= 7621, 8569
+    axins.set_xticklabels(xvalues, fontsize=8,backgroundcolor="white")
+    axins.set_yticklabels(yvalues, fontsize=8,backgroundcolor="white")
     # draw a bbox of the region of the inset axes in the parent axes and
     # connecting lines between the bbox and the inset axes area
     mark_inset(ax, axins, loc1=3, loc2=2, fc="white", ec="0.5")
