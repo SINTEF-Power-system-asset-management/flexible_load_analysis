@@ -1,10 +1,11 @@
 # Flexible Load Analysis
-Flexible Load Analysis (FLANLAN – FLexible (loading, storing and) ANalysis of Load And Net-data-correspondences) is a code platform implemented in Python. It performs loading, parsing, managing, anonymization, preprocessing, modification and analysis of mass load and grid data. Load analysis functionalities currently implemented include 
+Flexible Load Analysis is a code platform implemented in Python. It performs loading, parsing, managing, anonymization, preprocessing, modification and analysis of mass load and grid data. Load analysis functionalities currently implemented include 
 * a stochastic load model (based on http://hdl.handle.net/11250/2476389), 
 * time series analysis to characterize the need for flexibility in the grid area, and
 * "what-if" (or scenario) analyses to study the effects of grid connection of potential new loads with a certain load behaviour
 
-The application of the code platform for characterizing the need for flexibility in an industrial distribution grid is demonstrated in a paper available as a preprint at https://doi.org/10.36227/techrxiv.20219964.
+The application of the code platform for characterizing the need for flexibility in an industrial distribution grid is demonstrated in a paper published here: http://doi.org/10.1109/SEST53650.2022.9898467
+Erratum: The aggregated load reported in the publication was found to be erroneous. We are currently working on a fix on the load aggregation function in the code.
 
 The code is developed by SINTEF Energi AS in conjunction with CINELDI WP1.
 
