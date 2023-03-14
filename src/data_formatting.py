@@ -60,7 +60,7 @@ def split_txt_by_ID_and_encode(str_path_txt, str_separator, int_column_IDs, dict
         else:
             print(
                 "WARNING! Duplicate split load-file! Delete all old files before continuing.")
-    return
+    return str_folder
 
 
 def encode_directory_contents(str_dir_path, dict_encoding):
@@ -135,7 +135,23 @@ def format_data_files(dict_data_unsplit, dict_network, str_path_encoding=None, a
     str_path = dict_data_unsplit["path"]
     str_separator = dict_data_unsplit["separator"]
     int_ID_column = dict_data_unsplit["ID_column"]
-    split_txt_by_ID_and_encode(str_path, str_separator, int_ID_column, dict_encoding)
+    new_load_data_path = split_txt_by_ID_and_encode(str_path, str_separator, int_ID_column, dict_encoding)
+    
+    text_to_search = "2019;"
+    text_to_replace = "2019 00:00:00;"
+    for filename in os.listdir(new_load_data_path):
+        f = os.path.join(new_load_data_path, filename)
+        # checking if it is a file
+        if os.path.isfile(f):
+            print(f)
+            g=open(f,'r')
+            filedata=g.read()
+            g.close()
+            # Adding midnight timestamp
+            newdata = filedata.replace(text_to_search,text_to_replace)
+            g=open(f,'w')
+            g.write(newdata)
+            g.close()  
 
     print("Encoding network-data...")
     str_path = dict_network["path"]
@@ -143,6 +159,7 @@ def format_data_files(dict_data_unsplit, dict_network, str_path_encoding=None, a
     encode_directory_contents(str_path, dict_encoding)
 
     print("Successfully performed all data-operations")
+     
     return
 
 
