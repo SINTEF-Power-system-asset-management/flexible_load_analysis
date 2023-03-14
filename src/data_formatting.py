@@ -103,12 +103,12 @@ def encode_directory_contents(str_dir_path, dict_encoding):
 
 
 def automatic_encoding(str_network_dir_path):
-    # Automatic naming as "R(adial)xS(voltage)yT(number)"
+    # Automatic naming as "r(adial)xv(voltage)yb(number)"
     df_bus = pd.read_csv(str_network_dir_path + "bus.csv", sep=";")
 
-    df_bus['zone_and_voltage'] = df_bus.apply(lambda x: f"R{x.BUS_AREA}S{x.BASE_KV}", axis=1)
+    df_bus['zone_and_voltage'] = df_bus.apply(lambda x: f"r{x.BUS_AREA}v{x.BASE_KV}", axis=1)
     df_bus['instances'] = df_bus.groupby('zone_and_voltage').cumcount()+1
-    df_bus["IDs"] = df_bus.apply(lambda x: f"{x.zone_and_voltage}T{x.instances}", axis=1)
+    df_bus["IDs"] = df_bus.apply(lambda x: f"{x.zone_and_voltage}b{x.instances}", axis=1)
 
     dict_encoding = dict(zip(df_bus.BUS_I, df_bus.IDs))
 
@@ -152,15 +152,15 @@ if __name__=="__main__":
     # "example_load_data_split" before running this script, or else it will do
     # nothing.
     dict_data_unsplit = {
-        "path": "../in_data/example_data/example_load_data.txt",
+        "path": "../in_data/raw_ora_data/load.txt",
         "separator": ";",
         "ID_column": 0
     }
     dict_network = {
-        "path": "../in_data/example_data/example_network/",
+        "path": "../in_data/raw_ora_data/network/",
         "separator": ";"
     }
-    str_path_encoding = "../in_data/example_data/example_encoding.xlsx"
+    str_path_encoding = "../in_data/raw_ora_data/raw_ora_encoding.xlsx"
 
     # Do not change this.
     format_data_files(
