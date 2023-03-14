@@ -1,4 +1,6 @@
 __pycache__
 .vscode
+in_data/example_data/example_load_data_split_and_encoded
+in_data/example_data/example_network_encoded/
 in_data/ora_data/
 in_data/raw_ora_data/
