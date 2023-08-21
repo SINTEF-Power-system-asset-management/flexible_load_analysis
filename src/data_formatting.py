@@ -104,7 +104,7 @@ def encode_directory_contents(str_dir_path, dict_encoding):
 
 def automatic_encoding(str_network_dir_path):
     # Automatic naming as "R(adial)xS(voltage)yT(number)"
-    df_bus = pd.read_csv(str_network_dir_path + "bus.csv", sep=";")
+    df_bus = pd.read_csv(str_network_dir_path + "bus.csv", sep=";", dtype=str)
 
     df_bus['zone_and_voltage'] = df_bus.apply(lambda x: f"R{x.BUS_AREA}S{x.BASE_KV}", axis=1)
     df_bus['instances'] = df_bus.groupby('zone_and_voltage').cumcount()+1
@@ -112,12 +112,12 @@ def automatic_encoding(str_network_dir_path):
 
     dict_encoding = dict(zip(df_bus.BUS_I, df_bus.IDs))
 
-    print(dict_encoding)
-
     return dict_encoding
 
 
 def format_data_files(dict_data_unsplit, dict_network, str_path_encoding=None, auto_encode=True):
+    if auto_encode and not (str_path_encoding is None):
+        print("Warning, performing autoencoding while providing explicit encoding ignores the latter!")
     print("Loading encoding...")
     if auto_encode:
         dict_encoding = automatic_encoding(dict_network["path"])
@@ -152,15 +152,15 @@ if __name__=="__main__":
     # "example_load_data_split" before running this script, or else it will do
     # nothing.
     dict_data_unsplit = {
-        "path": "../in_data/example_data/example_load_data.txt",
+        "path": "in_data/example_data/example_load_data.txt",
         "separator": ";",
         "ID_column": 0
     }
     dict_network = {
-        "path": "../in_data/example_data/example_network/",
+        "path": "in_data/example_data/example_network/",
         "separator": ";"
     }
-    str_path_encoding = "../in_data/example_data/example_encoding.xlsx"
+    str_path_encoding = "in_data/example_data/example_encoding.xlsx"
 
     # Do not change this.
     format_data_files(
