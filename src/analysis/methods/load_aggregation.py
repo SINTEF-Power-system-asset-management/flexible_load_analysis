@@ -62,6 +62,7 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node):
     # Aggregering blir samme bredde-først søk fra agg_node til alle dens koblinger UNNTATT forelderen
     ts_agg = np.empty((0))
     prev_node = agg_node
+    explored = []
     # Vi skal søke for alle koblinger unntatt parent_node fra forrige BFS
     queue = network.list_children_of_node(agg_node, d_network) - [parent_node]
     while queue:
