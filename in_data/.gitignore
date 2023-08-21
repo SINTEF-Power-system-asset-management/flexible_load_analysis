@@ -1,4 +1,4 @@
-*
-*/
-!example_data/
-!.gitignore
+/*
+/*/
+!/example_data/
+/!.gitignore
