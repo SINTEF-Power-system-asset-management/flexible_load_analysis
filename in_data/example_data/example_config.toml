@@ -2,7 +2,7 @@
 # Change values to achieve the desired functionality.
 # Non-empty strings equate to boolean True, empty strings equate to False.
 
-name = "Flexible Load Modelling"
+name = "Example FLA configuration"
 
 [data]
 

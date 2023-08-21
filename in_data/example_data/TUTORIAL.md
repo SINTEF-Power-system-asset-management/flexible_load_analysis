@@ -11,7 +11,7 @@ File containing configuration of the program runtime, such as which parts of the
 See ../config.toml
 
 ## load_data
-The program requires measurements of the loads at each customer/load-point as seperate files stored in it's own directory.
+The program requires measurements of the loads at each customer/load-point as seperate files stored in its own directory.
 
 If the load-measurements are stored in a single file, typically when exported from a database, data_formatting.py may be used together with an encoding to split the data-file into a directory based on customer ID's. More on encodings later.
 
