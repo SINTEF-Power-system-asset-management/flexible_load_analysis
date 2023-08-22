@@ -125,6 +125,20 @@ def list_children_of_node(node, dict_network):
     return x
 
 
+def list_currently_connected_nodes(node, dict_network):
+    """Returns IDs of all nodes connected to specified node. Ignores nodes connected by non-active branch.
+    """
+    dict_branch = dict_network['branch']
+    x = []
+
+    for i in range(len(dict_branch['F_BUS'])):
+        if dict_branch['F_BUS'][i] == node and dict_branch["BR_STATUS"][i] == "1":
+            x.append(dict_branch['T_BUS'][i])
+        elif dict_branch['T_BUS'][i] == node and dict_branch["BR_STATUS"][i] == "1":
+            x.append(dict_branch['F_BUS'][i])
+    return x
+
+
 def node_in_network(n_node, g_network):
     return (n_node in g_network["bus"]["BUS_I"])
 

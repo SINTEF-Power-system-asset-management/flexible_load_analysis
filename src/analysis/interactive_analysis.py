@@ -70,6 +70,10 @@ def interactive_load_aggregation(dict_analysis_config, dict_results, dict_loads_
     # 2. Perform analysis.
     ts_agg = load_aggregation.aggregate_load_of_node(
         str_load_ID, dict_loads_ts, g_network, str_ref_ID)
+    if ts_agg.size == 0:
+        print("Aggregation resulted in no load timeseries, skipping plotting.")
+        return dict_results
+
 
     # 3. Present results graphically or numerically.
     print("Got the following aggregated load at node", str_load_ID)
