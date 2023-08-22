@@ -127,6 +127,60 @@ def load_time_and_data_from_txt(
     return arr_time, arr_data
 
 
+def load_time_and_data_from_csv(
+        str_path_csv,
+        str_separator,
+        int_time_column,
+        int_data_column,
+        vertical_data=True):
+    """Loads time and data-columns from csv-file
+
+    Parameters
+    ----------
+    str_path_csv : str
+        Relative path of csv-file to be loaded.
+    str_separator : str
+        Character or string separating each column.
+    int_time_column, int_data_column : int
+        Column (row) the relevant information occupies. Zero-indexed.
+    vertical_data, bool, default=True
+        Whether the time/data-values occupy rows downwards ("vertical") or not.
+
+    Returns
+    ----------
+    arr_time : np.array
+        Array of time-values.
+    arr_data : np.array
+        Array of data-values.
+
+    Raises
+    ----------
+    FileNotFoundError
+        If pandas can't find str_path_csv.
+
+    Notes
+    ----------
+    Requires pandas as dependency.
+
+    Assumes the first row (column) is used for labeling and therefore does not
+    load this row (column).
+
+    The returned arrays are coordinated in the sense that the ith element of
+    each array correspond to the same row in the loaded excel-sheet.
+    """
+    try:
+        df_csv = pd.read_csv(str_path_csv, sep=str_separator, dtype=str)
+    except FileNotFoundError:
+        print("File not found, check path in config.toml")
+        raise FileNotFoundError
+    arr_excel_sheet = np.array(df_csv)
+    if not vertical_data:
+        arr_excel_sheet = np.transpose(arr_excel_sheet)
+    arr_time = arr_excel_sheet[:, int_time_column]
+    arr_data = arr_excel_sheet[:, int_data_column]
+    return arr_time, arr_data
+
+
 def convert_general_time_array_to_datetime_array(
         arr_time_general,
         list_time_format,
@@ -267,7 +321,17 @@ def load_data_and_create_timeseries(dict_data_config):
                 int_time_column, int_data_column, bool_vertical_data)
 
         elif str_data_filetype == ".csv":
-            raise Exception("Not yet implemented")
+            str_separator = dict_data_config["separator"]
+            int_time_column = dict_data_config["time_column"]
+            int_data_column = dict_data_config["data_column"]
+            bool_vertical_data = dict_data_config["vertical_data"]
+
+            arr_time, arr_data = load_time_and_data_from_csv(
+                str_path, str_separator,
+                int_time_column, int_data_column, bool_vertical_data)
+        
+        else:
+            raise(Exception(f"Unrecognized or non-implemented filetype: {str_data_filetype}"))
 
         # elif str_data_filetype == ".example"
         #   Code for additional formats
