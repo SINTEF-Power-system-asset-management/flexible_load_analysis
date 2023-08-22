@@ -12,10 +12,11 @@ The unit of the load is implicitly kW (KiloWatt), but changing this will not aff
 
 """
 import datetime as dt
-import init.preprocessing as preprocessing
-import modelling.modelling as modelling
-import utilities
-import plotting
+
+from ..init import preprocessing
+from ..modelling import modelling
+from .. import utilities
+from .. import plotting
 
 
 def prepare_all_loads(dict_config, dict_data):

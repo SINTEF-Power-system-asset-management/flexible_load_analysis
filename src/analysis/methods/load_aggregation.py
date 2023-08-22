@@ -1,8 +1,8 @@
 """Aggregation of all loads "downstream" to some other node.
 """
 import numpy as np
-import objects.timeseries as ts
-import objects.network as network
+
+from ...objects import network, timeseries as ts
 
 def _voltage_for_node_id(node, d_network):
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)

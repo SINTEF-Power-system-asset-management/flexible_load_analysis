@@ -1,9 +1,9 @@
 # Aggregation factor: The ratio between a child's load at the point of the node's aggregated max load, and the child's max load
 # Norsk: "Sammenlagringsfaktor"
 
-from load_aggregation import aggregate_load_of_node
-from max_load import find_max_load
-import objects.network as network
+from .load_aggregation import aggregate_load_of_node
+from .max_load import find_max_load
+from ...objects import network
 
 def aggregation_factors(str_bus_ID, dict_loads_ts, g_network): 
 

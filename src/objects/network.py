@@ -17,7 +17,8 @@ import pandapower as pp
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import utilities
+
+from .. import utilities
 
 
 def plot_network(dict_network):

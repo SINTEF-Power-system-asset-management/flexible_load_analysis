@@ -1,8 +1,7 @@
-from init import data_loading
-import objects.load_points as load_points
-import objects.net_modification as net_modification
-from analysis import interactive_analysis
-import utilities
+from .init import data_loading
+from .objects import load_points, net_modification
+from .analysis import interactive_analysis
+from . import utilities
 
 print()
 print("#############################################################################################")
@@ -10,7 +9,7 @@ print("##                              Generic Load Modelling                   
 print("#############################################################################################")
 print()
 
-STR_CONFIG_PATH = "in_data/example_data/example_config.toml"
+STR_CONFIG_PATH = "in_data/norwegian_low_voltage/config.toml"
 dict_config, dict_data, dict_network = data_loading.initialize_config_and_data(
     STR_CONFIG_PATH)
 

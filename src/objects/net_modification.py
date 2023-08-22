@@ -1,10 +1,12 @@
-import objects.network as network
-import objects.load_points as load_points
-import objects.timeseries as ts
-import modelling.modelling as modelling
-import numpy as np
 import copy
-import utilities
+
+import numpy as np
+
+from . import network
+from . import load_points
+from  . import timeseries as ts
+from ..modelling import modelling
+from .. import utilities
 
 
 def add_new_load_to_net(str_new_load_ID, ts_new_load_data, str_parent_node_ID, dict_loads_ts, g_network):

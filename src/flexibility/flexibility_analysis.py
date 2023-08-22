@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import analysis.methods.load_aggregation as load_aggregation
-import plotting
-from flexibility.flexibility_need import OverloadEvent
+
+from ..analysis.methods import load_aggregation
+from .. import plotting
+from .flexibility_need import OverloadEvent
 
 def find_branch_closest_to_overload(loads, network):
     maxs = []

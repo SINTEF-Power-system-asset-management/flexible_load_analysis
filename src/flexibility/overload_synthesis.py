@@ -1,11 +1,12 @@
 import copy
+
 import numpy as np
-import plotting
-import analysis.methods.load_aggregation as load_aggregation
-import flexibility.flexibility_need as flexibility_need
-import flexibility.flexibility_analysis as flexibility_analysis
-import objects.net_modification as net_modification
-import objects.timeseries as ts
+
+from .. import plotting
+from ..analysis.methods import load_aggregation
+from ..objects import net_modification, timeseries as ts
+from . import flexibility_need, flexibility_analysis
+
 
 def add_N_random_loads(loads, network, agg_index, num_iterations, 
                                     plot_aggregate=True, plot_histogram=True, plot_clustering=True):

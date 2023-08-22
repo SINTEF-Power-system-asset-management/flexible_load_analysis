@@ -1,9 +1,10 @@
 import numpy as np
-import objects.load_points as load_points
-import init.data_loading as init
-import utilities as util
-from flexibility.overload_synthesis import *
-from flexibility.flexibility_analysis import *
+
+from .objects import load_points
+from .init import data_loading as init
+from . import utilities as util
+from .flexibility.overload_synthesis import *
+from .flexibility.flexibility_analysis import *
 
 if __name__ == "__main__":
 

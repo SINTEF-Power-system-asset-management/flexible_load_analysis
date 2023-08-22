@@ -1,5 +1,6 @@
 import numpy as np
-import utilities
+
+from .. import utilities
 
 def create_standard_time_series(arr_time_dt, arr_data):
     """Returns timeseries on standardized format

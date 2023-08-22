@@ -1,10 +1,12 @@
 import os
 import datetime as dt
+
 import pandas as pd
 import numpy as np
 import toml
-from objects import timeseries as ts
-from utilities import print_dictionary_recursive
+
+from ..objects import timeseries as ts
+from ..utilities import print_dictionary_recursive
 
 
 def load_config(str_config_path):

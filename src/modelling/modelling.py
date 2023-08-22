@@ -1,4 +1,4 @@
-from modelling.models import toenne
+from .models import toenne
 
 
 def model_load(dict_modelling_config, dict_data_ts):
