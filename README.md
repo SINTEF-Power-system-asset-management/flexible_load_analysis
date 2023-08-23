@@ -1,11 +1,11 @@
 # Flexible Load Analysis
-Flexible Load Analysis is a Python script for modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
+Flexible Load Analysis is a Python package for loading, modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
 The program was originally made to test load-modelling methods described in [Erling Tønne's Doctoral Thesis](http://hdl.handle.net/11250/2476389).  
 The script is created by SINTEF Energi AS in conjunction with CINELDI WP1.
 
 ## Installation
-The script is installed by cloning this repository to your own local machine.
-Running the script requires the following dependencies:
+The package is installed by cloning this repository to your own local machine.
+Using the package requires the following dependencies:
 
 ### Dependencies
 * Python 3
@@ -17,19 +17,24 @@ Running the script requires the following dependencies:
 * [pandapower](https://www.pandapower.org/)
 
 Install all dependencies by running  
-```Powershell
+```bash
 python3 -m pip install -r requirements.txt
 ```
 
 ## Usage
-To use this script, change config.toml to reflect placement and structure of your load-timeseries dataset, as well as changing any other relevant fields.
-Remember to update the path of the config in main.py as well.
+The library can be used standalone with any of the included scripts.
+
+More relevantly, however, is using the functionality for loading, data-structures and analyses in your own project as an included package. 
+As of now, this is done by adding this repo as a git submodule into your own project, adding the packages' requirements into your own,
+installing these and then importing the package like any other python package.
+
+To use the included scripts, create a fitting config-file to reflect placement and structure of your load-timeseries dataset, as well as changing any other relevant fields.
 
 Required data-files and supported formats is described in example_data\TUTORIAL.md
 
-After this, the program may be ran by running
-```Bash
-python src/main.py
+After this, the included scripts may be ran by running
+```bash
+python3 -m scripts.interactive_FLA
 ```
 
 See the source-code for how to implement custom preprocessing-steps as well as other models.
