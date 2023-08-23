@@ -1,10 +1,10 @@
 import numpy as np
 
-from .objects import load_points
-from .init import data_loading as init
-from . import utilities as util
-from .flexibility.overload_synthesis import *
-from .flexibility.flexibility_analysis import *
+from flexible_load_analysis.objects import load_points
+from flexible_load_analysis.init import data_loading as init
+from flexible_load_analysis import utilities as util
+from flexible_load_analysis.flexibility.overload_synthesis import *
+from flexible_load_analysis.flexibility.flexibility_analysis import *
 
 if __name__ == "__main__":
 

@@ -1,7 +1,7 @@
-from .init import data_loading
-from .objects import load_points, net_modification
-from .analysis import interactive_analysis
-from . import utilities
+from flexible_load_analysis.init import data_loading
+from flexible_load_analysis.objects import load_points, net_modification
+from flexible_load_analysis.analysis import interactive_analysis
+from flexible_load_analysis import utilities
 
 print()
 print("#############################################################################################")
