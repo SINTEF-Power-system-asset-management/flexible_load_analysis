@@ -9,7 +9,7 @@ print("##                              Generic Load Modelling                   
 print("#############################################################################################")
 print()
 
-STR_CONFIG_PATH = "in_data/norwegian_low_voltage/config.toml"
+STR_CONFIG_PATH = "in_data/example_data/example_config.toml"
 dict_config, dict_data, dict_network = data_loading.initialize_config_and_data(
     STR_CONFIG_PATH)
 
