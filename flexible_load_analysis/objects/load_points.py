@@ -33,15 +33,16 @@ def prepare_all_loads(dict_config, dict_data):
     date_end = dt.date.fromisoformat(
         dict_config["data"]["load_measurements"]["last_date_iso"])
 
-    ts_temperature_historical = utilities.get_first_value_of_dictionary(
-        dict_data["temperature_measurements"])
-    ts_temperature_historical = preprocessing.remove_nan_and_none_datapoints(
-        ts_temperature_historical)
-    dict_daily_normal_temperature = preprocessing.compute_daily_historical_normal(
-        ts_temperature_historical)
-    dict_temperature_n_day_average = preprocessing.create_n_day_average_dict(
-        ts_temperature_historical,
-        date_start, date_end,  n=3)
+    if dict_config["preprocessing"]["correct_for_temperature"]:
+        ts_temperature_historical = utilities.get_first_value_of_dictionary(
+            dict_data["temperature_measurements"])
+        ts_temperature_historical = preprocessing.remove_nan_and_none_datapoints(
+            ts_temperature_historical)
+        dict_daily_normal_temperature = preprocessing.compute_daily_historical_normal(
+            ts_temperature_historical)
+        dict_temperature_n_day_average = preprocessing.create_n_day_average_dict(
+            ts_temperature_historical,
+            date_start, date_end,  n=3)
 
     print("Preparing all loads in network...")
     # Preprocessing and potential modelling of every load-point
@@ -52,8 +53,9 @@ def prepare_all_loads(dict_config, dict_data):
 
         dict_node_ts = {}
         dict_node_ts["load_measurements"] = dict_data["load_measurements"][str_node_ID]
-        dict_node_ts["normal_temperature"] = dict_daily_normal_temperature
-        dict_node_ts["n-day_average_temperature"] = dict_temperature_n_day_average
+        if dict_config["preprocessing"]["correct_for_temperature"]:
+            dict_node_ts["normal_temperature"] = dict_daily_normal_temperature
+            dict_node_ts["n-day_average_temperature"] = dict_temperature_n_day_average
 
         print("Preprocessing", str_node_ID + "...")
         dict_node_ts = preprocessing.preprocess_data(
