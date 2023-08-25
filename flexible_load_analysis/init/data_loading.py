@@ -372,7 +372,8 @@ def load_network_from_directory(dict_network_config):
 
     list_paths_to_be_loaded = []
     for str_file_path in os.listdir(str_dir_path):
-        list_paths_to_be_loaded.append(str_dir_path + str_file_path)
+        _filename, extension = os.path.splitext(str_dir_path + str_file_path)
+        if extension == ".csv": list_paths_to_be_loaded.append(str_dir_path + str_file_path)
 
     dict_network = {}
     for str_path in list_paths_to_be_loaded:
