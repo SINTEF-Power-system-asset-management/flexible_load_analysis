@@ -252,6 +252,12 @@ def remove_node(dict_network, n_node):
     return dict_network
 
 
+def get_network_reference_bus_ID(dict_network):
+    dict_bus = dict_network["bus"]
+    ref_bus_idx = np.where(dict_bus["BUS_TYPE"] == 3)
+    return dict_bus["BUS_I"][ref_bus_idx]
+
+
 def input_until_node_in_network_appears(dict_network):
     bool_ID_in_network = False
     while not bool_ID_in_network:
