@@ -276,10 +276,6 @@ def load_data_and_create_timeseries(dict_data_config):
     ----------
     ts_data : timeseries = np.array([datetime, float])
         Timeseries of loaded data.
-
-    Notes
-    ----------
-    Main functionality of this module.
     """
     str_data_path = dict_data_config["path"]
     str_data_date_format = dict_data_config["date_format"]
@@ -402,6 +398,10 @@ def initialize_config_and_data(str_config_path):
         Pairs of data-sources as strings and loaded datafiles on timeseries-format.
     dict_network : dict
         Dictionary of network-information required to build graph-representation.
+        
+    Notes
+    ----------
+    Main functionality of this module.
     """
     ## Loading config ###
     print("Preparing to load config-file:", str_config_path)
