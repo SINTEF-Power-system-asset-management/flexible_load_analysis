@@ -1,7 +1,6 @@
 import numpy as np
 
-from flexible_load_analysis.objects import load_points
-from flexible_load_analysis.init import data_loading as init
+from flexible_load_analysis.init import data_loading as init, preprocessing
 from flexible_load_analysis import utilities as util
 from flexible_load_analysis.flexibility.overload_synthesis import *
 from flexible_load_analysis.flexibility.flexibility_analysis import *
@@ -15,7 +14,7 @@ if __name__ == "__main__":
         STR_CONFIG_PATH)
 
     # Data-structure
-    dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)
+    dict_loads_ts = preprocessing.prepare_all_loads(dict_config, dict_data)
     
     add_N_random_loads(dict_loads_ts, dict_network, agg_index=1, num_iterations=50, plot_aggregate=True, plot_histogram=True)
     

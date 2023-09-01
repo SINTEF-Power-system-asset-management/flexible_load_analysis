@@ -1,5 +1,5 @@
-from flexible_load_analysis.init import data_loading
-from flexible_load_analysis.objects import load_points, net_modification
+from flexible_load_analysis.init import data_loading, preprocessing
+from flexible_load_analysis.objects import net_modification
 from flexible_load_analysis.analysis import interactive_analysis
 from flexible_load_analysis import utilities
 
@@ -14,7 +14,7 @@ dict_config, dict_data, dict_network = data_loading.initialize_config_and_data(
     STR_CONFIG_PATH)
 
 # Network datastructures
-dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
+dict_loads_ts = preprocessing.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
 
 dict_results = {}
 bool_continue_modification_and_analysis = True
