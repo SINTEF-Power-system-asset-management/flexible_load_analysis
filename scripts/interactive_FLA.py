@@ -14,7 +14,7 @@ dict_config, dict_data, dict_network = data_loading.initialize_config_and_data(
     STR_CONFIG_PATH)
 
 # Network datastructures
-dict_loads_ts = preprocessing.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
+dict_loads_ts, dict_preprocessing_log = preprocessing.preprocess_all_loads(dict_config, dict_data)         # Leaf-Nodes
 
 dict_results = {}
 bool_continue_modification_and_analysis = True

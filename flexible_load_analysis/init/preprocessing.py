@@ -1,4 +1,5 @@
 import datetime as dt
+import copy
 
 import numpy as np
 
@@ -7,34 +8,11 @@ from .. import utilities
 
 """Module for performing various timeseries preprocessing steps.
 The module functionality is designed to be pipeline-able, in that
-a choice of preprocessing methods may be run back to back. 
+a choice of preprocessing methods may be run back to back.
 """
 
-def remove_nan_and_none_datapoints(ts_data):
-    """Removes datapoints containing NaN or None.
 
-    Parameters
-    ----------
-    dict_data_ts : dict(timeseries)
-        Dictionary of all timeseries to remove NaN and None from.
-
-    Returns
-    ----------
-    dict_data_ts : dict(timeseries)
-        Dictionary of all timeseries without NaN and None-values.
-    """
-    print("Removing NaN and None datapoints...")
-    
-    list_good_indeces = []
-    for dp in ts_data:
-        dp = list(dp)
-        if (not None in dp) and (dp == dp):
-            list_good_indeces.append(True)
-        else:
-            list_good_indeces.append(False)
-    ts_data = ts_data[list_good_indeces]
-    return ts_data
-
+# Helper functions
 
 def datetime_to_yearless_iso_string(dt):
     """Converts datetime-object to string of date without year on iso format.
@@ -133,8 +111,80 @@ def create_n_day_average_dict(ts_basis, date_start, date_end,  n):
     raise(Exception("Start or end date missing from basis-timeseries"))
 
 
+
+# Preprocessing steps
+# Supported preprocessing steps must take a timeseries as first argument,
+# a dictionary for optional storing of preprocessing performed and thirdly
+# *args and **kwargs.
+# Only return is the processed timeseries
+
+# TODO: Create separate modules for each preprocessing step
+# TODO: Create enforcement of interface
+
+def remove_nan_and_none_datapoints(ts_data, dict_preprocessing_log, fill_isolated_method=None):
+    """Removes datapoints containing NaN or None.
+
+    Parameters
+    ----------
+    dict_data_ts : dict(timeseries)
+        Dictionary of all timeseries to remove NaN and None from.
+
+    Returns
+    ----------
+    dict_data_ts : dict(timeseries)
+        Dictionary of all timeseries without NaN and None-values.
+    """
+    print("Removing NaN and None datapoints...")
+    
+    list_good_indeces = []
+    for dp in ts_data:
+        dp = list(dp)
+        if (not None in dp) and (dp == dp):
+            list_good_indeces.append(True)
+        else:
+            list_good_indeces.append(False)
+    if fill_isolated_method is None or fill_isolated_method == "":
+        ts_data = ts_data[list_good_indeces]
+    else:
+        # Any data-filling technique other than none requires knowledge of isolated Nans
+        num_datapoint = len(list_good_indeces)
+        isolated_missing_points_idxs = []
+        for i in range(num_datapoint):
+            i_is_bad_datapoint = (list_good_indeces[i] == False)
+            i_neighbours_good_datapoints = True
+            # Only check neighbouring datapoints if not at ends of timeseries
+            if i != 0: i_neighbours_good_datapoints = i_neighbours_good_datapoints and (list_good_indeces[i - 1] == True)
+            if i != num_datapoint - 1: i_neighbours_good_datapoints = i_neighbours_good_datapoints and (list_good_indeces[i + 1] == True)
+            if i_is_bad_datapoint and i_neighbours_good_datapoints: isolated_missing_points_idxs.append(i)
+
+        if fill_isolated_method=="lin_interp":
+            raise(NotImplementedError)
+        elif fill_isolated_method=="quadratic_interp":
+            raise(NotImplementedError)
+        else:
+            raise(NotImplementedError)
+
+    dict_preprocessing_log["remove_NaN_and_None"] = {"good_indices" : list_good_indeces}
+    return ts_data
+
+
+def remove_negative_values(ts_data):
+    raise(NotImplementedError)
+    dict_preprocessing_log["remove_negative_values"] = {"result1" : variable}
+    return ts_data
+
+
+def fill_missing_data(ts_data):
+    """Finds missing timestamps given some expected resolution and fills using selected method.
+    """
+    # Should really import some method from timeseries, for cleanliness
+    raise(NotImplementedError)
+    dict_preprocessing_log["fill_missing_data"] = {"result1" : variable}
+    return ts_data
+
+
 def correct_load_for_temperature_deviations(
-        ts_load, 
+        ts_load, dict_preprocessing_log,
         dict_daily_normal_temperature,
         dict_temperature_n_day_average,
         k, x):
@@ -162,6 +212,7 @@ def correct_load_for_temperature_deviations(
     print("Performing temperature-correction of load-data...")
     # Correction step
     ts_load_corrected = np.zeros_like(ts_load)
+    skipped_timestamps = []
     for i in range(len(ts_load)):
         arr_datapoint_i = ts_load[i]
         dt_time_i = arr_datapoint_i[0]
@@ -177,74 +228,22 @@ def correct_load_for_temperature_deviations(
             except KeyError:
                 print(f"Temperature for {dt_time_i} missing, skipping correction")
                 fl_load_corrected_i = fl_load_i
+                skipped_timestamps.append(dt_time_i)
         else:
             fl_load_corrected_i = fl_load_i
 
         ts_load_corrected[i][0] = dt_time_i
         ts_load_corrected[i][1] = fl_load_corrected_i
 
+    dict_preprocessing_log["correct_for_temperature"] = {"skipped_timestamps" : skipped_timestamps}
     return ts_load_corrected
 
 
-def preprocess_data(dict_preprocessing_config, dict_data_ts):
-    """Performs preprocessing on given data based on configuration.
-
-    Parameters
-    ----------
-    dict_preprocessing_config : dict
-        Dictionary of which preprocessing steps to perform.
-    dict_data_ts : dict(timeseries)
-        Timeseries to preprocess or to use for preprocessing purposes.
-
-    Returns
-    ----------
-    dict_data_ts : dict(timeseries)
-        Input-dictionary with backloaded preprocessed data and biproducts.
-
-    Notes
-    ----------
-    Main functionality of this module.
-    """
-    print("Preprocessing data...")
-
-    list_preprocessing_log = []
-
-    if dict_preprocessing_config["remove_NaN_and_None"]:
-        dict_data_ts["load_measurements"] = remove_nan_and_none_datapoints(dict_data_ts["load_measurements"])
-        list_preprocessing_log.append("remove_nan_and_none")
-
-    if dict_preprocessing_config["correct_for_temperature"]:
-        ts_load = dict_data_ts["load_measurements"]
-        dict_daily_normal_temperature = dict_data_ts["normal_temperature"]
-        dict_temperature_3_day_average = dict_data_ts["n-day_average_temperature"]
-        k = dict_preprocessing_config["k_temperature_coefficient"]
-        x = dict_preprocessing_config["x_temperature_sensitivity"]
-
-        dict_data_ts["load_temperature_corrected"] = correct_load_for_temperature_deviations(
-            ts_load, 
-            dict_daily_normal_temperature,
-            dict_temperature_3_day_average,
-            k, x)
-        list_preprocessing_log.append("correct_for_temperature")
-
-    # Format allows for simple pipelining of additional preprocessing steps.
-    # if dict_preprocessing_config["example"]:
-    #   dict_data_ts["field"] = example_preprocessing_step(dict_preprocessing_config, dict_data_ts["other_field"])
-    # if dict_preprocessing_config["another"]:
-    #   dict_data_ts["other_field"] = another_preprocessing_step(dict_preprocessing_config, dict_data_ts["yet_another_field"])
-
-    if "correct_for_temperature" in list_preprocessing_log:
-        dict_data_ts["load"] = dict_data_ts["load_temperature_corrected"]
-    else:
-        dict_data_ts["load"] = dict_data_ts["load_measurements"]
-
-    print("Successfully completed all preprocessing steps")
-    return dict_data_ts
 
 
-# TODO: Messy, not expandable, uneccesary.
-# Weird to have both preprocessing and prepare_all_loads, which does preprocessing with prework
-def prepare_all_loads(dict_config, dict_data):
+# Preprocessing pipeline
+
+def preprocess_all_loads(dict_config, dict_data):
     """Prepares nodes based on input data and config.
     Parameters
     ----------
@@ -252,48 +251,78 @@ def prepare_all_loads(dict_config, dict_data):
         Configuration-file.
     dict_data : dictionary of measured loads and temperature.
     """
-    print("Preparing common data...")
-    date_start = dt.date.fromisoformat(
+
+    dict_preprocessing_config = dict_config["preprocessing"]
+
+    preprocessing_funcs = []
+    preprocessing_parameters = []
+    
+    # Remove NaN and None values from load-timeseries
+    perform_remove_nan_and_none = dict_preprocessing_config.get("remove_NaN_and_None", False)
+    if perform_remove_nan_and_none:
+        fill_method = dict_preprocessing_config.get("NaN_and_None_removal", {}).get("fill_method", None)
+        preprocessing_funcs.append(remove_nan_and_none_datapoints)
+        preprocessing_parameters.append([fill_method])
+
+    # Temperature correction
+    perform_temperature_correction = dict_preprocessing_config.get("perform_temperature_correction", False)
+    if perform_temperature_correction:
+        date_start = dt.date.fromisoformat(
         dict_config["data"]["load_measurements"]["first_date_iso"])
-    date_end = dt.date.fromisoformat(
+        date_end = dt.date.fromisoformat(
         dict_config["data"]["load_measurements"]["last_date_iso"])
 
-    if dict_config["preprocessing"]["correct_for_temperature"]:
         ts_temperature_historical = utilities.get_first_value_of_dictionary(
             dict_data["temperature_measurements"])
         ts_temperature_historical = remove_nan_and_none_datapoints(
-            ts_temperature_historical)
+            ts_temperature_historical, {})
         dict_daily_normal_temperature = compute_daily_historical_normal(
             ts_temperature_historical)
         dict_temperature_n_day_average = create_n_day_average_dict(
             ts_temperature_historical,
             date_start, date_end,  n=3)
-
-    print("Preparing all loads in network...")
-    # Preprocessing and potential modelling of every load-point
-    dict_loads_ts = {}
-    for str_node_ID in dict_data["load_measurements"]:
-        print("--------------------")
-        print("Preparing load-point", str_node_ID + "...")
-
-        dict_node_ts = {}
-        dict_node_ts["load_measurements"] = dict_data["load_measurements"][str_node_ID]
-        if dict_config["preprocessing"]["correct_for_temperature"]:
-            dict_node_ts["normal_temperature"] = dict_daily_normal_temperature
-            dict_node_ts["n-day_average_temperature"] = dict_temperature_n_day_average
-
-        print("Preprocessing", str_node_ID + "...")
-        dict_node_ts = preprocess_data(
-            dict_config["preprocessing"], dict_node_ts)
-
-        if dict_config["modelling"]["perform_modelling"]:
-            print("Modelling based on dataset", str_node_ID + "...")
-            dict_model = modelling.model_load(
-                dict_config["modelling"], dict_node_ts)
-            dict_loads_ts[str_node_ID] = dict_model["load"]
         
-        dict_loads_ts[str_node_ID] = dict_node_ts["load"]
+        k = dict_config["preprocessing"]["correct_for_temperature"]["k_temperature_coefficient"]
+        x = dict_config["preprocessing"]["correct_for_temperature"]["x_temperature_sensitivity"]
+        
+        preprocessing_funcs.append(correct_load_for_temperature_deviations)
+        preprocessing_parameters.append([dict_daily_normal_temperature, dict_temperature_n_day_average, k, x])
 
+    # Example
+    perform_example_step = dict_preprocessing_config.get("perform_example_step", False)
+    if perform_example_step:
+        fill_method = dict_preprocessing_config.get("NaN_and_None_removal", {}).get("fill_method", None)
+        preprocessing_funcs.append(remove_nan_and_none_datapoints)
+        preprocessing_parameters.append([fill_method])
+
+
+
+    # Actually perform preprocessing.
+    preprocessing_log = {}
+    dict_loads_ts = {}
+
+    print("Preprocessing all loads in network...")
+    for str_node_ID in dict_data["load_measurements"]:
+        print(f"Preparing load-point {str_node_ID}...")
+        load_ts = copy.deepcopy(dict_data["load_measurements"][str_node_ID])
+        preprocessing_log[str_node_ID] = {}
+
+        for func, params in zip(preprocessing_funcs, preprocessing_parameters):
+            load_ts = func(load_ts, preprocessing_log[str_node_ID], *params)
+        
+        dict_loads_ts[str_node_ID] = load_ts
+    
     print("--------------------")
     print("Successfully prepared all load-points")
-    return dict_loads_ts
+    return dict_loads_ts, preprocessing_log
+
+
+
+    """
+    # TODO: Model_all_loads func og slutte å kreve at man sender inn dict hvorav én av keys-a er load. Heller sende load_ts (ett stk!!) og evt ekstra params som valgfri
+    if dict_config["modelling"]["perform_modelling"]:
+        print("Modelling based on dataset", str_node_ID + "...")
+        dict_model = modelling.model_load(
+            dict_config["modelling"], dict_node_ts)
+        dict_loads_ts[str_node_ID] = dict_model["load"]
+    """

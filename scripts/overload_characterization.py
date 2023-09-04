@@ -14,7 +14,7 @@ if __name__ == "__main__":
         STR_CONFIG_PATH)
 
     # Data-structure
-    dict_loads_ts = preprocessing.prepare_all_loads(dict_config, dict_data)
+    dict_loads_ts, dict_preprocessing_log = preprocessing.preprocess_all_loads(dict_config, dict_data)
     
     add_N_random_loads(dict_loads_ts, dict_network, agg_index=1, num_iterations=50, plot_aggregate=True, plot_histogram=True)
     

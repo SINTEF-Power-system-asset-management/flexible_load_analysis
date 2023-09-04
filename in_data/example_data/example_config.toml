@@ -65,9 +65,14 @@ name = "Example FLA configuration"
 
 # Any non-empty string will indicate the chosen preprocessing step is performed
 remove_NaN_and_None = "True"
-correct_for_temperature = "True"
-k_temperature_coefficient = 0.1
-x_temperature_sensitivity = 0.05
+perform_temperature_correction = "True"
+
+    [preprocessing.NaN_and_None_removal]
+    fill_method = ""
+
+    [preprocessing.correct_for_temperature]     # Additional parameters or options
+    k_temperature_coefficient = 0.1     # Optional if perform_step is false
+    x_temperature_sensitivity = 0.05
 
 
 [modelling]
