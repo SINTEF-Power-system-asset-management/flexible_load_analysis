@@ -63,9 +63,9 @@ def interactively_model_based_on_existing_load(dict_loads_ts, dict_modelling_con
     str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
     ts_modelling_baseline = copy.deepcopy(dict_loads_ts[str_ID])
 
-    dict_data_ts = {"load": ts_modelling_baseline}
-    dict_model = modelling.model_load(dict_modelling_config, dict_data_ts)
-    return dict_model["load"]
+    
+    ts_model = modelling.model_single_load(dict_modelling_config, ts_modelling_baseline)
+    return ts_model
 
 
 def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):

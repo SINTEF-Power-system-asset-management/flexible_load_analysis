@@ -3,7 +3,6 @@ import copy
 
 import numpy as np
 
-from ..modelling import modelling
 from .. import utilities
 
 """Module for performing various timeseries preprocessing steps.
@@ -315,14 +314,3 @@ def preprocess_all_loads(dict_config, dict_data):
     print("--------------------")
     print("Successfully prepared all load-points")
     return dict_loads_ts, preprocessing_log
-
-
-
-    """
-    # TODO: Model_all_loads func og slutte å kreve at man sender inn dict hvorav én av keys-a er load. Heller sende load_ts (ett stk!!) og evt ekstra params som valgfri
-    if dict_config["modelling"]["perform_modelling"]:
-        print("Modelling based on dataset", str_node_ID + "...")
-        dict_model = modelling.model_load(
-            dict_config["modelling"], dict_node_ts)
-        dict_loads_ts[str_node_ID] = dict_model["load"]
-    """
