@@ -387,7 +387,7 @@ def load_network_from_directory(dict_network_config):
     return dict_network
 
 
-def initialize_config_and_data(str_config_path):
+def initialize_config_and_data(str_config_path, query_modifications=False):
     """Loads configuration file and creates timeseries from the data-sources.
 
     Returns
@@ -398,11 +398,8 @@ def initialize_config_and_data(str_config_path):
         Pairs of data-sources as strings and loaded datafiles on timeseries-format.
     dict_network : dict
         Dictionary of network-information required to build graph-representation.
-        
-    Notes
-    ----------
-    Main functionality of this module.
     """
+
     ## Loading config ###
     print("Preparing to load config-file:", str_config_path)
     dict_config = load_config(str_config_path)
@@ -410,10 +407,11 @@ def initialize_config_and_data(str_config_path):
     print("----------------------------------------")
     print_dictionary_recursive(dict_config)
     print("----------------------------------------")
-    print("Do you want to override any parameters (No)/Yes?")
-    str_input = str.lower(input())
-    if str_input == 'y' or str_input == 'yes':
-        raise(Exception("Not configured yet"))
+    if query_modifications:
+        print("Do you want to override any parameters (No)/Yes?")
+        str_input = str.lower(input())
+        if str_input == 'y' or str_input == 'yes':
+            raise(Exception("Not configured yet"))
 
     ### Loading data ###
     print("Beginning to load data...")
