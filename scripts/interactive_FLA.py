@@ -1,4 +1,4 @@
-from flexible_load_analysis.init import data_loading, preprocessing
+from flexible_load_analysis.data_initialization import data_loading, preprocessing
 from flexible_load_analysis.modelling import modelling
 from flexible_load_analysis.objects import net_modification
 from flexible_load_analysis.analysis import interactive_analysis

@@ -1,6 +1,6 @@
 import numpy as np
 
-from flexible_load_analysis.init import data_loading as init, preprocessing
+from flexible_load_analysis.data_initialization import data_loading as init, preprocessing
 from flexible_load_analysis import utilities as util
 from flexible_load_analysis.flexibility.overload_synthesis import *
 from flexible_load_analysis.flexibility.flexibility_analysis import *
