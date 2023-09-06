@@ -12,7 +12,7 @@ def add_N_random_loads(loads, dict_network, agg_index, num_iterations,
                                     plot_aggregate=True, plot_histogram=True, plot_clustering=True):
     str_agg_id = dict_network["branch"]["F_BUS"][agg_index]
     fl_limit_kW = float(dict_network["branch"]["RATE_A"][agg_index])*1000
-    reference_bus_ID = network.get_network_reference_bus_ID(dict_network)
+    reference_bus_ID = network.get_reference_bus_ID(dict_network)
 
     all_load_ids = [load_id for load_id in loads]
     l_loads_added = []
@@ -49,7 +49,7 @@ def increase_single_load(loads, dict_network, customer_index, aggregation_index,
     str_customer_id = dict_network["bus"]["BUS_I"][customer_index]
     # Line-limit at aggregation point
     fl_limit_kW = float(dict_network["branch"]["RATE_A"][aggregation_index])*1000
-    reference_bus_ID = network.get_network_reference_bus_ID(dict_network)
+    reference_bus_ID = network.get_reference_bus_ID(dict_network)
 
     ts_agg_before = load_aggregation.aggregate_load_of_node(
                 str_agg_id, loads, dict_network, reference_bus_ID)

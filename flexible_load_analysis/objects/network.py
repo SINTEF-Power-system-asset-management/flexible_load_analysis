@@ -252,14 +252,22 @@ def remove_node(dict_network, n_node):
     return dict_network
 
 
-def get_network_reference_bus_ID(dict_network):
-    dict_bus = dict_network["bus"]
-    ref_bus_idx = np.where(dict_bus["BUS_TYPE"].astype(int) == 3)[0]
+def get_reference_bus_idx(dict_network):
+    ref_bus_idx = np.where(dict_network["bus"]["BUS_TYPE"].astype(int) == 3)[0]
     if ref_bus_idx.shape[0] > 1:
         raise Exception("Found multiple reference buses")
     elif ref_bus_idx.shape[0] < 1:
         raise Exception("Found no reference bus")
-    return dict_bus["BUS_I"][ref_bus_idx[0]]
+    else: return ref_bus_idx[0]
+
+def get_reference_bus_ID(dict_network):
+    idx = get_reference_bus_idx(dict_network)
+    return dict_network["bus"]["BUS_I"][idx]
+
+
+def get_reference_bus_voltage(dict_network):
+    ref_bus_idx = get_reference_bus_idx(dict_network)
+    return float(dict_network["bus"]["BASE_KV"][ref_bus_idx])
 
 
 def input_until_node_in_network_appears(dict_network):
