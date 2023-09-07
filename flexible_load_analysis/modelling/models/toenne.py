@@ -224,7 +224,6 @@ def create_toenne_load_model(ts_measured_load, dict_modelling_log, **dict_parame
     dict_model : dict
         Dictionary of finished model as well as biproducts from modelling.
     """
-    print("Performing Tønne-modelling...")
 
     # Step 1 of Tønne is inherent in the load already being corrected for temperature-deviations
     str_max_or_average_variation = dict_parameters["max_or_average_variation_calculation"]

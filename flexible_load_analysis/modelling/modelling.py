@@ -1,7 +1,7 @@
 from .models import toenne
 from ..utilities import get_first_value_of_dictionary
 
-def model_all_loads(dict_modelling_config, dict_loads_ts):
+def model_all_loads(dict_modelling_config, dict_loads_ts, suppress_status=False):
     str_chosen_model = dict_modelling_config["chosen_model"]
     dict_parameters = dict_modelling_config[str_chosen_model]
 
@@ -14,13 +14,13 @@ def model_all_loads(dict_modelling_config, dict_loads_ts):
     dict_modelled_ts = {}
     dict_modelling_log = {}
     for str_node_ID in dict_loads_ts:
-        print(f"Modelling node {str_node_ID} ...")
+        if not suppress_status: print(f"Modelling node {str_node_ID} ...")
         load_measurement_ts = dict_loads_ts[str_node_ID]
         dict_modelling_log[str_node_ID] = {}
         modelled_ts = modelling_func(load_measurement_ts, dict_modelling_log[str_node_ID], **dict_parameters)
         dict_modelled_ts[str_node_ID] = modelled_ts
     
-    print("Successfully performed all load-modelling")
+    if not suppress_status: print("Successfully performed all load-modelling")
     return dict_modelled_ts, dict_modelling_log
 
 

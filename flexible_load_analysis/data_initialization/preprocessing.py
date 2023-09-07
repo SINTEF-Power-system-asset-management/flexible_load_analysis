@@ -133,7 +133,6 @@ def remove_nan_and_none_datapoints(ts_data, dict_preprocessing_log, fill_isolate
     dict_data_ts : dict(timeseries)
         Dictionary of all timeseries without NaN and None-values.
     """
-    print("Removing NaN and None datapoints...")
     
     list_good_indeces = []
     for dp in ts_data:
@@ -208,7 +207,6 @@ def correct_load_for_temperature_deviations(
         Input-dictionary backloaded with temperature-corrected load and 
         calculated daily historical normal temperature.
     """
-    print("Performing temperature-correction of load-data...")
     # Correction step
     ts_load_corrected = np.zeros_like(ts_load)
     skipped_timestamps = []
@@ -242,7 +240,7 @@ def correct_load_for_temperature_deviations(
 
 # Preprocessing pipeline
 
-def preprocess_all_loads(dict_config, dict_data):
+def preprocess_all_loads(dict_config, dict_data, suppress_status=False):
     """Prepares nodes based on input data and config.
     Parameters
     ----------
@@ -300,9 +298,9 @@ def preprocess_all_loads(dict_config, dict_data):
     preprocessing_log = {}
     dict_loads_ts = {}
 
-    print("Preprocessing all loads in network...")
+    if not suppress_status: print("Preprocessing all loads in network...")
     for str_node_ID in dict_data["load_measurements"]:
-        print(f"Preparing load-point {str_node_ID}...")
+        if not suppress_status: print(f"Preparing load-point {str_node_ID}...")
         load_ts = copy.deepcopy(dict_data["load_measurements"][str_node_ID])
         preprocessing_log[str_node_ID] = {}
 
@@ -311,6 +309,6 @@ def preprocess_all_loads(dict_config, dict_data):
         
         dict_loads_ts[str_node_ID] = load_ts
     
-    print("--------------------")
-    print("Successfully prepared all load-points")
+    if not suppress_status: print("--------------------")
+    if not suppress_status: print("Successfully prepared all load-points")
     return dict_loads_ts, preprocessing_log
