@@ -1,6 +1,0 @@
-Models must be stored in this folder (models) and take as input a dictionary of 
-timeseries, of which at least one is labelled "load" for load-measurements.
-The model must also take an (optionally empty) dictionary of parameters.
-
-The output of the modelling-module must be a dictionary of the modelled load,
-labelled "load" and any biproducts from modelling "biproducts".

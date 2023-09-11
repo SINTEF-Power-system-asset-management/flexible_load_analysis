@@ -208,7 +208,7 @@ def generate_stochastic_model(
     return ts_stochastic_model
 
 
-def create_toenne_load_model(dict_data_ts, dict_parameters):
+def create_toenne_load_model(ts_measured_load, dict_modelling_log, **dict_parameters):
     """Perform all steps of Tønne-algorithm to create stochastic load-model.
 
     Parameters
@@ -224,10 +224,8 @@ def create_toenne_load_model(dict_data_ts, dict_parameters):
     dict_model : dict
         Dictionary of finished model as well as biproducts from modelling.
     """
-    print("Performing Tønne-modelling...")
 
     # Step 1 of Tønne is inherent in the load already being corrected for temperature-deviations
-    ts_measured_load = dict_data_ts["load"]
     str_max_or_average_variation = dict_parameters["max_or_average_variation_calculation"]
     str_variation_value_alternative = dict_parameters["variation_values_alternative"]
 
@@ -269,12 +267,12 @@ def create_toenne_load_model(dict_data_ts, dict_parameters):
         ts_load_deterministic_model, arr_model_error_histogram, dict_parameters["stochastic_source"])
     
     # Backloading of model
-    dict_model = {}
-    dict_model["load"] = ts_load_stochastic_model
-    dict_model["biproducts"] = {
+    dict_modelling_biproducts = {
         "variation_values": dict_variation_values,
         "deterministic_model": ts_load_deterministic_model,
         "error_timeseries": ts_relative_model_error,
         "error_histogram": arr_model_error_histogram
     }
-    return dict_model
+    for key, val in dict_modelling_biproducts.items():
+        dict_modelling_log[key] = val
+    return ts_load_stochastic_model

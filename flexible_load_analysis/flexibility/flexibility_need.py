@@ -1,5 +1,6 @@
 import numpy as np
-import utilities as util
+
+from .. import utilities as util
 
 def remove_unimportant_overloads(l_overloads):
     return list(filter(lambda o: not o.is_unimportant(), l_overloads))

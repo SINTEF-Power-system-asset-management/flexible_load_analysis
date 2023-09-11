@@ -1,10 +1,12 @@
-import objects.network as network
-import objects.load_points as load_points
-import objects.timeseries as ts
-import modelling.modelling as modelling
-import numpy as np
 import copy
-import utilities
+
+import numpy as np
+
+from . import network
+from . import load_points
+from  . import timeseries as ts
+from ..modelling import modelling
+from .. import utilities
 
 
 def add_new_load_to_net(str_new_load_ID, ts_new_load_data, str_parent_node_ID, dict_loads_ts, g_network):
@@ -61,9 +63,9 @@ def interactively_model_based_on_existing_load(dict_loads_ts, dict_modelling_con
     str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
     ts_modelling_baseline = copy.deepcopy(dict_loads_ts[str_ID])
 
-    dict_data_ts = {"load": ts_modelling_baseline}
-    dict_model = modelling.model_load(dict_modelling_config, dict_data_ts)
-    return dict_model["load"]
+    
+    ts_model = modelling.model_single_load(dict_modelling_config, ts_modelling_baseline)
+    return ts_model
 
 
 def interactively_add_new_loads_to_net(dict_config, dict_loads_ts, g_network):

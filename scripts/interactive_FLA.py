@@ -1,8 +1,8 @@
-from init import data_loading
-import objects.load_points as load_points
-import objects.net_modification as net_modification
-from analysis import interactive_analysis
-import utilities
+from flexible_load_analysis.data_initialization import data_loading, preprocessing
+from flexible_load_analysis.modelling import modelling
+from flexible_load_analysis.objects import net_modification
+from flexible_load_analysis.analysis import interactive_analysis
+from flexible_load_analysis import utilities
 
 print()
 print("#############################################################################################")
@@ -14,8 +14,10 @@ STR_CONFIG_PATH = "in_data/example_data/example_config.toml"
 dict_config, dict_data, dict_network = data_loading.initialize_config_and_data(
     STR_CONFIG_PATH)
 
-# Network datastructures
-dict_loads_ts = load_points.prepare_all_loads(dict_config, dict_data)         # Leaf-Nodes
+dict_loads_ts, dict_preprocessing_log = preprocessing.preprocess_all_loads(dict_config, dict_data)         # Leaf-Nodes
+
+if dict_config["modelling"]["perform_modelling"]:
+    dict_loads_ts, dict_modelling_log = modelling.model_all_loads(dict_config["modelling"], dict_loads_ts)
 
 dict_results = {}
 bool_continue_modification_and_analysis = True

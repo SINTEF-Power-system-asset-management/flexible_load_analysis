@@ -1,10 +1,12 @@
 import os
 import datetime as dt
+
 import pandas as pd
 import numpy as np
 import toml
-from objects import timeseries as ts
-from utilities import print_dictionary_recursive
+
+from ..objects import timeseries as ts
+from ..utilities import print_dictionary_recursive
 
 
 def load_config(str_config_path):
@@ -261,7 +263,7 @@ def convert_general_data_array_to_float_array(arr_data):
     return arr_data_float
 
 
-def load_data_and_create_timeseries(dict_data_config):
+def load_data_and_create_timeseries(dict_data_config, suppress_status=False):
     """Loads data based on structured dictionary and creates timeseries.
 
     Parameters
@@ -274,10 +276,6 @@ def load_data_and_create_timeseries(dict_data_config):
     ----------
     ts_data : timeseries = np.array([datetime, float])
         Timeseries of loaded data.
-
-    Notes
-    ----------
-    Main functionality of this module.
     """
     str_data_path = dict_data_config["path"]
     str_data_date_format = dict_data_config["date_format"]
@@ -297,7 +295,7 @@ def load_data_and_create_timeseries(dict_data_config):
 
     dict_loaded_ts = {}
     for str_path in list_paths_to_be_loaded:
-        print("Loading", str_path + "...")
+        if not suppress_status: print("Loading", str_path + "...")
         _str_data_filename, str_data_filetype = os.path.splitext(str_path)
 
         if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
@@ -352,7 +350,7 @@ def load_data_and_create_timeseries(dict_data_config):
     return dict_loaded_ts
 
 
-def load_network_from_directory(dict_network_config):
+def load_network_from_directory(dict_network_config, suppress_status=False):
     """Loads directory of MATPOWER-formatted csv-files to dictionary.
 
     Parameters
@@ -370,11 +368,12 @@ def load_network_from_directory(dict_network_config):
 
     list_paths_to_be_loaded = []
     for str_file_path in os.listdir(str_dir_path):
-        list_paths_to_be_loaded.append(str_dir_path + str_file_path)
+        _filename, extension = os.path.splitext(str_dir_path + str_file_path)
+        if extension == ".csv": list_paths_to_be_loaded.append(str_dir_path + str_file_path)
 
     dict_network = {}
     for str_path in list_paths_to_be_loaded:
-        print("Loading", str_path + "...")
+        if not suppress_status: print("Loading", str_path + "...")
 
         df_network_info = pd.read_csv(str_path, sep=str_separator, dtype=str)
         dict_network_info = {}
@@ -388,7 +387,7 @@ def load_network_from_directory(dict_network_config):
     return dict_network
 
 
-def initialize_config_and_data(str_config_path):
+def initialize_config_and_data(str_config_path, query_modifications=False, suppress_status=False):
     """Loads configuration file and creates timeseries from the data-sources.
 
     Returns
@@ -400,32 +399,35 @@ def initialize_config_and_data(str_config_path):
     dict_network : dict
         Dictionary of network-information required to build graph-representation.
     """
+
     ## Loading config ###
-    print("Preparing to load config-file:", str_config_path)
+    if not suppress_status: print("Preparing to load config-file:", str_config_path)
     dict_config = load_config(str_config_path)
-    print("Loaded the following config-file:")
-    print("----------------------------------------")
-    print_dictionary_recursive(dict_config)
-    print("----------------------------------------")
-    print("Do you want to override any parameters (No)/Yes?")
-    str_input = str.lower(input())
-    if str_input == 'y' or str_input == 'yes':
-        raise(Exception("Not configured yet"))
+    if not suppress_status: print(
+"Loaded the following config-file:\n \
+----------------------------------------")
+    if not suppress_status: print_dictionary_recursive(dict_config)
+    if not suppress_status: print("----------------------------------------")
+    if query_modifications:
+        print("Do you want to override any parameters (No)/Yes?")
+        str_input = str.lower(input())
+        if str_input == 'y' or str_input == 'yes':
+            raise(Exception("Not configured yet"))
 
     ### Loading data ###
-    print("Beginning to load data...")
+    if not suppress_status: print("Beginning to load data...")
     dict_data_config = dict_config["data"]
     dict_data = {}
     for data_source in dict_data_config:
         dict_data[data_source] = load_data_and_create_timeseries(
-            dict_data_config[data_source])
-        print("Successfully loaded:", data_source)
+            dict_data_config[data_source], suppress_status)
+        if not suppress_status: print("Successfully loaded:", data_source)
 
     ### Loading network ###
-    print("Beginning to load network...")
+    if not suppress_status: print("Beginning to load network...")
     dict_network_config = dict_config["network"]
     dict_network = load_network_from_directory(
-        dict_network_config)
+        dict_network_config, suppress_status)
 
-    print("Successfully loaded all components")
+    if not suppress_status: print("Successfully loaded all components")
     return dict_config, dict_data, dict_network

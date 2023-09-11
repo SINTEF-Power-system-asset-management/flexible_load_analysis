@@ -1,0 +1,5 @@
+Models must be stored in this folder (models) and take as input a 
+timeseries, dictionary for storing logging events and biproducts, as well as
+kwargs of any required parameters to the model.
+
+The output of the modelling-module must be a timeseries of the modelled load.

@@ -13,12 +13,17 @@ chosen graph-representation may be changed at will, without needing to
 change code outside this module.
 
 """
+import warnings
+
 import pandapower as pp
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import utilities
 
+from .. import utilities
+
+
+### Conversions
 
 def plot_network(dict_network):
     """
@@ -107,6 +112,10 @@ def convert_network_dictionary_to_pp(dict_network):
     print("Successfully converted MATPOWER-formatted array to pandapower format")
     return pp_network
 
+
+
+### Traversal
+
 def list_nodes(dict_network): 
     """Lists all nodes of network.
     """
@@ -116,6 +125,8 @@ def list_nodes(dict_network):
 def list_children_of_node(node, dict_network):
     """Return child-nodes of a node in directed network.
     """
+    warnings.warn(f"Directed networks are no longer supported. Please refer to {list_currently_connected_nodes} or {all_buses_below}", DeprecationWarning)
+
     dict_branch = dict_network['branch']
     x = []
 
@@ -123,6 +134,71 @@ def list_children_of_node(node, dict_network):
         if dict_branch['F_BUS'][i] == node:
             x.append(dict_branch['T_BUS'][i])
     return x
+
+
+def find_parent(node, dict_network, reference_node=None):
+    """Finds the parent of ```node''' in a radial network, that being the node in the network which leads from ```node''' towards the ```reference_node'''.
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+
+    node_currently_exploring = None
+    explored = []
+    queue = [reference_node]
+    if node == reference_node:
+        parent = None
+    else:
+        # Bredde-først-søk for å finne node som leder fra reference til agg_node
+        while queue:
+            node_currently_exploring = queue.pop()
+            new_children = list_currently_connected_nodes(node_currently_exploring, dict_network)
+            if node in new_children:
+                # noden vi undersøker er har noden vi ønsker å finne som barn <=> noden vi undersøker er foreldren
+                parent = node_currently_exploring
+                break
+            explored.append(node_currently_exploring)
+            # Kun søk noder med lavere eller lik spenning
+            for n in new_children:
+                if (n not in explored) and (voltage_for_node_id(n, dict_network) <= voltage_for_node_id(node_currently_exploring, dict_network)):
+                    queue.append(n)
+        else:
+            # Kommer hit dersom vi aldri break-er fra while
+            print(f"Unable to find route from [{reference_node}] to [{node}]")
+            return np.empty((0))
+
+    return parent  
+
+
+def all_buses_below(node, dict_network, reference_node=None):
+    """Finds all bus-IDs which are below ```node''', meaning they are further away from ```reference_node'''. Warning: Result includes input ```node'''.
+    """
+    # OBS: Resultatet inkluderer noden vi aggregerer fra.
+
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+    parent_node = find_parent(node, dict_network, reference_node)
+
+    node_currently_exploring = node
+    # Vi skal bare utforske nedover
+    queue = [node for node in list_currently_connected_nodes(node, dict_network) if node != parent_node]
+    explored = [node]
+    # BFS hvor man bruker [list_currently_connected(cur_parent) - [cur_parent]] som queue
+    while queue:
+        node_currently_exploring = queue.pop()
+        explored.append(node_currently_exploring)
+        new_children = list_currently_connected_nodes(node_currently_exploring, dict_network)
+        # Kun søk noder med lavere eller lik spenning
+        for n in new_children:
+            if (n not in explored) and (voltage_for_node_id(n, dict_network) <= voltage_for_node_id(node_currently_exploring, dict_network)):
+                queue.append(n)
+    return explored
+
+
+def all_loads_below(node, dict_network, dict_loads, reference_node=None):
+    """Finds all bus-IDs which have load-timeseries and are further away from ```reference_node''' than input ```node'''
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+    buses_below = all_buses_below(node, dict_network, reference_node)
+    loads_below = [bus for bus in buses_below if bus in dict_loads]
+    return loads_below
 
 
 def list_currently_connected_nodes(node, dict_network):
@@ -142,6 +218,9 @@ def list_currently_connected_nodes(node, dict_network):
 def node_in_network(n_node, g_network):
     return (n_node in g_network["bus"]["BUS_I"])
 
+
+
+### Modification
 
 def add_node(dict_network, n_node, n_parent_node):
     """Adds a node and edge branching off a parent-node
@@ -251,6 +330,32 @@ def remove_node(dict_network, n_node):
     return dict_network
 
 
+
+### Accessing
+
+def voltage_for_node_id(node, d_network):
+    node_idx = np.where(d_network["bus"]["BUS_I"] == node)
+    return d_network["bus"]["BASE_KV"][node_idx]
+
+
+def get_reference_bus_idx(dict_network):
+    ref_bus_idx = np.where(dict_network["bus"]["BUS_TYPE"].astype(int) == 3)[0]
+    if ref_bus_idx.shape[0] > 1:
+        raise Exception("Found multiple reference buses")
+    elif ref_bus_idx.shape[0] < 1:
+        raise Exception("Found no reference bus")
+    else: return ref_bus_idx[0]
+
+def get_reference_bus_ID(dict_network):
+    idx = get_reference_bus_idx(dict_network)
+    return dict_network["bus"]["BUS_I"][idx]
+
+
+def get_reference_bus_voltage(dict_network):
+    ref_bus_idx = get_reference_bus_idx(dict_network)
+    return float(dict_network["bus"]["BASE_KV"][ref_bus_idx])
+
+
 def input_until_node_in_network_appears(dict_network):
     bool_ID_in_network = False
     while not bool_ID_in_network:
@@ -261,14 +366,3 @@ def input_until_node_in_network_appears(dict_network):
         else:
             print("Could not find", str_ID, "in network, try again!")
     return str_ID
-
-
-def customers_below(node, loads, g_network):
-    if node in loads:
-        return [node]
-    else:
-        res = []
-        children = list_children_of_node(node, g_network)
-        for id in children:
-            res += customers_below(id, loads, g_network)
-        return res

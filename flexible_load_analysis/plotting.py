@@ -2,12 +2,14 @@
 
 Run plot_selected to plot these figures.
 """
+from calendar import month_abbr
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from calendar import month_abbr
-import utilities as util
-from flexibility.flexibility_need import metric_annotation
+
+from . import utilities as util
+from .flexibility.flexibility_need import metric_annotation
 
 
 def plot_timeseries(list_ts, list_labels, str_title, str_xlabel="Date", str_ylabel="Load [kW]", fl_limit=None):

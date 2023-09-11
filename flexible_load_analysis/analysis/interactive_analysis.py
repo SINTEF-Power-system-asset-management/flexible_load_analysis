@@ -14,10 +14,10 @@ The functions for interactively performing analysis should be structured as foll
 4. Interactively store results to file and/or sub-results-dictionary for ability to
 perform some other analysis on results later.
 """
-import objects.network as network
-import plotting
-import utilities
-from analysis.methods import max_load, load_aggregation, load_duration_curve
+from ..objects import network
+from .. import plotting
+from .. import utilities
+from .methods import max_load, load_aggregation, load_duration_curve
 
 
 # Interactive analysis
