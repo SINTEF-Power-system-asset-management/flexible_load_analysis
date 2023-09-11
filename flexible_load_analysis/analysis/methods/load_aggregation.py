@@ -4,9 +4,6 @@ import numpy as np
 
 from ...objects import network, timeseries as ts
 
-def _voltage_for_node_id(node, d_network):
-    node_idx = np.where(d_network["bus"]["BUS_I"] == node)
-    return d_network["bus"]["BASE_KV"][node_idx]
 
 def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node):
     """Finds timeseries of total load experienced by a node.
@@ -53,7 +50,7 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node):
                 break
             # Kun søk noder med lavere eller lik spenning
             for n in new_children:
-                if (not n in explored) and (_voltage_for_node_id(n, d_network) <= _voltage_for_node_id(prev_node, d_network)):
+                if (not n in explored) and (network.voltage_for_node_id(n, d_network) <= network.voltage_for_node_id(prev_node, d_network)):
                     queue.append(n)
         else:
             print(f"Unable to find route from [{reference_node}] to [{agg_node}]")
@@ -88,7 +85,7 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node):
         new_children = network.list_currently_connected_nodes(prev_node, d_network)
         # Kun søk noder med lavere eller lik spenning
         for n in new_children:
-            if (not n in explored) and (_voltage_for_node_id(n, d_network) <= _voltage_for_node_id(prev_node, d_network)):
+            if (not n in explored) and (network.voltage_for_node_id(n, d_network) <= network.voltage_for_node_id(prev_node, d_network)):
                 queue.append(n)
 
     contributing_nodes.sort()
