@@ -23,6 +23,8 @@ import numpy as np
 from .. import utilities
 
 
+### Conversions
+
 def plot_network(dict_network):
     """
     Convert to NetworkX and plot the topology
@@ -109,6 +111,10 @@ def convert_network_dictionary_to_pp(dict_network):
     pp_network = pp.converter.from_ppc(ppc, f_hz=50, validate_conversion=False)
     print("Successfully converted MATPOWER-formatted array to pandapower format")
     return pp_network
+
+
+
+### Traversal
 
 def list_nodes(dict_network): 
     """Lists all nodes of network.
@@ -212,6 +218,9 @@ def list_currently_connected_nodes(node, dict_network):
 def node_in_network(n_node, g_network):
     return (n_node in g_network["bus"]["BUS_I"])
 
+
+
+### Modification
 
 def add_node(dict_network, n_node, n_parent_node):
     """Adds a node and edge branching off a parent-node
@@ -320,6 +329,9 @@ def remove_node(dict_network, n_node):
         dict_branch['MU_ANGMAX'] = np.delete(dict_branch['MU_ANGMAX'], i)
     return dict_network
 
+
+
+### Accessing
 
 def voltage_for_node_id(node, d_network):
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)
