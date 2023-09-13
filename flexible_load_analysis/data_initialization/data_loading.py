@@ -350,6 +350,15 @@ def load_data_and_create_timeseries(dict_data_config, suppress_status=False):
     return dict_loaded_ts
 
 
+def load_multiple_timeseries(dict_data_config, suppress_status=False):
+    dict_data = {}
+    for data_source in dict_data_config:
+        dict_data[data_source] = load_data_and_create_timeseries(
+            dict_data_config[data_source], suppress_status)
+        if not suppress_status: print("Successfully loaded:", data_source)
+    return dict_data
+
+
 def load_network_from_directory(dict_network_config, suppress_status=False):
     """Loads directory of MATPOWER-formatted csv-files to dictionary.
 
@@ -417,11 +426,7 @@ def initialize_config_and_data(str_config_path, query_modifications=False, suppr
     ### Loading data ###
     if not suppress_status: print("Beginning to load data...")
     dict_data_config = dict_config["data"]
-    dict_data = {}
-    for data_source in dict_data_config:
-        dict_data[data_source] = load_data_and_create_timeseries(
-            dict_data_config[data_source], suppress_status)
-        if not suppress_status: print("Successfully loaded:", data_source)
+    dict_data = load_multiple_timeseries(dict_data_config, suppress_status)
 
     ### Loading network ###
     if not suppress_status: print("Beginning to load network...")
