@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 
-def split_txt_by_ID_and_encode(str_path_txt, str_separator, int_column_IDs, dict_ID_encoding):
+def split_txt_by_ID_and_encode(str_path_txt, str_separator, int_column_IDs, dict_ID_encoding, perform_encoding=True):
     """Splits rows of txt into multiple files based on ID-field.
 
     Parameters
@@ -36,8 +36,11 @@ def split_txt_by_ID_and_encode(str_path_txt, str_separator, int_column_IDs, dict
     for i in range(1, len(arr_contents)):
         arr_cur_line = str.split(str.strip(arr_contents[i]), str_separator)
         old_ID = arr_cur_line[int_column_IDs]
-        if old_ID in dict_ID_encoding:
-            new_ID = dict_ID_encoding[arr_cur_line[int_column_IDs]]
+        if old_ID in dict_ID_encoding or not perform_encoding:
+            if perform_encoding:
+                new_ID = dict_ID_encoding[arr_cur_line[int_column_IDs]]
+            else:
+                new_ID = old_ID
             arr_cur_line[int_column_IDs] = new_ID
             arr_lines_so_far = dict_uniques.get(new_ID, [str_header])
             arr_lines_so_far.append(str_separator.join(arr_cur_line) + '\n')
