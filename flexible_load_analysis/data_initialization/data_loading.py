@@ -205,29 +205,31 @@ def convert_general_time_array_to_datetime_array(
     """
     arr_time_dt = [None] * len(arr_time_general)
     for i in range(len(arr_time_general)):
+        timestamp_i = arr_time_general[i]
+
         if isinstance(time_formats, list):
                 for str_format in time_formats:
                     try:
                         arr_time_dt[i] = dt.datetime.strptime(
-                            str(arr_time_general[i]), str_format)
-                        bool_success = True
+                            str(timestamp_i), str_format)
+                        successful_parsing = True
                         break
                     except:
-                        bool_success = False
+                        successful_parsing = False
                         continue
-                if not bool_success:
+                if not successful_parsing:
                     raise Exception(
                         "Unable to apply any of the given date-formats")
         elif time_formats == '%H':
             arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
-                              + dt.timedelta(hours=int(arr_time_general[i])))
+                              + dt.timedelta(hours=int(timestamp_i)))
         else:
             try:
                 arr_time_dt[i] = dt.datetime.strptime(
-                    str(arr_time_general[i]), time_formats)
+                    str(timestamp_i), time_formats)
             except:
                 Exception(
-                        f"Unable to apply the given date-format for timestamp {str(arr_time_general[i])}")
+                        f"Unable to apply the given date-format for timestamp {str(timestamp_i)}")
     return arr_time_dt
 
 
@@ -298,6 +300,7 @@ def load_data_and_create_timeseries(dict_data_config, suppress_status=False):
         if not suppress_status: print("Loading", str_path + "...")
         _str_data_filename, str_data_filetype = os.path.splitext(str_path)
 
+        # TODO: Change to use dict_data_config-fields as kwargs to load_time_and_data_from_x
         if str_data_filetype == ".xlsx" or str_data_filetype == ".xls":
             int_sheet = dict_data_config["sheet"]
             int_time_column = dict_data_config["time_column"]
