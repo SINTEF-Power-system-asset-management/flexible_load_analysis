@@ -185,7 +185,7 @@ def load_time_and_data_from_csv(
 
 def convert_general_time_array_to_datetime_array(
         arr_time_general,
-        list_time_format,
+        time_formats,
         str_first_date_iso=""):
     """Converts array of any time-format to python datetime.
 
@@ -193,8 +193,8 @@ def convert_general_time_array_to_datetime_array(
     ----------
     arr_time_general : np.arrary
         Array of timestamps on any format.
-    list_time_format : list(string)
-        List of possible formats the timestamps are on.
+    time_formats : list(string) or string
+        Possible formats the timestamps are on.
     str_first_date_iso, str, default=""
         Date of first timestamp, iso format.
 
@@ -205,12 +205,8 @@ def convert_general_time_array_to_datetime_array(
     """
     arr_time_dt = [None] * len(arr_time_general)
     for i in range(len(arr_time_general)):
-        if 'H' in list_time_format:
-            arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
-                              + dt.timedelta(hours=int(arr_time_general[i])))
-        else:
-            if isinstance(list_time_format, list):
-                for str_format in list_time_format:
+        if isinstance(time_formats, list):
+                for str_format in time_formats:
                     try:
                         arr_time_dt[i] = dt.datetime.strptime(
                             str(arr_time_general[i]), str_format)
@@ -222,12 +218,16 @@ def convert_general_time_array_to_datetime_array(
                 if not bool_success:
                     raise Exception(
                         "Unable to apply any of the given date-formats")
-            else:
-                try:
-                    arr_time_dt[i] = dt.datetime.strptime(
-                        str(arr_time_general[i]), list_time_format)
-                except:
-                    pass
+        elif time_formats == '%H':
+            arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
+                              + dt.timedelta(hours=int(arr_time_general[i])))
+        else:
+            try:
+                arr_time_dt[i] = dt.datetime.strptime(
+                    str(arr_time_general[i]), time_formats)
+            except:
+                Exception(
+                        f"Unable to apply the given date-format for timestamp {str(arr_time_general[i])}")
     return arr_time_dt
 
 
