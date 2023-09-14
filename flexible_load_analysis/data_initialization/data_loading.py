@@ -204,6 +204,9 @@ def convert_general_time_array_to_datetime_array(
         Array of timestamps on datetime-format.
     """
     arr_time_dt = [None] * len(arr_time_general)
+    if isinstance(arr_time_general[0], list) or isinstance(arr_time_general[0], np.ndarray):
+        arr_time_general = [" ".join(timestamp_parts) for timestamp_parts in arr_time_general]
+        time_formats = " ".join(time_formats)
     for i in range(len(arr_time_general)):
         timestamp_i = arr_time_general[i]
 
