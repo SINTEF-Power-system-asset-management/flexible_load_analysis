@@ -138,9 +138,11 @@ def list_children_of_node(node, dict_network):
 
 def find_treelike_prev_next_nodes(dict_network, reference_node=None):
     """Makes dictionaries of 'prev_node' and 'next_node' (list) in network, taking different voltage levels into account.
+    Beware: Returned dictionaries only contains keys for nodes which a path to was found.
+    Meaning: If a node is not in the returned dictionary then it means there was no path found from ref_node to that node.
     """
     if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
-    prev_node = {n : None for n in list_nodes(dict_network)}
+    prev_node = {}
     prev_node[reference_node] = None
     queue = [reference_node]
     explored = []
@@ -154,7 +156,7 @@ def find_treelike_prev_next_nodes(dict_network, reference_node=None):
                 queue.append(n)
                 prev_node[n] = node_currently_exploring
     
-    next_node = {n : [] for n in list_nodes(dict_network)}
+    next_node = {n : [] for _, n in prev_node.items()}
     for node, prev in prev_node.items():
         next_node[prev].append(node)
     return prev_node, next_node
