@@ -136,6 +136,30 @@ def list_children_of_node(node, dict_network):
     return x
 
 
+def find_treelike_prev_next_nodes(dict_network, reference_node=None):
+    """Makes dictionaries of 'prev_node' and 'next_node' (list) in network, taking different voltage levels into account.
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+    prev_node = {n : None for n in list_nodes(dict_network)}
+    prev_node[reference_node] = None
+    queue = [reference_node]
+    explored = []
+    while queue:
+        node_currently_exploring = queue.pop()
+        connected_nodes = list_currently_connected_nodes(node_currently_exploring)
+        explored.append(node_currently_exploring)
+        # Kun søk noder med lavere eller lik spenning
+        for n in connected_nodes:
+            if (n not in explored) and (voltage_for_node_id(n, dict_network) <= voltage_for_node_id(node_currently_exploring, dict_network)):
+                queue.append(n)
+                prev_node[n] = node_currently_exploring
+    
+    next_node = {n : [] for n in list_nodes(dict_network)}
+    for node, prev in prev_node.items():
+        next_node[prev].append(node)
+    return prev_node, next_node
+
+
 def find_parent(node, dict_network, reference_node=None):
     """Finds the parent of ```node''' in a radial network, that being the node in the network which leads from ```node''' towards the ```reference_node'''.
     """
