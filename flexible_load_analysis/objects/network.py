@@ -270,7 +270,7 @@ def remove_node(dict_network, n_node):
 
 def voltage_for_node_id(node, d_network):
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)
-    return d_network["bus"]["BASE_KV"][node_idx]
+    return d_network["bus"]["BASE_KV"][node_idx].astype(np.float64)
 
 
 def get_reference_bus_idx(dict_network):
