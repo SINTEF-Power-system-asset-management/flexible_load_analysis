@@ -133,25 +133,23 @@ def remove_nan_and_none_datapoints(ts_data, dict_preprocessing_log, fill_isolate
         Dictionary of all timeseries without NaN and None-values.
     """
     
-    list_good_indeces = []
-    for dp in ts_data:
-        dp = list(dp)
-        if (not None in dp) and (dp == dp):
-            list_good_indeces.append(True)
-        else:
-            list_good_indeces.append(False)
+    good_indeces = np.ones_like(ts_data, dtype=bool)
+    good_indeces &= (ts_data == ts_data)   # Nan == Nan returns False
+    good_indeces &= (ts_data != None)      # None == None returns True
+    good_indeces = np.logical_and(good_indeces[:,0], good_indeces[:,1]) # only keep datapoints where both conditions are fulfilled
+
     if fill_isolated_method is None or fill_isolated_method == "":
-        ts_data = ts_data[list_good_indeces]
+        ts_data = ts_data[good_indeces]
     else:
         # Any data-filling technique other than none requires knowledge of isolated Nans
-        num_datapoint = len(list_good_indeces)
+        num_datapoint = len(good_indeces)
         isolated_missing_points_idxs = []
         for i in range(num_datapoint):
-            i_is_bad_datapoint = (list_good_indeces[i] == False)
+            i_is_bad_datapoint = (good_indeces[i] == False)
             i_neighbours_good_datapoints = True
             # Only check neighbouring datapoints if not at ends of timeseries
-            if i != 0: i_neighbours_good_datapoints = i_neighbours_good_datapoints and (list_good_indeces[i - 1] == True)
-            if i != num_datapoint - 1: i_neighbours_good_datapoints = i_neighbours_good_datapoints and (list_good_indeces[i + 1] == True)
+            if i != 0: i_neighbours_good_datapoints = i_neighbours_good_datapoints and (good_indeces[i - 1] == True)
+            if i != num_datapoint - 1: i_neighbours_good_datapoints = i_neighbours_good_datapoints and (good_indeces[i + 1] == True)
             if i_is_bad_datapoint and i_neighbours_good_datapoints: isolated_missing_points_idxs.append(i)
 
         if fill_isolated_method=="lin_interp":
@@ -161,7 +159,7 @@ def remove_nan_and_none_datapoints(ts_data, dict_preprocessing_log, fill_isolate
         else:
             raise(NotImplementedError)
 
-    dict_preprocessing_log["remove_NaN_and_None"] = {"good_indices" : list_good_indeces}
+    dict_preprocessing_log["remove_NaN_and_None"] = {"good_indices" : good_indeces}
     return ts_data
 
 
