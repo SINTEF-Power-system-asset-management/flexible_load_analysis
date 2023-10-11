@@ -1,5 +1,3 @@
-import copy
-
 import numpy as np
 
 from . import network
@@ -50,7 +48,7 @@ def interactively_copy_existing_load(dict_loads_ts):
 
     print("Input ID of node you want to copy")
     str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
-    ts_new_load_data = copy.deepcopy(dict_loads_ts[str_ID])
+    ts_new_load_data = np.copy(dict_loads_ts[str_ID])
 
     return ts_new_load_data
 
@@ -61,7 +59,7 @@ def interactively_model_based_on_existing_load(dict_loads_ts, dict_modelling_con
 
     print("Input ID of node you want to model based on")
     str_ID = load_points.input_until_node_in_load_points_appears(dict_loads_ts)
-    ts_modelling_baseline = copy.deepcopy(dict_loads_ts[str_ID])
+    ts_modelling_baseline = np.copy(dict_loads_ts[str_ID])
 
     
     ts_model = modelling.model_single_load(dict_modelling_config, ts_modelling_baseline)

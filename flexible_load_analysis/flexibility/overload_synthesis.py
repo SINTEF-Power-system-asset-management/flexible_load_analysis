@@ -1,5 +1,3 @@
-import copy
-
 import numpy as np
 
 from .. import plotting
@@ -21,7 +19,7 @@ def add_N_random_loads(loads, dict_network, agg_index, num_iterations,
         if i != 0:
             print("Adding new load to dict_network...")
             id_to_copy_from = np.random.choice(all_load_ids)
-            ts_new_load_data = copy.deepcopy(loads[id_to_copy_from])
+            ts_new_load_data = np.copy(loads[id_to_copy_from])
             net_modification.add_new_load_to_net(
                 "5000" + str(i), ts_new_load_data, str_agg_id, loads, dict_network)
             l_loads_added.append(id_to_copy_from)

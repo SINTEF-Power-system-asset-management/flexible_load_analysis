@@ -1,5 +1,4 @@
 import datetime as dt
-import copy
 
 import numpy as np
 
@@ -301,7 +300,7 @@ def preprocess_all_loads(dict_config, dict_data, suppress_status=False):
     if not suppress_status: print("Preprocessing all loads in network...")
     for str_node_ID in dict_data["load_measurements"]:
         if not suppress_status: print(f"Preparing load-point {str_node_ID}...")
-        load_ts = copy.deepcopy(dict_data["load_measurements"][str_node_ID])
+        load_ts = np.copy(dict_data["load_measurements"][str_node_ID])
         preprocessing_log[str_node_ID] = {}
 
         for func, params in zip(preprocessing_funcs, preprocessing_parameters):
