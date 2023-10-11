@@ -210,7 +210,17 @@ def convert_general_time_array_to_datetime_array(
     for i in range(len(arr_time_general)):
         timestamp_i = arr_time_general[i]
 
-        if isinstance(time_formats, list):
+        # Apriori time formats allows for speedup
+        if time_formats == '%Y-%m-%d %H':
+            arr_time_dt[i] = dt.datetime(
+                year=int(timestamp_i[:4]),
+                month=int(timestamp_i[5:7]),
+                day=int(timestamp_i[8:10]),
+                hour=int(timestamp_i[-2:])
+                )
+
+        # Check list of multiple supplied time formats
+        elif isinstance(time_formats, list):
                 for str_format in time_formats:
                     try:
                         arr_time_dt[i] = dt.datetime.strptime(
@@ -223,9 +233,13 @@ def convert_general_time_array_to_datetime_array(
                 if not successful_parsing:
                     raise Exception(
                         "Unable to apply any of the given date-formats")
+
+        # Case where only "number of hours since start_date" is given in data
         elif time_formats == '%H':
             arr_time_dt[i] = (dt.datetime.fromisoformat(str_first_date_iso)
                               + dt.timedelta(hours=int(timestamp_i)))
+
+        # Default case when time_formats is single format
         else:
             try:
                 arr_time_dt[i] = dt.datetime.strptime(
