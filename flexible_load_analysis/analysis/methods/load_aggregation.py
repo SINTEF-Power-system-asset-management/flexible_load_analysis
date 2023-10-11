@@ -2,7 +2,7 @@
 """
 import numpy as np
 
-from ...objects import network, timeseries as ts
+from ...objects import network, radial_network_traversal, timeseries as ts
 
 
 def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
@@ -37,7 +37,7 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
     
     ts_agg = np.empty((0))
 
-    contributing_nodes = network.all_loads_below(agg_node, d_network, d_loads, reference_node)
+    contributing_nodes = radial_network_traversal.all_loads_below(agg_node, d_network, d_loads, reference_node)
 
     for n in contributing_nodes:
         ts_agg = ts.add_timeseries(ts_agg, d_loads[n])

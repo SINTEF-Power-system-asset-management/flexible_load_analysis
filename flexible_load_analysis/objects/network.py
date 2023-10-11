@@ -125,7 +125,7 @@ def list_nodes(dict_network):
 def list_children_of_node(node, dict_network):
     """Return child-nodes of a node in directed network.
     """
-    warnings.warn(f"Directed networks are no longer supported. Please refer to {list_currently_connected_nodes} or {all_buses_below}", DeprecationWarning)
+    warnings.warn(f"Directed networks are no longer supported. Please refer to {list_currently_connected_nodes}", DeprecationWarning)
 
     dict_branch = dict_network['branch']
     x = []
@@ -134,97 +134,6 @@ def list_children_of_node(node, dict_network):
         if dict_branch['F_BUS'][i] == node:
             x.append(dict_branch['T_BUS'][i])
     return x
-
-
-def find_treelike_prev_next_nodes(dict_network, reference_node=None):
-    """Makes dictionaries of 'prev_node' and 'next_node' (list) in network, taking different voltage levels into account.
-    Beware: Returned dictionaries only contains keys for nodes which a path to was found.
-    Meaning: If a node is not in the returned dictionary then it means there was no path found from ref_node to that node.
-    """
-    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
-    prev_node = {}
-    prev_node[reference_node] = None
-    queue = [reference_node]
-    explored = []
-    while queue:
-        node_currently_exploring = queue.pop()
-        connected_nodes = list_currently_connected_nodes(node_currently_exploring)
-        explored.append(node_currently_exploring)
-        # Kun søk noder med lavere eller lik spenning
-        for n in connected_nodes:
-            if (n not in explored) and (voltage_for_node_id(n, dict_network) <= voltage_for_node_id(node_currently_exploring, dict_network)):
-                queue.append(n)
-                prev_node[n] = node_currently_exploring
-    
-    next_node = {n : [] for _, n in prev_node.items()}
-    for node, prev in prev_node.items():
-        next_node[prev].append(node)
-    return prev_node, next_node
-
-
-def find_parent(node, dict_network, reference_node=None):
-    """Finds the parent of ```node''' in a radial network, that being the node in the network which leads from ```node''' towards the ```reference_node'''.
-    """
-    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
-
-    node_currently_exploring = None
-    explored = []
-    queue = [reference_node]
-    if node == reference_node:
-        parent = None
-    else:
-        # Bredde-først-søk for å finne node som leder fra reference til agg_node
-        while queue:
-            node_currently_exploring = queue.pop()
-            new_children = list_currently_connected_nodes(node_currently_exploring, dict_network)
-            if node in new_children:
-                # noden vi undersøker er har noden vi ønsker å finne som barn <=> noden vi undersøker er foreldren
-                parent = node_currently_exploring
-                break
-            explored.append(node_currently_exploring)
-            # Kun søk noder med lavere eller lik spenning
-            for n in new_children:
-                if (n not in explored) and (voltage_for_node_id(n, dict_network) <= voltage_for_node_id(node_currently_exploring, dict_network)):
-                    queue.append(n)
-        else:
-            # Kommer hit dersom vi aldri break-er fra while
-            print(f"Unable to find route from [{reference_node}] to [{node}]")
-            return np.empty((0))
-
-    return parent  
-
-
-def all_buses_below(node, dict_network, reference_node=None):
-    """Finds all bus-IDs which are below ```node''', meaning they are further away from ```reference_node'''. Warning: Result includes input ```node'''.
-    """
-    # OBS: Resultatet inkluderer noden vi aggregerer fra.
-
-    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
-    parent_node = find_parent(node, dict_network, reference_node)
-
-    node_currently_exploring = node
-    # Vi skal bare utforske nedover
-    queue = [node for node in list_currently_connected_nodes(node, dict_network) if node != parent_node]
-    explored = [node]
-    # BFS hvor man bruker [list_currently_connected(cur_parent) - [cur_parent]] som queue
-    while queue:
-        node_currently_exploring = queue.pop()
-        explored.append(node_currently_exploring)
-        new_children = list_currently_connected_nodes(node_currently_exploring, dict_network)
-        # Kun søk noder med lavere eller lik spenning
-        for n in new_children:
-            if (n not in explored) and (voltage_for_node_id(n, dict_network) <= voltage_for_node_id(node_currently_exploring, dict_network)):
-                queue.append(n)
-    return explored
-
-
-def all_loads_below(node, dict_network, dict_loads, reference_node=None):
-    """Finds all bus-IDs which have load-timeseries and are further away from ```reference_node''' than input ```node'''
-    """
-    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
-    buses_below = all_buses_below(node, dict_network, reference_node)
-    loads_below = [bus for bus in buses_below if bus in dict_loads]
-    return loads_below
 
 
 def list_currently_connected_nodes(node, dict_network):
@@ -380,6 +289,15 @@ def get_reference_bus_ID(dict_network):
 def get_reference_bus_voltage(dict_network):
     ref_bus_idx = get_reference_bus_idx(dict_network)
     return float(dict_network["bus"]["BASE_KV"][ref_bus_idx])
+
+
+def get_impedance_of_branch(f_bus, t_bus, dict_network):
+    pairs = list(zip(dict_network["branch"]["F_BUS"], dict_network["branch"]["F_BUS"]))
+    for i in range(len(pairs)):
+        if pairs[i] == (f_bus, t_bus) or pairs[i] == (t_bus, f_bus):
+            return dict_network["branch"]["BR_R"][i].astype(np.float64) + 1j*dict_network["branch"]["BR_X"][i].astype(np.float64)
+    else:
+        raise(Exception(f"Branch {(f_bus, t_bus)} not found in network"))
 
 
 def input_until_node_in_network_appears(dict_network):
