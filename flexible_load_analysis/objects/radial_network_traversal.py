@@ -48,23 +48,6 @@ def find_parent(node, dict_network, reference_node=None):
     return parent  
 
 
-def path_to_node(from_node, to_node, dict_network, reference_node=None):
-    """Finds the path (list of nodes) between ```from_node''' and ```to_node'''. Output list includes both endpoints
-    """
-    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
-    prevs, _ = find_prev_and_next_nodes(dict_network, reference_node)
-    parent = from_node
-    path = [parent]
-    while parent in prevs:
-        parent = prevs[parent]
-        path.append(parent)
-        if parent == to_node:
-            break
-    else:
-        raise(Exception(f"Did not find path from {from_node} to {to_node}"))
-    return path
-
-
 def all_buses_below(node, dict_network, reference_node=None):
     """Finds all bus-IDs which are below ```node''', meaning they are further away from ```reference_node'''.
     """
@@ -104,10 +87,69 @@ def all_leaf_nodes(node, dict_network, reference_node=None):
     return childless
 
 
-def line_of_buses_with_highest_impedance(dict_network, reference_node=None):
+def path_to_node(from_node, to_node, dict_network, reference_node=None):
+    """Finds the path (list of nodes) between ```from_node''' and ```to_node'''. Output list includes both endpoints
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+    prevs, _ = find_prev_and_next_nodes(dict_network, reference_node)
+    parent = from_node
+    path = [parent]
+    while parent in prevs:
+        parent = prevs[parent]
+        path.append(parent)
+        if parent == to_node:
+            break
+    else:
+        raise(Exception(f"Did not find path from {from_node} to {to_node}"))
+    return path
+
+
+def all_paths_from_node(from_node, dict_network, reference_node=None):
+    """Gives all paths (list of nodes) from ```from_node''' to a leaf node of the radial network.
+    """
     if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
 
-    goals, paths = all_paths(reference_node, dict_network, reference_node)
+    all_endpoints = all_leaf_nodes(from_node, dict_network, reference_node)
+    all_paths = []
+    for to_node in all_endpoints:
+        all_paths.append(path_to_node(from_node, to_node, dict_network, reference_node))
+    return all_paths
 
-        
 
+
+# Impedance between nodes in radial network
+
+def total_impedance_of_path(path, dict_network):
+    """Returns total impedance of a path (list of nodes) in a radial network.
+    """
+    tot_impedance = 0 + 0j
+    path = path.copy()
+    from_node = path.pop(0)
+    while path:
+        to_node = path.pop(0)
+        tot_impedance += get_impedance_of_branch(from_node, to_node, dict_network)
+        from_node = to_node
+    return tot_impedance
+
+
+def impedance_for_all_paths_in_network(dict_network, reference_node=None):
+    """Returns dict of path-impedance pairs for all paths (list of nodes) from reference node in a radial network.
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+
+    all_paths = all_paths_from_node(reference_node, dict_network, reference_node)
+    impedances = {}
+    for path in all_paths:
+        impedances[path] = total_impedance_of_path(path, dict_network)
+    return impedances
+
+
+def path_of_highest_impedance(dict_network, reference_node=None):
+    """Finds path from reference-node to leaf-nodes in radial network with highest imepedance.
+    """
+
+    if reference_node is None: reference_node = get_reference_bus_ID(dict_network)
+
+    path_impedances = impedance_for_all_paths_in_network(dict_network, reference_node)
+    path_impedances = {path: abs(Z) for path, Z in path_impedances.items()}
+    return max(path_impedances, key=path_impedances.get)
