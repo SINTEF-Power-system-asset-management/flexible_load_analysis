@@ -28,6 +28,12 @@ More relevantly, however, is using the functionality for loading, data-structure
 As of now, this is done by adding this repo as a git submodule into your own project, adding the packages' requirements into your own,
 installing these and then importing the package like any other python package.
 
+The library may be used as a Git submodule. In that case, remember to run
+```bash
+git submodule update --remote
+```
+to actually download and update the contents of the package.
+
 To use the included scripts, create a fitting config-file to reflect placement and structure of your load-timeseries dataset, as well as changing any other relevant fields.
 
 Required data-files and supported formats is described in example_data\TUTORIAL.md
