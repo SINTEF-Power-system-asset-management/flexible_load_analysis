@@ -7,6 +7,8 @@ Module does not depend on the internal representation of said network, as long a
 necessary interface.
 """
 
+import warnings
+
 from .network import get_reference_bus_ID, list_currently_connected_nodes, voltage_for_node_id, list_nodes, get_impedance_of_branch
 
 
@@ -113,15 +115,17 @@ def path_to_node(from_node, to_node, n_network, reference_node=None):
     """
     if reference_node is None: reference_node = get_reference_bus_ID(n_network)
     prevs, _ = find_prev_and_next_nodes(n_network, reference_node)
-    parent = from_node
+    parent = to_node    # Move backwards from to_node until from_node is found
     path = [parent]
     while parent in prevs:
         parent = prevs[parent]
         path.append(parent)
-        if parent == to_node:
+        if parent == from_node:
             break
     else:
-        raise(Exception(f"Did not find path from {from_node} to {to_node}"))
+        warnings.warn(f"Did not find path from {from_node} to {to_node}")
+        return None
+    path.reverse()
     return path
 
 
