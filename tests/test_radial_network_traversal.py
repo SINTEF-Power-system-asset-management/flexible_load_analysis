@@ -58,7 +58,7 @@ class RadialTravelsalTestCase(unittest.TestCase):
             ("B9", []),
         ]
         for node, actual_leafs in known_node_leaf_arr_pairs:
-            found_below = trav.all_leaf_nodes(node, self.network_data)
+            found_below = trav.all_leaf_nodes_below(node, self.network_data)
             self.assertCountEqual(found_below, actual_leafs, f"Node {node} found incorrect leaf-nodes below {found_below}, expected {actual_leafs}")
 
         

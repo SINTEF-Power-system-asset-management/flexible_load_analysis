@@ -83,16 +83,17 @@ def all_loads_below(node, n_network, dict_loads, reference_node=None):
     return loads_below
 
 
-def all_leaf_nodes(node, n_network, reference_node=None):
+def all_leaf_nodes_below(node, n_network, reference_node=None):
     """Finds all bus-IDs below ```node''' which have no children.
     """
 
     if reference_node is None: reference_node = get_reference_bus_ID(n_network)
-    prevs, _ = find_prev_and_next_nodes(n_network)
-    next = {n : [] for n in list_nodes(n_network)}
-    for node, prev in prevs.items():
-        next[prev].append(node)
-    childless = [n for n in next if not next[n]]
+    # Does not use nexts from prev_next since this does not include nodes with no children
+    _, nexts = find_prev_and_next_nodes(n_network)
+    all_below = all_buses_below(node, n_network, reference_node)
+    childless = []
+    for n in all_below:
+        if n not in nexts: childless.append(n)
     return childless
 
 
@@ -118,7 +119,7 @@ def all_paths_from_node(from_node, n_network, reference_node=None):
     """
     if reference_node is None: reference_node = get_reference_bus_ID(n_network)
 
-    all_endpoints = all_leaf_nodes(from_node, n_network, reference_node)
+    all_endpoints = all_leaf_nodes_below(from_node, n_network, reference_node)
     all_paths = []
     for to_node in all_endpoints:
         all_paths.append(path_to_node(from_node, to_node, n_network, reference_node))
