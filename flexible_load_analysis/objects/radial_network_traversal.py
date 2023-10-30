@@ -91,7 +91,7 @@ def all_leaf_nodes_below(node, n_network, reference_node=None):
 
     if reference_node is None: reference_node = get_reference_bus_ID(n_network)
     # Does not use nexts from prev_next since this does not include nodes with no children
-    _, nexts = find_prev_and_next_nodes(n_network)
+    _, nexts = find_prev_and_next_nodes(n_network, reference_node)
     all_below = all_buses_below(node, n_network, reference_node)
     childless = []
     for n in all_below:
