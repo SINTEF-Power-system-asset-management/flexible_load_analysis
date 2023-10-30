@@ -54,14 +54,19 @@ def find_parent(node, n_network, reference_node=None):
 
 def all_buses_below(node, n_network, reference_node=None):
     """Finds all bus-IDs which are below ```node''', meaning they are further away from ```reference_node'''.
+    
+    Notes:
+    ----------
+    ```node''' is not part of the returned list. I.e. ```node''' is not further away from itself.
     """
 
     if reference_node is None: reference_node = get_reference_bus_ID(n_network)
     _, nexts = find_prev_and_next_nodes(n_network, reference_node)
 
     def _nodes_below(node, nexts):
-        nodes_below_here = [node]
+        nodes_below_here = []
         for child in nexts.get(node, []):
+            nodes_below_here += [child]
             nodes_below_here += _nodes_below(child, nexts)
         return nodes_below_here
     
