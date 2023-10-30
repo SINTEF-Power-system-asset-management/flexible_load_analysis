@@ -45,7 +45,7 @@ class RadialTravelsalTestCase(unittest.TestCase):
             found_below = trav.all_buses_below(node, self.network_data)
             self.assertCountEqual(found_below, actual_belows, f"Node {node} found incorrect nodes below {found_below}, expected {actual_belows}")
 
-    def test_all_leaf_nodes(self):
+    def test_all_leaf_nodes_below(self):
         known_node_leaf_arr_pairs = [
             ("B1", ["B7", "B8", "B9"]),
             ("B2", ["B7", "B8", "B9"]),
@@ -58,8 +58,13 @@ class RadialTravelsalTestCase(unittest.TestCase):
             ("B9", []),
         ]
         for node, actual_leafs in known_node_leaf_arr_pairs:
-            found_below = trav.all_leaf_nodes_below(node, self.network_data)
-            self.assertCountEqual(found_below, actual_leafs, f"Node {node} found incorrect leaf-nodes below {found_below}, expected {actual_leafs}")
+            found_leafs = trav.all_leaf_nodes_below(node, self.network_data)
+            self.assertCountEqual(found_leafs, actual_leafs, f"Node {node} found incorrect leaf-nodes below {found_leafs}, expected {actual_leafs}")
+        
+    def test_all_leaf_nodes(self):
+        actual_leafs = ["B7", "B8", "B9"]
+        found_leafs = trav.all_leaf_nodes_in_network(self.network_data)
+        self.assertCountEqual(found_leafs, actual_leafs, f"Found incorrect leaf-nodes {found_leafs}, expected {actual_leafs}")
 
         
 
