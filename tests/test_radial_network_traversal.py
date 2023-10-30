@@ -2,7 +2,9 @@ import unittest
 
 from flexible_load_analysis.objects import radial_network_traversal as trav
 from .init_test_data import load_test_loads_and_network
-from flexible_load_analysis.objects.network import plot_network
+
+# TODO: Make test case allow for other network than test-network, i.e. make
+# known correct test-outcomes be initalized by setUp and choice of dataset
 
 class RadialTravelsalTestCase(unittest.TestCase):
     def setUp(self) -> None:
