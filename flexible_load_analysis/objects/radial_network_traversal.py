@@ -31,11 +31,12 @@ def find_prev_and_next_nodes(n_network, reference_node=None):
                 queue.append(n)
                 prev_node[n] = node_currently_exploring
     
-    next_node = {n : [] for _, n in prev_node.items()}
+    next_node = {}
     for node, prev in prev_node.items():
-        next_node[prev].append(node)
-        # TODO: Kan spare ett kall til .items() ved aa ta en 
-        # if prev in next_node: next_node[prev].append(node) else next_node[prev] = [node]
+        if prev in next_node:
+            next_node[prev].append(node) 
+        else: 
+            next_node[prev] = [node]
     return prev_node, next_node
 
 
