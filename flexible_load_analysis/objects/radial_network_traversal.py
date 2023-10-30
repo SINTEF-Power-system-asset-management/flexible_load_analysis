@@ -99,15 +99,12 @@ def all_leaf_nodes_below(node, n_network, reference_node=None):
     return childless
 
 
-def all_leaf_nodes_in_network(n_network, reference_node=None):
-    """Finds all bus-IDs in network which have no children.
+def all_leaf_nodes_in_radial(n_network, reference_node=None):
+    """Finds all bus-IDs in radial of ```reference_node''' which have no children.
     """
 
     if reference_node is None: reference_node = get_reference_bus_ID(n_network)
-    _, nexts = find_prev_and_next_nodes(n_network)
-    all_nodes = list_nodes(n_network)
-    childless = [n for n in all_nodes if n not in nexts]
-    return childless
+    return all_leaf_nodes_below(reference_node, n_network, reference_node)
 
 
 def path_to_node(from_node, to_node, n_network, reference_node=None):
