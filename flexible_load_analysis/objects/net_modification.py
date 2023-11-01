@@ -18,7 +18,7 @@ def add_new_load_to_net(str_new_load_ID, ts_new_load_data, str_parent_node_ID, d
 def remove_node_from_net(dict_loads_ts, g_network, str_load_ID):
     """Removes a node from both the network and node-container.
     """
-    dict_loads_ts = load_points.remove_load(dict_loads_ts, str_load_ID)
+    if str_load_ID in dict_loads_ts: dict_loads_ts = load_points.remove_load(dict_loads_ts, str_load_ID)
     g_network = network.remove_node(g_network, str_load_ID)
     return dict_loads_ts, g_network
 
