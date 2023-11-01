@@ -214,54 +214,21 @@ def remove_node(dict_network, n_node):
     dict_bus = dict_network['bus']
 
     # Find index of the node to be deleted
-    node_index = np.where(dict_bus['BUS_I'] == n_node)
+    bus_indeces_to_keep = np.where(~(dict_bus['BUS_I'] == n_node))
 
     # Remove node name and all attributes from the bus dictionary
-    dict_bus['BUS_I'] = np.delete(dict_bus['BUS_I'],node_index[0][0])
-    dict_bus['BUS_TYPE'] = np.delete(dict_bus['BUS_TYPE'],node_index[0][0])
-    dict_bus['PD'] = np.delete(dict_bus['PD'],node_index[0][0])
-    dict_bus['QD'] = np.delete(dict_bus['QD'],node_index[0][0])
-    dict_bus['GS'] = np.delete(dict_bus['GS'],node_index[0][0])
-    dict_bus['BS'] = np.delete(dict_bus['BS'],node_index[0][0])
-    dict_bus['BUS_AREA'] = np.delete(dict_bus['BUS_AREA'],node_index[0][0])
-    dict_bus['VM'] = np.delete(dict_bus['VM'],node_index[0][0])
-    dict_bus['VA'] = np.delete(dict_bus['VA'],node_index[0][0])
-    dict_bus['BASE_KV'] = np.delete(dict_bus['BASE_KV'],node_index[0][0])
-    dict_bus['ZONE'] = np.delete(dict_bus['ZONE'],node_index[0][0])
-    dict_bus['VMAX'] = np.delete(dict_bus['VMAX'],node_index[0][0])
-    dict_bus['VMIN'] = np.delete(dict_bus['VMIN'],node_index[0][0])
-
+    for column in dict_bus:
+        dict_bus[column] = dict_bus[column][bus_indeces_to_keep]
 
     dict_branch = dict_network['branch']
-
     # Find index / indices of branches that are connected to the node
-    FBUS_Index = np.where(dict_branch['F_BUS'] == n_node)[0].tolist()
-    TBUS_Index = np.where(dict_branch['T_BUS'] == n_node)[0].tolist()
-    branch_index = FBUS_Index+TBUS_Index # indices of branches to delete
+    FBUS_indices = (dict_branch['F_BUS'] == n_node)
+    TBUS_indices = (dict_branch['T_BUS'] == n_node)
+    branch_indices_to_keep = np.where(~(FBUS_indices | TBUS_indices))
 
     # Delete all branches that are connected to the node
-    for i in branch_index:
-        dict_branch['F_BUS'] = np.delete(dict_branch['F_BUS'], i)
-        dict_branch['T_BUS'] = np.delete(dict_branch['T_BUS'], i)
-        dict_branch['BR_R'] = np.delete(dict_branch['BR_R'], i)
-        dict_branch['BR_X'] = np.delete(dict_branch['BR_X'], i)
-        dict_branch['BR_B'] = np.delete(dict_branch['BR_B'], i)
-        dict_branch['RATE_A'] = np.delete(dict_branch['RATE_A'], i)
-        dict_branch['RATE_B'] = np.delete(dict_branch['RATE_B'], i)
-        dict_branch['RATE_C'] = np.delete(dict_branch['RATE_C'], i)
-        dict_branch['TAP'] = np.delete(dict_branch['TAP'], i)
-        dict_branch['SHIFT'] = np.delete(dict_branch['SHIFT'], i)
-        dict_branch['BR_STATUS'] = np.delete(dict_branch['BR_STATUS'], i)
-        dict_branch['ANGMIN'] = np.delete(dict_branch['ANGMIN'], i)
-        dict_branch['ANGMAX'] = np.delete(dict_branch['ANGMAX'], i)
-        dict_branch['PF'] = np.delete(dict_branch['PF'], i)
-        dict_branch['QF'] = np.delete(dict_branch['QF'], i)
-        dict_branch['PT'] = np.delete(dict_branch['PT'], i)
-        dict_branch['QT'] = np.delete(dict_branch['QT'], i)
-        dict_branch['MU_SF'] = np.delete(dict_branch['MU_SF'], i)
-        dict_branch['MU_ST'] = np.delete(dict_branch['MU_ST'], i)
-        dict_branch['MU_ANGMIN'] = np.delete(dict_branch['MU_ANGMIN'], i)
-        dict_branch['MU_ANGMAX'] = np.delete(dict_branch['MU_ANGMAX'], i)
+    for column in dict_branch:
+        dict_branch[column] = dict_branch[column][branch_indices_to_keep]
     return dict_network
 
 
