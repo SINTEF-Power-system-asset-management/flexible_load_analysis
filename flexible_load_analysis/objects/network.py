@@ -292,7 +292,7 @@ def get_reference_bus_voltage(dict_network):
 
 
 def get_impedance_of_branch(f_bus, t_bus, dict_network):
-    pairs = list(zip(dict_network["branch"]["F_BUS"], dict_network["branch"]["F_BUS"]))
+    pairs = list(zip(dict_network["branch"]["F_BUS"], dict_network["branch"]["T_BUS"]))
     for i in range(len(pairs)):
         if pairs[i] == (f_bus, t_bus) or pairs[i] == (t_bus, f_bus):
             return dict_network["branch"]["BR_R"][i].astype(np.float64) + 1j*dict_network["branch"]["BR_X"][i].astype(np.float64)
