@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 from . import network
@@ -5,6 +7,8 @@ from . import load_points
 from  . import timeseries as ts
 from ..modelling import modelling
 from .. import utilities
+from ..analysis.methods.load_aggregation import aggregate_load_of_node
+from .radial_network_traversal import all_buses_below
 
 
 def add_new_load_to_net(str_new_load_ID, ts_new_load_data, str_parent_node_ID, dict_loads_ts, g_network):
@@ -22,6 +26,63 @@ def remove_node_from_net(dict_loads_ts, g_network, str_load_ID):
     g_network = network.remove_node(g_network, str_load_ID)
     return dict_loads_ts, g_network
 
+
+def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=None):
+    # First find the nodes with the highest impedance, these should not be simplified away [TIR]
+    # Also reduce network to single voltage level
+    # This is acieved by aggregating up all leaf-nodes connected to the same substation
+    # Then combining both sides of the substation into one, increasing its impedance accordingly.
+
+    warnings.warn("Experimental features!")
+    if reference_bus is None: reference_bus = network.get_reference_bus_ID(dict_network)
+
+    # Find all pairs of buses which make up a trafo
+    trafo_bus_pairs = network.get_all_transformer_bus_pairs(dict_network)
+    # for each pair, aggregate the load at the pair and store in a single timeseries to be
+    # associated with the combined node
+    for (f_bus, t_bus) in trafo_bus_pairs:
+        if network.voltage_for_node_id(f_bus, dict_network) == unifying_voltage_kV:
+            inner_node = f_bus
+            outer_node = t_bus
+        elif network.voltage_for_node_id(t_bus, dict_network) == unifying_voltage_kV:
+            inner_node = t_bus
+            outer_node = f_bus
+        else:
+            continue
+            #raise Exception("Transformer present in network which doesn't match unifying voltage level")
+
+        if network.voltage_for_node_id(outer_node, dict_network) > unifying_voltage_kV:
+            # Simplifying upwards a transformer
+
+            # Special case when the high voltage side of the transformer is the reference bus
+            # Then this can simply be made to the lower voltage level,
+            # with impedance corrected
+            if network.is_reference_bus(outer_node, dict_network):
+                # Reference bus stays as a reference bus
+                network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network)
+                network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network)
+
+            # if the high voltage side, however, is connected to a larger network then 
+            # this must be handled differently, possibly by simply throwing this part
+            # of the network away
+            else:
+                # For now, simply throw an error
+                print(f"{inner_node},{outer_node}")
+                raise(NotImplementedError("Method for simplifying net of higher voltage values is not yet implemented."))
+            
+        else:
+            # Simplifying downwards a transformer
+            nodes_to_remove = all_buses_below(inner_node, dict_network, reference_bus)
+            new_load_ts = aggregate_load_of_node(inner_node, dict_loads, dict_network, reference_bus)
+            for n in nodes_to_remove:
+                remove_node_from_net(dict_loads, dict_network, n)
+            dict_loads[inner_node] = new_load_ts
+
+    return dict_loads, dict_network
+
+
+
+### Interactive net-modifications ###
 
 def interactively_inspect_loads(dict_loads_ts):
     bool_continue_inspecting = True

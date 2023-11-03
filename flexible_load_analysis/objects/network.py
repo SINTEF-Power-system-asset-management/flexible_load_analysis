@@ -114,7 +114,7 @@ def convert_network_dictionary_to_pp(dict_network):
 
 
 
-### Traversal
+### Members
 
 def list_nodes(dict_network): 
     """Lists all nodes of network.
@@ -232,12 +232,55 @@ def remove_node(dict_network, n_node):
     return dict_network
 
 
+def set_voltage_level(str_bus, new_base_kV, dict_network):
+    bus_idx = np.where(dict_network["bus"]["BUS_I"] == str_bus)
+    dict_network["bus"]["BASE_KV"][bus_idx] = new_base_kV
+    return dict_network
+
+
+def set_line_impedance_of_branch(f_bus, t_bus, new_impedance, dict_network):
+    branch_idx = find_branch_index(f_bus, t_bus, dict_network)
+    dict_network["branch"]["BR_R"][branch_idx] = np.real(new_impedance)
+    dict_network["branch"]["BR_X"][branch_idx] = np.imag(new_impedance)
+    return dict_network
+
+
+def set_branch_tap(f_bus, t_bus, new_tap, dict_network):
+    branch_idx = find_branch_index(f_bus, t_bus, dict_network)
+    dict_network["branch"]["TAP"][branch_idx] = new_tap
+    return dict_network
+
+
+def convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network):
+    branch_idx = find_branch_index(f_bus, t_bus, dict_network)
+    N1overN2 = dict_network["branch"]["TAP"].astype(np.float64)[branch_idx]
+    old_impedance = get_impedance_of_branch(f_bus, t_bus, dict_network)
+    new_impedance = old_impedance * N1overN2**2
+    set_line_impedance_of_branch(f_bus, t_bus, new_impedance, dict_network)
+    set_branch_tap(f_bus, t_bus, 0, dict_network)
+    # TODO: Deal with shift?
+    pass
+
+
 
 ### Accessing
 
 def voltage_for_node_id(node, d_network):
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)
     return d_network["bus"]["BASE_KV"][node_idx].astype(np.float64)
+
+
+def is_reference_bus(str_bus, dict_network):
+    bus_idx = np.where(dict_network["bus"]["BUS_I"].astype(str) == str_bus)
+    return dict_network["bus"]["BUS_TYPE"][bus_idx].astype(int) == 3
+
+
+def find_branch_index(bus1, bus2, dict_network):
+    branch_mask =   ((dict_network["branch"]["F_BUS"] == bus1) & (dict_network["branch"]["T_BUS"] == bus2)) | \
+                    ((dict_network["branch"]["F_BUS"] == bus2) & (dict_network["branch"]["T_BUS"] == bus1))
+    branch_idx = np.where(branch_mask)[0]
+    assert branch_idx.size == 1 # Or else there exists multiple branches between buses 1 and 2
+    return branch_idx
 
 
 def get_reference_bus_idx(dict_network):
@@ -262,7 +305,7 @@ def get_impedance_of_branch(f_bus, t_bus, dict_network):
     pairs = list(zip(dict_network["branch"]["F_BUS"], dict_network["branch"]["T_BUS"]))
     for i in range(len(pairs)):
         if pairs[i] == (f_bus, t_bus) or pairs[i] == (t_bus, f_bus):
-            return dict_network["branch"]["BR_R"][i].astype(np.float64) + 1j*dict_network["branch"]["BR_X"][i].astype(np.float64)
+            return dict_network["branch"]["BR_R"].astype(np.float64)[i] + 1j*dict_network["branch"]["BR_X"].astype(np.float64)[i]
     else:
         raise(Exception(f"Branch {(f_bus, t_bus)} not found in network"))
 
@@ -277,3 +320,8 @@ def input_until_node_in_network_appears(dict_network):
         else:
             print("Could not find", str_ID, "in network, try again!")
     return str_ID
+
+
+def get_all_transformer_bus_pairs(dict_network):
+    trafo_branches = np.where(dict_network["branch"]["TAP"].astype(np.float64) != 0)
+    return list(zip(dict_network["branch"]["F_BUS"][trafo_branches], dict_network["branch"]["T_BUS"][trafo_branches]))
