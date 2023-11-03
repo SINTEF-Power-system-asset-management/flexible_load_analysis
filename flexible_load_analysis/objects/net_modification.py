@@ -40,6 +40,7 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
     trafo_bus_pairs = network.get_all_transformer_bus_pairs(dict_network)
     # for each pair, aggregate the load at the pair and store in a single timeseries to be
     # associated with the combined node
+    nodes_removed_so_far = []
     for (f_bus, t_bus) in trafo_bus_pairs:
         if network.voltage_for_node_id(f_bus, dict_network) == unifying_voltage_kV:
             inner_node = f_bus
@@ -71,12 +72,20 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
                 raise(NotImplementedError("Method for simplifying net of higher voltage values is not yet implemented."))
             
         else:
+            # If the node in question already was simplified away in a previous step
+            if outer_node in nodes_removed_so_far:
+                continue
             # Simplifying downwards a transformer
-            nodes_to_remove = all_buses_below(inner_node, dict_network, reference_bus)
-            new_load_ts = aggregate_load_of_node(inner_node, dict_loads, dict_network, reference_bus)
+            # Here, the highest impedance of a removed node should really be added to the impedance of outer_node...
+            nodes_to_remove = all_buses_below(outer_node, dict_network, reference_bus)
+            new_load_ts = aggregate_load_of_node(outer_node, dict_loads, dict_network, reference_bus)
             for n in nodes_to_remove:
                 remove_node_from_net(dict_loads, dict_network, n)
-            dict_loads[inner_node] = new_load_ts
+            nodes_removed_so_far += nodes_to_remove
+            dict_loads[outer_node] = new_load_ts
+
+            network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network)
+            network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network)
 
     return dict_loads, dict_network
 

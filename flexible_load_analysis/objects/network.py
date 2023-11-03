@@ -151,7 +151,7 @@ def list_currently_connected_nodes(node, dict_network):
 
 
 def node_in_network(n_node, g_network):
-    return (n_node in g_network["bus"]["BUS_I"])
+    return (str(n_node) in g_network["bus"]["BUS_I"].astype(str))
 
 
 
