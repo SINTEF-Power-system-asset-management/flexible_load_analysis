@@ -25,12 +25,12 @@ from .. import utilities
 
 ### Conversions
 
-def plot_network(dict_network):
+def plot_network(dict_network, draw_figure=True, **plot_kwargs):
     """
     Convert to NetworkX and plot the topology
     """
     nx_network = convert_network_dictionary_to_graph(dict_network)
-    plt.subplot(111)
+    if "ax" not in plot_kwargs: plt.subplot(111)
     pos = nx.kamada_kawai_layout(nx_network)
 
     node_voltage_lvls = dict_network["bus"]["BASE_KV"].astype(np.float64)
@@ -49,8 +49,8 @@ def plot_network(dict_network):
     edge_status[not_active_idx] = "#660000"
     edge_status = list(edge_status)
 
-    nx.draw(nx_network, pos=pos, with_labels=True, font_weight='bold', cmap="Set1" ,node_color=node_voltage_lvls, edge_color=edge_status)
-    plt.show()
+    nx.draw(nx_network, pos=pos, with_labels=True, font_weight='bold', cmap="Set1" ,node_color=node_voltage_lvls, edge_color=edge_status, **plot_kwargs)
+    if draw_figure: plt.show()
     return
 
 
