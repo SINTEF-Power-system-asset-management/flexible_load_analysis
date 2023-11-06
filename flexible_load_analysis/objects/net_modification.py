@@ -38,6 +38,9 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
 
     # Find all pairs of buses which make up a trafo
     trafo_bus_pairs = network.get_all_transformer_bus_pairs(dict_network)
+    # We only want to simplify nodes beneath the reference bus
+    candidate_nodes = all_buses_below(reference_bus, dict_network, reference_bus)
+    trafo_bus_pairs = [p for p in trafo_bus_pairs if (p[0] in candidate_nodes and p[1] in candidate_nodes)]
     # for each pair, aggregate the load at the pair and store in a single timeseries to be
     # associated with the combined node
     nodes_removed_so_far = []
