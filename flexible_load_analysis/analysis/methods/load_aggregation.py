@@ -39,6 +39,12 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
 
     contributing_nodes = radial_network_traversal.all_loads_below(agg_node, d_network, d_loads, reference_node)
 
+    if contributing_nodes:
+        all_timestamps = [d_loads[n][:,0] for n in contributing_nodes]
+        most_timestamps = all_timestamps[np.argmax([t.shape[0] for t in all_timestamps])]
+        ts_agg = np.zeros((most_timestamps.shape[0],2),dtype=object)
+        ts_agg[:,0] = most_timestamps
+
     for n in contributing_nodes:
         ts_agg = ts.add_timeseries(ts_agg, d_loads[n])
 
