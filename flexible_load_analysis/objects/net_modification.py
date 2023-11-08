@@ -85,7 +85,7 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
             for n in nodes_to_remove:
                 remove_node_from_net(dict_loads, dict_network, n)
             nodes_removed_so_far += nodes_to_remove
-            dict_loads[outer_node] = new_load_ts
+            if np.any(new_load_ts): dict_loads[outer_node] = new_load_ts
 
             network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network)
             network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network)
