@@ -138,6 +138,21 @@ def all_paths_from_node(from_node, n_network, reference_node=None):
     return all_paths
 
 
+def standard_radial_bus_ordering(n_network, reference_node=None):
+    """Returns a list of ordering of all buses in the network given by a DFS, starting from ```reference_node'''.
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(n_network)
+
+    _, nexts = find_prev_and_next_nodes(n_network, reference_node)
+    queue = [reference_node]
+    explored = []
+    while queue:
+        cur_node = queue.pop(0)
+        explored.append(cur_node)
+        for n in nexts.get(cur_node, []):
+            queue.insert(0, n)
+    return explored
+
 
 # Impedance between nodes in radial network
 
