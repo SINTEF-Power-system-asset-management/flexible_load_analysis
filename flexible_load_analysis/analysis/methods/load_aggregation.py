@@ -5,7 +5,7 @@ import numpy as np
 from ...objects import network, radial_network_traversal, timeseries as ts
 
 
-def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
+def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None, print_contributing=True):
     """Finds timeseries of total load experienced by a node.
 
     Parameters:
@@ -43,5 +43,5 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
         ts_agg = ts.add_timeseries(ts_agg, d_loads[n])
 
     contributing_nodes.sort()
-    print(f"Nodes contributing to aggregate: {contributing_nodes}")
+    if print_contributing: print(f"Nodes contributing to aggregate: {contributing_nodes}")
     return ts_agg
