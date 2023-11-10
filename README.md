@@ -18,7 +18,7 @@ Using the package requires the following dependencies:
 
 Install all dependencies by running  
 ```bash
-python3 -m pip install -r requirements.txt
+python3 -m pip install .
 ```
 
 ## Usage
