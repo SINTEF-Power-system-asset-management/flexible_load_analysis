@@ -1,9 +1,0 @@
-matplotlib
-networkx
-numpy
-openpyxl
-pandapower
-pandas
-PYPOWER
-toml
-
