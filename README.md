@@ -25,13 +25,13 @@ python3 -m pip install .
 The code can be used standalone as an application with any of the included scripts.
 
 More relevantly, however, is using the functionality for loading, data-structures and analyses in your own project as an included package. 
-If used in this way with a 
-
+If used in this way with a package manager, remember to add
 ```toml
 dependencies = [
     "flexible-load-analysis @ git+https://github.com/SINTEF-Power-system-asset-management/flexible_load_analysis.git@dev"
 ]
 ```
+to your pyproject.toml file.
 
 The library may alternatively be used as a Git submodule. In that case, remember to run
 ```bash
