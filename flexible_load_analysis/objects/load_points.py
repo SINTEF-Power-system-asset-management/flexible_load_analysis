@@ -12,6 +12,9 @@ The unit of the load is implicitly kW (KiloWatt), but changing this will not aff
 
 """
 
+import numpy as np
+
+from . import timeseries as ts
 from .. import utilities
 from .. import plotting
 
@@ -25,6 +28,13 @@ def add_new_load(dict_loads_ts, str_new_load_ID, ts_new_load_data):
 def remove_load(dict_loads_ts, str_load_ID):
     dict_loads_ts.pop(str_load_ID)
     return dict_loads_ts
+
+
+def all_timestamps_present(dict_loads_ts):
+    all_timestamps = np.empty((0,))
+    for timeseries in dict_loads_ts.values():
+        all_timestamps = np.unique(np.append(all_timestamps, ts.get_timestamp_array(timeseries)))
+    return all_timestamps
 
 
 def print_all_load_points(dict_loads_ts):
