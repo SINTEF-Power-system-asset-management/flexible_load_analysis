@@ -3,6 +3,7 @@ import datetime as dt
 import numpy as np
 
 from .. import utilities
+from ..objects import timeseries as ts
 
 """Module for performing various timeseries preprocessing steps.
 The module functionality is designed to be pipeline-able, in that
@@ -163,6 +164,25 @@ def remove_nan_and_none_datapoints(ts_data, dict_preprocessing_log, fill_isolate
     return ts_data
 
 
+def remove_duplicate_timestamps(ts_data, dict_log, *params):
+    """Finds repeated timestamps and keeps only one of the datapoints
+
+    Notes
+    ----------
+    Does not take the actual value of the data into account, only the timestamp
+    """
+    # TODO: Probably should take average of the datapoints of duplicate timestamp
+    timestamps = ts.get_timestamp_array(ts_data)
+    _, idxs_to_keep = np.unique(timestamps, return_index=True)
+
+    removed = np.ones_like(ts_data[:,0], dtype=bool)
+    removed[idxs_to_keep] = False
+
+    dict_log["remove_duplicate_timestamps"] = {"removed" : ts_data[removed,:]}
+    ts_data = ts_data[idxs_to_keep, :]
+    return ts_data
+
+
 def remove_negative_values(ts_data):
     raise(NotImplementedError)
     dict_preprocessing_log["remove_negative_values"] = {"result1" : variable}
@@ -257,6 +277,12 @@ def preprocess_all_loads(dict_config, dict_data, suppress_status=False):
         fill_method = dict_preprocessing_config.get("NaN_and_None_removal", {}).get("fill_method", None)
         preprocessing_funcs.append(remove_nan_and_none_datapoints)
         preprocessing_parameters.append([fill_method])
+
+    # Remove duplicate timestamps
+    perform_duplicate_timestamp_removal = dict_preprocessing_config.get("remove_duplicate_timestamps", False)
+    if perform_duplicate_timestamp_removal:
+        preprocessing_funcs.append(remove_duplicate_timestamps)
+        preprocessing_parameters.append([])
 
     # Temperature correction
     perform_temperature_correction = dict_preprocessing_config.get("perform_temperature_correction", False)
