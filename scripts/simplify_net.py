@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 from flexible_load_analysis.data_initialization import data_loading, preprocessing
-from flexible_load_analysis.objects import net_modification
+from flexible_load_analysis.objects import net_simplification
 from flexible_load_analysis.objects.network import plot_network
 
 
@@ -31,7 +31,7 @@ for STR_CONFIG_PATH, voltage_level_kV, reference_bus in zip(configs, voltage_lev
     plot_network(dict_network, draw_figure=False, ax=axs[0])
     axs[0].set_title("Before simplification")
 
-    dict_loads_ts, dict_network = net_modification.simplify_net(dict_loads_ts, dict_network, unifying_voltage_kV=voltage_level_kV, reference_bus=reference_bus)
+    dict_loads_ts, dict_network = net_simplification.simplify_net(dict_loads_ts, dict_network, unifying_voltage_kV=voltage_level_kV, reference_bus=reference_bus)
     
     plot_network(dict_network, draw_figure=False, ax=axs[1])
     axs[1].set_title("After simplification")
