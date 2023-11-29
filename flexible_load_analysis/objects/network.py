@@ -266,6 +266,7 @@ def convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network):
 ### Accessing
 
 def voltage_for_node_id(node, d_network):
+    if node is None: return np.nan
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)
     return d_network["bus"]["BASE_KV"][node_idx].astype(np.float64)
 

@@ -58,10 +58,9 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
             inner_node = t_bus
             outer_node = f_bus
         else:
-            # If one of the trafo-pairs are not connected to the subgrid of voltage level unifying_voltage.
-            # For now we simply elect to not simplify them.
-            # TODO: Can be handled by simply removing these buses?
-            continue
+            # If the trafo-pair is not connected to the subgrid of voltage level unifying_voltage.
+            inner_node = None
+            outer_node = None
 
         if outer_node in nodes_removed_so_far:      #TODO: Er det riktig aa ha dette her?
             continue
@@ -97,13 +96,15 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
             for n in nodes_to_remove:
                 net_modification.remove_node_from_net(dict_loads_simplified, dict_network_simplified, n)
             nodes_removed_so_far += nodes_to_remove
-            if np.any(new_load_ts): dict_loads_simplified[outer_node] = new_load_ts
 
+            if np.any(new_load_ts): dict_loads_simplified[outer_node] = new_load_ts
             network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network_simplified)
             network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network_simplified)
 
         else:
             # 3. Transformer is not connected to subnet of interest
-            pass
+            # For now we simply elect to not simplify them.
+            # TODO: Can be handled by simply removing these buses?
+            continue
 
     return dict_loads_simplified, dict_network_simplified
