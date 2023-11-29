@@ -251,6 +251,7 @@ def set_branch_tap(f_bus, t_bus, new_tap, dict_network):
 
 
 def convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network):
+    #TODO: Source?
     branch_idx = find_branch_index(f_bus, t_bus, dict_network)
     N1overN2 = dict_network["branch"]["TAP"].astype(np.float64)[branch_idx]
     old_impedance = get_impedance_of_branch(f_bus, t_bus, dict_network)
