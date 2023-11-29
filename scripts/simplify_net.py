@@ -31,7 +31,7 @@ for STR_CONFIG_PATH, voltage_level_kV, reference_bus in zip(configs, voltage_lev
     plot_network(dict_network, draw_figure=False, ax=axs[0])
     axs[0].set_title("Before simplification")
 
-    dict_loads_ts, dict_network = net_simplification.simplify_net(dict_loads_ts, dict_network, unifying_voltage_kV=voltage_level_kV, reference_bus=reference_bus)
+    dict_loads_ts, dict_network = net_simplification.simplify_net(dict_loads_ts, dict_network, unifying_voltage_kV=voltage_level_kV, reference_bus=reference_bus, keep_highest_impedance_loadline=True)
     
     plot_network(dict_network, draw_figure=False, ax=axs[1])
     axs[1].set_title("After simplification")

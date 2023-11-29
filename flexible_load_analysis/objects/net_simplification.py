@@ -3,11 +3,11 @@ import copy
 
 import numpy as np
 
-from ..analysis.methods.load_aggregation import aggregate_load_of_node
+from ..analysis.methods.load_aggregation import aggregate_given_loads
 from .radial_network_traversal import all_buses_below
 from . import network, net_modification
 
-def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=None):
+def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=None, keep_highest_impedance_loadline=False):
     """Takes a net (network and associated load-timeseries) and simplifies it into a single voltage level.
 
     Parameters
@@ -20,6 +20,8 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
         Voltage level to simplify the network into.
     reference_bus (optional) : str
         Reference bus of radial to simplify. Not necessary in networks with single radial.
+    keep_highest_impedance_loadline (optional) : bool
+        Decides if load of highest impedance path is excluded from being aggregated into transformer
     
     Returns
     ----------
@@ -44,7 +46,7 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
     candidate_nodes = all_buses_below(reference_bus, dict_network, reference_bus) + [reference_bus]
     trafo_bus_pairs = [p for p in trafo_bus_pairs if (p[0] in candidate_nodes and p[1] in candidate_nodes)]
 
-    # For each pair, aggregate the load and change voltage levels.
+    # For each pair, simplify it based on what type of transformer it is.
     dict_loads_simplified = copy.deepcopy(dict_loads)
     dict_network_simplified = copy.deepcopy(dict_network)
     nodes_removed_so_far = []
@@ -62,7 +64,7 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
             inner_node = None
             outer_node = None
 
-        if outer_node in nodes_removed_so_far:      #TODO: Er det riktig aa ha dette her?
+        if outer_node in nodes_removed_so_far:
             continue
 
         # Now there are three cases:
@@ -87,19 +89,39 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
                 # For now, simply throw an error
                 print(f"{inner_node},{outer_node}")
                 raise(NotImplementedError("Method for simplifying net of higher voltage values is not yet implemented."))
-            
+
         elif network.voltage_for_node_id(outer_node, dict_network_simplified) < unifying_voltage_kV:
             # 2. Simplifying downwards a transformer
-            # TODO: the highest impedance of a removed node should really be added to the impedance of outer_node
+            # 2.1 Change voltage level of outer node of trafo
+            network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network_simplified)
+
+            # 2.2 Compute equivalent impedance of trafo-branch, optionally choosing to preserve child of highest impedance
             nodes_to_remove = all_buses_below(outer_node, dict_network_simplified, reference_bus)
-            new_load_ts = aggregate_load_of_node(outer_node, dict_loads_simplified, dict_network_simplified, reference_bus)
+            if not nodes_to_remove: continue
+
+            # OBS: Here we assume that nodes_to_remove only contains buses connected directly to outer_node.
+            # This may not necessarily be the case in a larger net with multiple voltage levels.
+            # This will then fail get_impedance_of_branch
+            node_impedance_pairs = [(n, network.get_impedance_of_branch(n, outer_node, dict_network)) for n in nodes_to_remove]
+            node_of_highest_impedance, highest_impedance = sorted(node_impedance_pairs, key=lambda p : p[1], reverse=True)[0]
+
+            if keep_highest_impedance_loadline:
+                nodes_to_remove.remove(node_of_highest_impedance)
+                network.set_voltage_level(node_of_highest_impedance, unifying_voltage_kV, dict_network_simplified)
+                additional_trafo_impedance = 0
+            else:
+                additional_trafo_impedance = highest_impedance
+
+            network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network_simplified)
+            new_impedance = network.get_impedance_of_branch(f_bus, t_bus, dict_network_simplified) + additional_trafo_impedance
+            network.set_line_impedance_of_branch(f_bus, t_bus, new_impedance, dict_network_simplified)
+
+            # 2.3 Aggregate loads and remove child-nodes
+            new_load_ts = aggregate_given_loads([n for n in nodes_to_remove if n in dict_loads], dict_loads)
             for n in nodes_to_remove:
                 net_modification.remove_node_from_net(dict_loads_simplified, dict_network_simplified, n)
             nodes_removed_so_far += nodes_to_remove
-
             if np.any(new_load_ts): dict_loads_simplified[outer_node] = new_load_ts
-            network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network_simplified)
-            network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network_simplified)
 
         else:
             # 3. Transformer is not connected to subnet of interest
