@@ -23,6 +23,9 @@ def remove_node_from_net(dict_loads_ts, g_network, str_load_ID):
     return dict_loads_ts, g_network
 
 
+
+### Interactive net-modifications ###
+
 def interactively_inspect_loads(dict_loads_ts):
     bool_continue_inspecting = True
     while bool_continue_inspecting:

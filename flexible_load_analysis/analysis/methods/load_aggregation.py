@@ -5,6 +5,23 @@ import numpy as np
 from ...objects import network, radial_network_traversal, timeseries as ts
 
 
+def aggregate_given_loads(buses_to_aggregate, d_loads):
+    """Finds the aggregate load of supplied buses, not taking network structure into account.
+    """
+    ts_agg = np.empty((0))
+
+    if buses_to_aggregate:
+        all_timestamps = [d_loads[n][:,0] for n in buses_to_aggregate]
+        most_timestamps = all_timestamps[np.argmax([t.shape[0] for t in all_timestamps])]
+        ts_agg = np.zeros((most_timestamps.shape[0],2),dtype=object)
+        ts_agg[:,0] = most_timestamps
+
+    for n in buses_to_aggregate:
+        ts_agg = ts.add_timeseries(ts_agg, d_loads[n])
+
+    return ts_agg
+
+
 def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None, print_contributing=True):
     """Finds timeseries of total load experienced by a node.
 
@@ -34,13 +51,10 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None, pr
     
     if reference_node is None:
         reference_node = network.get_reference_bus_ID(d_network)
-    
-    ts_agg = np.empty((0))
 
     contributing_nodes = radial_network_traversal.all_loads_below(agg_node, d_network, d_loads, reference_node)
 
-    for n in contributing_nodes:
-        ts_agg = ts.add_timeseries(ts_agg, d_loads[n])
+    ts_agg = aggregate_given_loads(contributing_nodes, d_loads)
 
     contributing_nodes.sort()
     if print_contributing: print(f"Nodes contributing to aggregate: {contributing_nodes}")

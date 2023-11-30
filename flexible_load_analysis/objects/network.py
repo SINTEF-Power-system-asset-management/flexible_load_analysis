@@ -25,32 +25,31 @@ from .. import utilities
 
 ### Conversions
 
-def plot_network(dict_network):
+def plot_network(dict_network, draw_figure=True, **plot_kwargs):
     """
     Convert to NetworkX and plot the topology
     """
     nx_network = convert_network_dictionary_to_graph(dict_network)
-    plt.subplot(111)
+    if "ax" not in plot_kwargs: plt.subplot(111)
     pos = nx.kamada_kawai_layout(nx_network)
 
     node_voltage_lvls = dict_network["bus"]["BASE_KV"].astype(np.float64)
 
-    nx_edges = list(nx_network.edges)
-    not_active_inds = np.where(dict_network["branch"]["BR_STATUS"] == "0")[0]
-    not_active_edges = np.stack((
+    nx_edges = np.array(list(nx_network.edges))
+    num_edges = nx_edges.shape[0]
+    inactive_idxs = (dict_network["branch"]["BR_STATUS"].astype(np.float64) == 0)
+    inactive_edges = np.stack((
             dict_network["branch"]["F_BUS"],
             dict_network["branch"]["T_BUS"]),
-            axis=1)[not_active_inds]
-    not_active_edges_mp = np.array([str((a[0], a[1])) for a in not_active_edges])
-    not_active_edges_nx = np.array([str(tup) for tup in nx_edges])
-    not_active_idx = np.in1d(not_active_edges_nx, not_active_edges_mp).nonzero()[0]
-    
-    edge_status = np.array(["#006600"] * len(nx_edges))
-    edge_status[not_active_idx] = "#660000"
-    edge_status = list(edge_status)
+            axis=1)[inactive_idxs]
+    inactive_nx_idxs = np.zeros((num_edges), dtype=bool)
+    if inactive_edges.any(): inactive_nx_idxs = ((nx_edges == inactive_edges) | (nx_edges == np.flip(inactive_edges, axis=1))).all(axis=1)
 
-    nx.draw(nx_network, pos=pos, with_labels=True, font_weight='bold', cmap="Set1" ,node_color=node_voltage_lvls, edge_color=edge_status)
-    plt.show()
+    edge_status = np.array(["#006600"] * num_edges)
+    edge_status[inactive_nx_idxs] = "#660000"
+
+    nx.draw(nx_network, pos=pos, with_labels=True, font_weight='bold', cmap="Set1" ,node_color=node_voltage_lvls, edge_color=edge_status, **plot_kwargs)
+    if draw_figure: plt.show()
     return
 
 
@@ -114,7 +113,7 @@ def convert_network_dictionary_to_pp(dict_network):
 
 
 
-### Traversal
+### Members
 
 def list_nodes(dict_network): 
     """Lists all nodes of network.
@@ -151,7 +150,7 @@ def list_currently_connected_nodes(node, dict_network):
 
 
 def node_in_network(n_node, g_network):
-    return (n_node in g_network["bus"]["BUS_I"])
+    return (str(n_node) in g_network["bus"]["BUS_I"].astype(str))
 
 
 
@@ -232,12 +231,57 @@ def remove_node(dict_network, n_node):
     return dict_network
 
 
+def set_voltage_level(str_bus, new_base_kV, dict_network):
+    bus_idx = np.where(dict_network["bus"]["BUS_I"] == str_bus)
+    dict_network["bus"]["BASE_KV"][bus_idx] = new_base_kV
+    return dict_network
+
+
+def set_line_impedance_of_branch(f_bus, t_bus, new_impedance, dict_network):
+    branch_idx = find_branch_index(f_bus, t_bus, dict_network)
+    dict_network["branch"]["BR_R"][branch_idx] = np.real(new_impedance)
+    dict_network["branch"]["BR_X"][branch_idx] = np.imag(new_impedance)
+    return dict_network
+
+
+def set_branch_tap(f_bus, t_bus, new_tap, dict_network):
+    branch_idx = find_branch_index(f_bus, t_bus, dict_network)
+    dict_network["branch"]["TAP"][branch_idx] = new_tap
+    return dict_network
+
+
+def convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network):
+    #TODO: Source?
+    branch_idx = find_branch_index(f_bus, t_bus, dict_network)
+    N1overN2 = dict_network["branch"]["TAP"].astype(np.float64)[branch_idx]
+    old_impedance = get_impedance_of_branch(f_bus, t_bus, dict_network)
+    new_impedance = old_impedance * N1overN2**2
+    set_line_impedance_of_branch(f_bus, t_bus, new_impedance, dict_network)
+    set_branch_tap(f_bus, t_bus, 0, dict_network)
+    # TODO: Deal with shift?
+    pass
+
+
 
 ### Accessing
 
 def voltage_for_node_id(node, d_network):
+    if node is None: return np.nan
     node_idx = np.where(d_network["bus"]["BUS_I"] == node)
     return d_network["bus"]["BASE_KV"][node_idx].astype(np.float64)
+
+
+def is_reference_bus(str_bus, dict_network):
+    bus_idx = np.where(dict_network["bus"]["BUS_I"].astype(str) == str_bus)
+    return dict_network["bus"]["BUS_TYPE"][bus_idx].astype(int) == 3
+
+
+def find_branch_index(bus1, bus2, dict_network):
+    branch_mask =   ((dict_network["branch"]["F_BUS"] == bus1) & (dict_network["branch"]["T_BUS"] == bus2)) | \
+                    ((dict_network["branch"]["F_BUS"] == bus2) & (dict_network["branch"]["T_BUS"] == bus1))
+    branch_idx = np.where(branch_mask)[0]
+    assert branch_idx.size == 1 # Or else there exists multiple branches between buses 1 and 2
+    return branch_idx
 
 
 def get_reference_bus_idx(dict_network):
@@ -262,7 +306,7 @@ def get_impedance_of_branch(f_bus, t_bus, dict_network):
     pairs = list(zip(dict_network["branch"]["F_BUS"], dict_network["branch"]["T_BUS"]))
     for i in range(len(pairs)):
         if pairs[i] == (f_bus, t_bus) or pairs[i] == (t_bus, f_bus):
-            return dict_network["branch"]["BR_R"][i].astype(np.float64) + 1j*dict_network["branch"]["BR_X"][i].astype(np.float64)
+            return dict_network["branch"]["BR_R"].astype(np.float64)[i] + 1j*dict_network["branch"]["BR_X"].astype(np.float64)[i]
     else:
         raise(Exception(f"Branch {(f_bus, t_bus)} not found in network"))
 
@@ -277,3 +321,8 @@ def input_until_node_in_network_appears(dict_network):
         else:
             print("Could not find", str_ID, "in network, try again!")
     return str_ID
+
+
+def get_all_transformer_bus_pairs(dict_network):
+    trafo_branches = np.where(dict_network["branch"]["TAP"].astype(np.float64) != 0)
+    return list(zip(dict_network["branch"]["F_BUS"][trafo_branches], dict_network["branch"]["T_BUS"][trafo_branches]))
