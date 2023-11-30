@@ -1,7 +1,7 @@
 # Flexible Load Analysis
 Flexible Load Analysis is a Python package for loading, modelling and analysis of load-timeseries and net-data, with a focus on flexibility.  
 The program was originally made to test load-modelling methods described in [Erling Tønne's Doctoral Thesis](http://hdl.handle.net/11250/2476389).  
-The script is created by SINTEF Energi AS in conjunction with CINELDI WP1.
+The package is created by SINTEF Energi AS in conjunction with CINELDI WP1.
 
 ## Installation
 The package is installed by cloning this repository to your own local machine.
@@ -18,17 +18,22 @@ Using the package requires the following dependencies:
 
 Install all dependencies by running  
 ```bash
-python3 -m pip install -r requirements.txt
+python3 -m pip install .
 ```
 
 ## Usage
-The library can be used standalone with any of the included scripts.
+The code can be used standalone as an application with any of the included scripts.
 
 More relevantly, however, is using the functionality for loading, data-structures and analyses in your own project as an included package. 
-As of now, this is done by adding this repo as a git submodule into your own project, adding the packages' requirements into your own,
-installing these and then importing the package like any other python package.
+If used in this way with a package manager, remember to add
+```toml
+dependencies = [
+    "flexible-load-analysis @ git+https://github.com/SINTEF-Power-system-asset-management/flexible_load_analysis.git@dev"
+]
+```
+to your pyproject.toml file.
 
-The library may be used as a Git submodule. In that case, remember to run
+The library may alternatively be used as a Git submodule. In that case, remember to run
 ```bash
 git submodule update --remote
 ```

@@ -22,7 +22,7 @@ def aggregate_given_loads(buses_to_aggregate, d_loads):
     return ts_agg
 
 
-def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
+def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None, print_contributing=True):
     """Finds timeseries of total load experienced by a node.
 
     Parameters:
@@ -57,5 +57,5 @@ def aggregate_load_of_node(agg_node, d_loads, d_network, reference_node=None):
     ts_agg = aggregate_given_loads(contributing_nodes, d_loads)
 
     contributing_nodes.sort()
-    print(f"Nodes contributing to aggregate: {contributing_nodes}")
+    if print_contributing: print(f"Nodes contributing to aggregate: {contributing_nodes}")
     return ts_agg

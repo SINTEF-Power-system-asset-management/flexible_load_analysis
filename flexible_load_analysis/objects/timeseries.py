@@ -25,6 +25,13 @@ def create_standard_time_series(arr_time_dt, arr_data):
     return np.transpose(np.array([arr_time_dt, arr_data]))
 
 
+def get_timestamp_array(ts):
+    return ts[:,0]
+
+def get_data_array(ts):
+    return ts[:,1]
+
+
 def add_timeseries(ts_a, ts_b):
     """Returns the sum of data-values in two timeseries
 

@@ -8,6 +8,7 @@ necessary interface.
 """
 
 import warnings
+from collections import deque
 
 from .network import get_reference_bus_ID, list_currently_connected_nodes, voltage_for_node_id, list_nodes, get_impedance_of_branch
 
@@ -137,6 +138,24 @@ def all_paths_from_node(from_node, n_network, reference_node=None):
         all_paths.append(path_to_node(from_node, to_node, n_network, reference_node))
     return all_paths
 
+
+def standard_radial_bus_ordering(n_network, reference_node=None, shortest_paths_first=True):
+    """Returns a list of ordering of all buses in the network given by a DFS, starting from ```reference_node'''.
+    """
+    if reference_node is None: reference_node = get_reference_bus_ID(n_network)
+
+    _, nexts = find_prev_and_next_nodes(n_network, reference_node)
+    queue = deque([reference_node])
+    explored = []
+    while queue:
+        cur_node = queue.pop()
+        explored.append(cur_node)
+
+        children = nexts.get(cur_node, [])
+        children_sorted = sorted(children, key=lambda n : len(all_buses_below(n, n_network, reference_node)))     #TODO: slow to recompute at each iteration
+        if shortest_paths_first: children_sorted = children_sorted[::-1]
+        queue.extend(children_sorted)
+    return explored
 
 
 # Impedance between nodes in radial network

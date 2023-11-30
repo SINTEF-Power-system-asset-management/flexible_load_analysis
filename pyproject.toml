@@ -1,0 +1,25 @@
+[project]
+name = "flexible-load-analysis"
+version = "2.1.0"
+description = "Package for loading, preprocessing, managing and analysing mass load and network data."
+authors = [
+    {name = "Daniel Bjerkehagen", email = "daniel.bjerkehagen@sintef.no"},
+]
+dependencies = [
+    "matplotlib",
+    "networkx",
+    "numpy",
+    "openpyxl",
+    "pandapower",
+    "pandas",
+    "PYPOWER",
+    "toml",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+

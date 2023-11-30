@@ -99,6 +99,19 @@ class RadialTravelsalTestCase(unittest.TestCase):
         found_paths_to_leafs = trav.all_paths_from_node(fnode, self.network_data, self.reference_node)
         self.assertCountEqual(found_paths_to_leafs, known_paths_to_leafs)
 
+    def test_standard_radial_bus_ordering(self):
+        accepted_suborderings = [
+            ["B1", "B2", "B3", "B5", "B7"],
+            ["B1", "B2", "B3", "B5", "B8"],
+            ["B1", "B2", "B4", "B6", "B9"],
+        ]
+        found_ordering = trav.standard_radial_bus_ordering(self.network_data, self.reference_node)
+        for node_order in accepted_suborderings:
+            for i in range(1, len(node_order)):
+                later_node = node_order[i]
+                earlier_node = node_order[i-1]
+                self.assertTrue(found_ordering.index(later_node) > found_ordering.index(earlier_node), f"Found incorrect ordering of buses {earlier_node} and {later_node}")
+
 
 class SingleRadialCase(RadialTravelsalTestCase):
     def __init__(self, methodName) -> None:
