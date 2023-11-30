@@ -7,6 +7,65 @@ from ..analysis.methods.load_aggregation import aggregate_given_loads
 from .radial_network_traversal import all_buses_below
 from . import network, net_modification
 
+
+def simplify_HV_transformer(HV_bus, LV_bus, unifying_voltage_kV, dict_network):
+    # Special case when the high voltage side of the transformer is the reference bus
+    # Then this can simply be made to the lower voltage level,
+    # with impedance corrected
+    if network.is_reference_bus(HV_bus, dict_network):
+        # Reference bus stays as a reference bus
+        network.convert_trafo_branch_to_equivalent_impedance(HV_bus, LV_bus, dict_network)
+        network.set_voltage_level(HV_bus, unifying_voltage_kV, dict_network)
+
+    # if the high voltage side, however, is connected to a larger network then 
+    # this must be handled differently, possibly by simply throwing this part
+    # of the network away
+    else:
+        # For now, simply throw an error
+        print(f"{HV_bus},{LV_bus}")
+        raise(NotImplementedError("Method for simplifying net of higher voltage values is not yet implemented."))
+    
+    return dict_network
+
+
+def simplify_LV_transformer(HV_bus, LV_bus, unifying_voltage_kV, 
+                            dict_loads, dict_network, 
+                            reference_bus=None, keep_highest_impedance_loadline=None):
+    # 2.1 Change voltage level of outer node of trafo
+    network.set_voltage_level(LV_bus, unifying_voltage_kV, dict_network)
+
+    # 2.2 Compute equivalent impedance of trafo-branch, optionally choosing to preserve child of highest impedance
+    nodes_to_remove = all_buses_below(LV_bus, dict_network, reference_bus)
+    if nodes_to_remove: 
+        # OBS: Here we assume that nodes_to_remove only contains buses connected directly to LV_bus.
+        # This may not necessarily be the case in a larger net with multiple voltage levels.
+        # This will then fail get_impedance_of_branch
+        node_impedance_pairs = [(n, network.get_impedance_of_branch(n, LV_bus, dict_network)) for n in nodes_to_remove]
+        node_of_highest_impedance, highest_impedance = sorted(node_impedance_pairs, key=lambda p : p[1], reverse=True)[0]
+
+        if keep_highest_impedance_loadline:
+            nodes_to_remove.remove(node_of_highest_impedance)
+            network.set_voltage_level(node_of_highest_impedance, unifying_voltage_kV, dict_network)
+            additional_trafo_impedance = 0
+        else:
+            additional_trafo_impedance = highest_impedance
+    else:
+        # Case when bus has no nodes below itself
+        additional_trafo_impedance = 0
+
+    network.convert_trafo_branch_to_equivalent_impedance(HV_bus, LV_bus, dict_network)
+    new_impedance = network.get_impedance_of_branch(HV_bus, LV_bus, dict_network) + additional_trafo_impedance
+    network.set_line_impedance_of_branch(HV_bus, LV_bus, new_impedance, dict_network)
+
+    # 2.3 Aggregate loads and remove child-nodes
+    new_load_ts = aggregate_given_loads([n for n in nodes_to_remove if n in dict_loads], dict_loads)
+    for n in nodes_to_remove:
+        net_modification.remove_node_from_net(dict_loads, dict_network, n)
+    if np.any(new_load_ts): dict_loads[LV_bus] = new_load_ts
+    
+    return dict_loads, dict_network, nodes_to_remove
+
+
 def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=None, keep_highest_impedance_loadline=False):
     """Takes a net (network and associated load-timeseries) and simplifies it into a single voltage level.
 
@@ -73,55 +132,16 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
         # 3. The transformer in question is not connected to the subnet of interest.
         if network.voltage_for_node_id(outer_node, dict_network_simplified) > unifying_voltage_kV:
             # 1. Simplifying upwards a transformer
-
-            # Special case when the high voltage side of the transformer is the reference bus
-            # Then this can simply be made to the lower voltage level,
-            # with impedance corrected
-            if network.is_reference_bus(outer_node, dict_network_simplified):
-                # Reference bus stays as a reference bus
-                network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network_simplified)
-                network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network_simplified)
-
-            # if the high voltage side, however, is connected to a larger network then 
-            # this must be handled differently, possibly by simply throwing this part
-            # of the network away
-            else:
-                # For now, simply throw an error
-                print(f"{inner_node},{outer_node}")
-                raise(NotImplementedError("Method for simplifying net of higher voltage values is not yet implemented."))
+            simplify_HV_transformer(outer_node, inner_node, unifying_voltage_kV, dict_network_simplified)
 
         elif network.voltage_for_node_id(outer_node, dict_network_simplified) < unifying_voltage_kV:
             # 2. Simplifying downwards a transformer
-            # 2.1 Change voltage level of outer node of trafo
-            network.set_voltage_level(outer_node, unifying_voltage_kV, dict_network_simplified)
-
-            # 2.2 Compute equivalent impedance of trafo-branch, optionally choosing to preserve child of highest impedance
-            nodes_to_remove = all_buses_below(outer_node, dict_network_simplified, reference_bus)
-            if not nodes_to_remove: continue
-
-            # OBS: Here we assume that nodes_to_remove only contains buses connected directly to outer_node.
-            # This may not necessarily be the case in a larger net with multiple voltage levels.
-            # This will then fail get_impedance_of_branch
-            node_impedance_pairs = [(n, network.get_impedance_of_branch(n, outer_node, dict_network)) for n in nodes_to_remove]
-            node_of_highest_impedance, highest_impedance = sorted(node_impedance_pairs, key=lambda p : p[1], reverse=True)[0]
-
-            if keep_highest_impedance_loadline:
-                nodes_to_remove.remove(node_of_highest_impedance)
-                network.set_voltage_level(node_of_highest_impedance, unifying_voltage_kV, dict_network_simplified)
-                additional_trafo_impedance = 0
-            else:
-                additional_trafo_impedance = highest_impedance
-
-            network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network_simplified)
-            new_impedance = network.get_impedance_of_branch(f_bus, t_bus, dict_network_simplified) + additional_trafo_impedance
-            network.set_line_impedance_of_branch(f_bus, t_bus, new_impedance, dict_network_simplified)
-
-            # 2.3 Aggregate loads and remove child-nodes
-            new_load_ts = aggregate_given_loads([n for n in nodes_to_remove if n in dict_loads], dict_loads)
-            for n in nodes_to_remove:
-                net_modification.remove_node_from_net(dict_loads_simplified, dict_network_simplified, n)
-            nodes_removed_so_far += nodes_to_remove
-            if np.any(new_load_ts): dict_loads_simplified[outer_node] = new_load_ts
+            _, _, nodes_removed = simplify_LV_transformer(
+                inner_node, outer_node, unifying_voltage_kV,
+                dict_loads_simplified, dict_network_simplified,
+                reference_bus=reference_bus, keep_highest_impedance_loadline=keep_highest_impedance_loadline
+            )
+            nodes_removed_so_far += nodes_removed
 
         else:
             # 3. Transformer is not connected to subnet of interest
