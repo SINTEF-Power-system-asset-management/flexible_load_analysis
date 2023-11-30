@@ -97,20 +97,22 @@ def simplify_net(dict_loads, dict_network, unifying_voltage_kV, reference_bus=No
 
             # 2.2 Compute equivalent impedance of trafo-branch, optionally choosing to preserve child of highest impedance
             nodes_to_remove = all_buses_below(outer_node, dict_network_simplified, reference_bus)
-            if not nodes_to_remove: continue
+            if nodes_to_remove: 
+                # OBS: Here we assume that nodes_to_remove only contains buses connected directly to outer_node.
+                # This may not necessarily be the case in a larger net with multiple voltage levels.
+                # This will then fail get_impedance_of_branch
+                node_impedance_pairs = [(n, network.get_impedance_of_branch(n, outer_node, dict_network)) for n in nodes_to_remove]
+                node_of_highest_impedance, highest_impedance = sorted(node_impedance_pairs, key=lambda p : p[1], reverse=True)[0]
 
-            # OBS: Here we assume that nodes_to_remove only contains buses connected directly to outer_node.
-            # This may not necessarily be the case in a larger net with multiple voltage levels.
-            # This will then fail get_impedance_of_branch
-            node_impedance_pairs = [(n, network.get_impedance_of_branch(n, outer_node, dict_network)) for n in nodes_to_remove]
-            node_of_highest_impedance, highest_impedance = sorted(node_impedance_pairs, key=lambda p : p[1], reverse=True)[0]
-
-            if keep_highest_impedance_loadline:
-                nodes_to_remove.remove(node_of_highest_impedance)
-                network.set_voltage_level(node_of_highest_impedance, unifying_voltage_kV, dict_network_simplified)
-                additional_trafo_impedance = 0
+                if keep_highest_impedance_loadline:
+                    nodes_to_remove.remove(node_of_highest_impedance)
+                    network.set_voltage_level(node_of_highest_impedance, unifying_voltage_kV, dict_network_simplified)
+                    additional_trafo_impedance = 0
+                else:
+                    additional_trafo_impedance = highest_impedance
             else:
-                additional_trafo_impedance = highest_impedance
+                # Case when bus has no nodes below itself
+                additional_trafo_impedance = 0
 
             network.convert_trafo_branch_to_equivalent_impedance(f_bus, t_bus, dict_network_simplified)
             new_impedance = network.get_impedance_of_branch(f_bus, t_bus, dict_network_simplified) + additional_trafo_impedance
