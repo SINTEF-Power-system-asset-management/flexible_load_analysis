@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from .. import utilities
 
@@ -101,4 +102,16 @@ def normalize_timeseries(ts, new_max=1):
     old_max = np.max(ts[:,1])
     scale = new_max/old_max
     ts = scale_timeseries(ts, scale)
+    return ts
+
+
+def to_pandas(ts, col_name="load"):
+    df = pd.DataFrame({col_name : get_data_array(ts)}, index=get_timestamp_array(ts))
+    return df
+
+
+def from_pandas(df, col_name="load"):
+    timestamps = (df[col_name].index).to_pydatetime()
+    loads = df[col_name].to_numpy()
+    ts = np.vstack((timestamps, loads)).T
     return ts
