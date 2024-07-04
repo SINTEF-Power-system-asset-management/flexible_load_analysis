@@ -20,6 +20,7 @@ def find_branch_closest_to_overload(loads, network):
     return sorted(maxs,key=lambda x: x[1], reverse=False)[0]
 
 def find_overloads(ts_data, fl_power_limit):
+    """Returns all events where line is overloaded in timeseries"""
     l_overloads = []
     b_in_overload_event = False
     for i in range(len(ts_data)):
@@ -29,7 +30,7 @@ def find_overloads(ts_data, fl_power_limit):
             i_start = i
         elif not b_line_overloaded and b_in_overload_event:
             i_end = i
-            l_overloads.append(OverloadEvent(ts_data[i_start:i_end+1,:], fl_power_limit))
+            l_overloads.append(OverloadEvent(ts_data[i_start:i_end,:], fl_power_limit))
             b_in_overload_event = False
         else:
             continue
