@@ -6,6 +6,8 @@ from . import load_aggregation
 
 
 def velander_model(x, k1, k2):
+    """S. Velander (1947)
+    """
     return k1 * x + k2 * np.sqrt(x)
 
 
@@ -34,6 +36,8 @@ def find_velander_coefficients(
     Notes:
         For each iteration, a random number of load points are sampled, aggregated, and their peak load- and energy demand are
         calculated and collected as a single datapoint. The process is repeated until enough datapoints are generated.
+
+    Author: Stine Ekrheim
     """
     contributing_nodes = radial_network_traversal.all_loads_below(
         agg_node, d_network, d_loads, reference_node=agg_node
