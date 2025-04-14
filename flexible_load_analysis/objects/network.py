@@ -178,7 +178,7 @@ def add_node(dict_network, n_node, n_parent_node):
     dict_bus['ZONE'] = np.append(dict_bus['ZONE'],'1')
     dict_bus['VMAX'] = np.append(dict_bus['VMAX'],'1.04')
     dict_bus['VMIN'] = np.append(dict_bus['VMIN'],'0.96')
-
+    dict_bus['LG'] = np.append(dict_bus['LG'], '0')  
     dict_branch = dict_network['branch']
 
     # Adding the branch to the dictionary of branches
